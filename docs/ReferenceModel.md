@@ -17,14 +17,14 @@ In addition, some components which convert the binary output of each calculation
 Figure 1 shows the data stream workflow of the reference model with its particular internal data files.
 
 ##### Figure 1. Reference Model Workflow
-![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/KtoolsWorkflow.jpg "Reference Model Workflow")
+![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/KtoolsWorkflow.jpg "Reference Model Workflow")
 
 The input data for the reference components, shown as red source files, are the events, Damage CDFs, Exposure Instance, Damage Bin Dictionary and FM Instance.  These are Oasis concepts with Oasis format data as outlined below. 
 
 Figure 2 shows the workflows for the data conversion components.
 
 ##### Figure 2. Data Conversion Workflows
-![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/Dbtools2.jpg "Data Conversion Workflows")
+![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/Dbtools2.jpg "Data Conversion Workflows")
 
 ```
 Note that no examples of the component which generates the binary files have been provided in the tool set 
