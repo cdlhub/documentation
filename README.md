@@ -68,7 +68,7 @@ The following Cygwin add-in packages are required;
 * make
 
 Search for 'gcc' and 'make' to find all of the relevant packages (Only 'gcc' illustrated below).
-![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/cygwin1.jpg "Add-in packages")
+![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/cygwin1.jpg "Add-in packages")
 
 ### Instructions
 
@@ -76,7 +76,7 @@ Copy ktools-[version].tar.gz onto your machine.
 
 Open a Cygwin terminal. 
 
-![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/cygwin2.jpg "Cygwin terminal")
+![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/cygwin2.jpg "Cygwin terminal")
 
 Change directory to the location of the tar.gz.
 
@@ -108,7 +108,7 @@ $ make install
 
 The executables are located in C:/Oasis/bin. You should add this bin folder to your path in System Environment Variables.
 
-![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/windowspath.jpg "Adding the path in system environment variables")
+![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/windowspath.jpg "Adding the path in system environment variables")
 
 The installation is complete. Restart the Cygwin session to refresh the path before usage.
 
