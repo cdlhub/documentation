@@ -63,13 +63,13 @@ However all components are plug-and-play, so the internal data for each can be r
 The standard workflow is straight through in-memory processing to produce a single output file.  This minimises the amount of disk I/O at each stage and results in the best performance. This workflow is shown in Figure 2.
 
 ##### Figure 2. Straight-through processing
-![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/SingleOutput.jpg "Straight-through processing")
+![alt text](img/SingleOutput.jpg "Straight-through processing")
 
 However it is possible to write the results of each calculation to a binary file, if the data is required to be persisted. This workflow is shown in Figure 3.
 At present, intermediate results binaries are required to be read back into memory for downstream calculations.
 
 ##### Figure 3. Multiple output file processing
-![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/MultipleOutput1.jpg "Multiple output file processing")
+![alt text](img/MultipleOutput1.jpg "Multiple output file processing")
 
 The reference model demonstrates an implementation of the principal calculation components, along with some data conversion components which convert binary files to csv files. 
 
@@ -320,14 +320,14 @@ In addition, some components which convert the binary output of each calculation
 Figure 1 shows the data stream workflow of the reference model with its particular internal data files.
 
 ##### Figure 1. Reference Model Workflow
-![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/KtoolsWorkflow.jpg "Reference Model Workflow")
+![alt text](img/KtoolsWorkflow.jpg "Reference Model Workflow")
 
 The input data for the reference components, shown as red source files, are the events, Damage CDFs, Exposure Instance, Damage Bin Dictionary and FM Instance.  These are Oasis concepts with Oasis format data as outlined below. 
 
 Figure 2 shows the workflows for the data conversion components.
 
 ##### Figure 2. Data Conversion Workflows
-![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/Dbtools2.jpg "Data Conversion Workflows")
+![alt text](img/Dbtools2.jpg "Data Conversion Workflows")
 
 ```
 Note that no examples of the component which generates the binary files have been provided in the tool set 
@@ -586,11 +586,11 @@ Note that the events can still be chunked and each chunk distributed to a separa
 #### 3. Multi-output workflows
 Currently if the results of the intermediate calculation steps are required to be persisted, then they must be written out to disk and read back into memory to continue downstream processing.
 ##### Figure 1. Multiple output file processing - now
-![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/MultipleOutput1.jpg "Multiple output file processing")
+![alt text](img/MultipleOutput1.jpg "Multiple output file processing")
 
 The plan is to enable intermediate calculation steps to be written out to disk whilst continuing the in-memory workflow.
 ##### Figure 2. Multiple output file processing - future
-![alt text](https://github.com/johcarter/documentation/blob/master/docs/img/MultipleOutput2.jpg "Multiple output file processing")
+![alt text](img/MultipleOutput2.jpg "Multiple output file processing")
 
 #### 4. Sidx field format in gulcalc and fmcalc
 The sample index field will be simplified to be a simple 4 byte integer format, with no higher byte special meaning. The sample index value for the mean will be changed to -1 (currently 0) and -2 for standard deviation (currently -1).
