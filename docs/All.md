@@ -1,7 +1,7 @@
 # Introduction
-The purpose of this project is to provide a specification and reference model of the POSIX in-memory variant of the Oasis Kernel.  
+This paper describes the in-memory harness developed for Oasis R1.5.  Full details and the code are available in a private GitHub for Oasis Members.
 
-The code can be compiled in Linux, POSIX-compliant Windows and native Windows.
+The paper provides some Background, a short Overview, the Specification, the Reference Model implementation and a short Planned work section.
 
 ### Background
 
