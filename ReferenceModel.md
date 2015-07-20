@@ -9,11 +9,6 @@ The set of core components provided in this release is as follows;
 * **[fmcalc](#fmcalc)** performs the insured loss calculations on the ground up loss samples and mean. The output is the Oasis format loss sample table. The functionality covered in fmcalc is the same as the current financial Module in Oasis R1.4 (see R1.2 Financial Module documentation for more information).  The result can be output to a binary file or streamed into outputcalc.
 * **[outputcalc](#outputcalc)** performs an output analysis on the ground up or loss samples. The reference example is an event loss table containing TIV, sample mean and standard deviation for each event at portfolio/programme summary level. The results are written directly into csv file as there is no downstream processing.
 
-In addition, some components which convert the binary output of each calculation step to csv format are provided.
-* **cdftocsv** is a utility to convert binary format CDFs to a csv. getmodel standard output can be streamed directly into cdftocsv, or a binary file of the same format can be input.
-* **gultocsv** is a utility to convert binary format GULs to a csv. gulcalc standard output can be streamed directly into gultocsv, or a binary file of the same format can be input.
-* **fmtocsv** is a utility to convert binary format losses to a csv. fmcalc standard output can be streamed directly into fmtocsv, or a binary file of the same format can be input.
-
 Figure 1 shows the data stream workflow of the reference model with its particular internal data files.
 
 ##### Figure 1. Reference Model Workflow
