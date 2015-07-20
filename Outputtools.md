@@ -16,13 +16,32 @@ as yet. This component is, in general, specific to the technical environment and
 the data from a remote server as an API. However an example of 'gendata' is provided with Oasis R1.4 
 in a github project called 'oatools' which reads the input data from a SQL Server database.
 ```
-#### cdftocsv <a id="cdftocsv"></a>
+## cdftocsv <a id="cdftocsv"></a>
 
 A component which converts the getmodel output stream, or binary file with the same structure, to a csv file.
 
-##### Input
-Same as getmodel output or a binary file of the same format can be piped into cdftocsv.
+##### Stdin stream_id
 
+| Byte 1 | Bytes 2-4 |  Description                                   |
+|:-------|-----------|:-----------------------------------------------|
+|    0   |     1     |  getmodel reference example                    |
+
+A binary file of the same format can be piped into cdftocsv.
+
+##### Parameters
+None.
+
+##### Usage
+```
+$ [stdin component] | cdftocsv > [output].csv
+$ cdftocsv < [stdin].bin > [output].csv
+```
+
+##### Example
+```
+$ eve 1 1 1 | getmodel | cdftocsv > cdf.csv
+$ cdftocsv < getmodel.bin > cdf.csv 
+```
 ##### Output
 Csv file with the following fields;
 
@@ -35,7 +54,7 @@ Csv file with the following fields;
 | prob_to           | float  |    4   | The cumulative probability at the upper damage bin threshold        |   0.765     |
 | bin_mean          | float  |    4   | The conditional mean of the damage bin                              |   0.45      |
 
-#### gultocsv <a id="gultocsv"></a>
+## gultocsv <a id="gultocsv"></a>
 
 A component which converts the gulcalc output stream, or binary file with the same structure, to a csv file.
 
