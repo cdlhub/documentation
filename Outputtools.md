@@ -1,4 +1,4 @@
-# Output data tools
+# Output data tools <a id="outputtools"></a>
 
 The following components convert the binary output of each calculation component to csv format;
 * **[cdftocsv](#cdftocsv)** is a utility to convert binary format CDFs to a csv. getmodel standard output can be streamed directly into cdftocsv, or a binary file of the same format can be input.
@@ -46,6 +46,8 @@ Csv file with the following fields;
 | prob_to           | float  |    4   | The cumulative probability at the upper damage bin threshold        |   0.765     |
 | bin_mean          | float  |    4   | The conditional mean of the damage bin                              |   0.45      |
 
+[Return to top](#outputtools)
+
 ## gultocsv <a id="gultocsv"></a>
 
 A component which converts the gulcalc output stream, or binary file with the same structure, to a csv file.
@@ -80,7 +82,9 @@ Csv file with the following fields;
 | sidx              | int    |    4   | Sample index                                                        |     10      |
 | gul               | float  |    4   | The ground up loss value                                            | 5675.675    |
 
-#### fmtocsv <a id="fmtocsv"></a>
+[Return to top](#outputtools)
+
+## fmtocsv <a id="fmtocsv"></a>
 
 A component which converts the fmcalc output stream, or binary file with the same structure, to a csv file.
 
@@ -118,3 +122,10 @@ Csv file with the following fields;
 | output_id         | int    |    4   | Oasis output_id                                                     |    5        |
 | sidx              | int    |    4   | Sample index                                                        |    10       |
 | loss              | float  |    4   | The insured loss value                                              | 5375.675    |
+
+[Return to top](#outputtools)
+
+[Go to Planned work](PlannedWork.md)
+
+[Back to Contents](Contents.md)
+
