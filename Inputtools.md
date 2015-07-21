@@ -6,9 +6,10 @@ The following components convert input data in csv format to the binary format r
 * **[damagetobin](#damagebins)** is a utility to convert the Oasis damage bin dictionary table into binary format. 
 * **[exposuretobin](#exposuretobin)** is a utility to convert the Oasis exposure instance table into binary format. 
 * **[randtobin](#randtobin)** is a utility to convert a list of random numbers into binary format. 
+* **[cdfdatatobin](#cdfdatatobin)** is a utility to convert the Oasis cdf data into binary format.
 * **[fmdatatobin](#fmdatatobin)** is a utility to convert the Oasis FM instance data into binary format.
 * **[fmxreftobin](#fmxreftobin)** is a utility to convert the Oasis FM xref table into binary format.
-* **[cdfdatatobin](#cdfdatatobin)** is a utility to convert the Oasis cdf data into binary format.
+
 
 These components are intended to allow users to generate the required input binaries from csv independently of the original data store and technical environment. All that needs to be done is first generate the csv files from the data store (SQL Server database, etc).
 
@@ -21,9 +22,11 @@ The following components convert the binary input data required by the calculati
 * **[damagetocsv](#damagebins)** is a utility to convert the Oasis damage bin dictionary binary into csv format.
 * **[exposuretocsv](#exposuretocsv)** is a utility to convert the Oasis exposure instance binary into csv format.
 * **[randtocsv](#randtocsv)** is a utility to convert the random numbers binary into csv format.
+* **[cdfdatatocsv](#cdfdatatocsv)** is a utility to convert the Oasis cdf data binary into csv format.
 * **[fmdatatocsv](#fmdatatocsv)** is a utility to convert the Oasis FM instance binary into csv format.
 * **[fmxreftocsv](#fmxreftocsv)** is a utility to convert the Oasis FM xref binary into csv format.
-* **[cdfdatatocsv](#cdfdatatocsv)** is a utility to convert the Oasis cdf data binary into csv format.
+
+These components are provided for convenience of viewing the data and debugging.
 
 ## Events <a id="events"></a>
 One or more event binaries are required by eve and getmodel. It must have the following filename format, each uniquely identified by a chunk number (integer >=0);
@@ -98,5 +101,38 @@ $ exposuretobin < exposures.csv > exposures.bin
 
 #### exposuretocsv
 ```
-$ exposuretocsv < exposure.bin > exposure.csv
+$ exposuretocsv < exposures.bin > exposures.csv
+```
+
+## Random numbers <a id="random"></a>k
+One or more random number files may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It should be provided for the same number of chunks as events and must have the following filename format;
+* random_{chunk}.bin
+
+If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are generated dynamically in the calculation. 
+
+#### File format
+The csv file should contain the runtime number of samples as the first value followed by a simple list of random numbers. It should not contain any headers.
+
+First value;
+
+| Name              | Type     |  Bytes | Description                  Example     |
+|:------------------|----------|--------| :--------------------------|------------:|
+| number of samples | integer  |    4   | Runtime number of samples  |  100        |
+
+Subsequent values;
+
+| Name              | Type   |  Bytes | Description                    | Example     |
+|:------------------|--------|--------| :------------------------------|------------:|
+| rand              | float  |    4   | Random number between 0 and 1  |  0.75875    |  
+
+The first value in the file is an exception and should contain the runtime number of samples (integer > 0).  This is required for running gulcalc in 'Reconciliation mode' (using gulcalc -R parameter) which uses the same random numbers as Oasis classic and produces identical sampled values.  If not running in reconciliation mode, it is not used and can be set to 1.
+
+#### randtobin
+```
+$ randtobin < random_1.csv > random_1.bin
+```
+
+#### randtocsv
+```
+$ randtocsv < random_1.bin > random_1.csv
 ```
