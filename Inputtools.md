@@ -2,8 +2,8 @@
 
 The following components convert input data in csv format to the binary format required by the calculation components in the reference model;
 
-* **[evetobin](#evetobin)** is a utility to convert a list of event_ids into binary format.
-* **[damagetobin](#damagetobin)** is a utility to convert the Oasis damage bin dictionary table into binary format. 
+* **[evetobin](#events)** is a utility to convert a list of event_ids into binary format.
+* **[damagetobin](#damagebins)** is a utility to convert the Oasis damage bin dictionary table into binary format. 
 * **[exposuretobin](#exposuretobin)** is a utility to convert the Oasis exposure instance table into binary format. 
 * **[randtobin](#randtobin)** is a utility to convert a list of random numbers into binary format. 
 * **[fmdatatobin](#fmdatatobin)** is a utility to convert the Oasis FM instance data into binary format.
@@ -17,18 +17,18 @@ Note that [oatools](https://github.com/OasisLMF/oatools) contains a component 'g
 ```
 
 The following components convert the binary input data required by the calculation components in the reference model into csv format;
-* **[evetocsv](#evetocsv)** is a utility to convert the event binary into csv format.
-* **[damagetocsv](#damagetocsv)** is a utility to convert the Oasis damage bin dictionary binary into csv format.
+* **[evetocsv](#events)** is a utility to convert the event binary into csv format.
+* **[damagetocsv](#damagebins)** is a utility to convert the Oasis damage bin dictionary binary into csv format.
 * **[exposuretocsv](#exposuretocsv)** is a utility to convert the Oasis exposure instance binary into csv format.
 * **[randtocsv](#randtocsv)** is a utility to convert the random numbers binary into csv format.
 * **[fmdatatocsv](#fmdatatocsv)** is a utility to convert the Oasis FM instance binary into csv format.
 * **[fmxreftocsv](#fmxreftocsv)** is a utility to convert the Oasis FM xref binary into csv format.
 * **[cdfdatatocsv](#cdfdatatocsv)** is a utility to convert the Oasis cdf data binary into csv format.
 
-## Events binary
-One or more event binaries are required by all calculation components and must have the following filename format, which each uniquely identified by a chunk number (integer >=0);
+## Events <a id="events"></a>
+One or more event binaries are required by eve and getmodel. It must have the following filename format, each uniquely identified by a chunk number (integer >=0);
 * e_chunk_{chunk}_data.bin
-The chunks represent partitions of the event set.
+The chunks represent subsets of events.
 
 ```
 In general more than 1 chunk of events is not necessary for the in-memory kernel as the computation can be parallelized across the processes. However it is theoretically possible to use the event chunk feature as a means of distributing work to multiple calculation back-ends if more computational power is required.
@@ -49,4 +49,54 @@ $ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
 #### evetocsv
 ```
 $ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
+```
+
+## Damage bins <a id="damagebins"></a>
+The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following filename format;
+* damage_bin_dict.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name              | Type   |  Bytes | Description                                                   | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| bin_index         | int    |    4   | Identifier of the damage bin                                  |     1       |
+| bin_from          | float  |    4   | Lower damage threshold for the bin                            |   0.01      |
+| bin_to            | float  |    4   | Upper damage threshold for the bin                            |   0.02      |
+| interpolation     | float  |    4   | Interpolation damage value for the bin (usually the mid-point)|   0.015     |
+| interval_type     | int    |    4   | Identifier of the interval type, e.g. closed, open            |   1201      | 
+
+#### damagetobin
+```
+$ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
+```
+
+#### damagetocsv
+```
+$ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
+```
+
+## Exposures <a id="exposures"></a>k
+The exposures binary contains the list of exposures for which ground up loss will be sampled in the kernel calculations. The data format is that of the Oasis Exposure instance. It is required by gulcalc and outputcalc and must have the following filename format;
+* exposures.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name              | Type   |  Bytes | Description                                                   | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| item_id           | int    |    4   | Identifier of the exposure item                               |     1       |
+| areaperil_id      | int    |    4   | Identifier of the locator and peril of the item               |   4545      |
+| vulnerability_id  | int    |    4   | Identifier of the vulnerability distribution of the item      |   345456    |
+| tiv               | float  |    4   | The total insured value of the item                           |   200000    |
+| group_id          | int    |    4   | Identifier of the correlation group of the item               |    1        |  
+
+#### exposuretobin
+```
+$ exposuretobin < exposures.csv > exposures.bin
+```
+
+#### exposuretocsv
+```
+$ exposuretocsv < exposure.bin > exposure.csv
 ```
