@@ -34,6 +34,7 @@ These components are provided for convenience of viewing the data and debugging.
 ## Events <a id="events"></a>
 One or more event binaries are required by eve and getmodel. It must have the following filename format, each uniquely identified by a chunk number (integer >=0);
 * e_chunk_{chunk}_data.bin
+
 The chunks represent subsets of events.
 
 ```
@@ -225,7 +226,7 @@ The csv file should contain the following fields and include a header row.
 | item_id                     | int    |    4   | Identifier of the exposure item                |    56745    |
 | output_id                   | int    |    4   | Oasis Financial Module output_id               |     546     |
 
-The data should not contain any nulls (replace with 0).
+The data should not contain any nulls.
 
 #### fmxreftobin
 ```
