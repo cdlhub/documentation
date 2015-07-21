@@ -139,6 +139,8 @@ The parameters are;
 * -S number of samples
 * -R reconciliation mode (optional)
 * -r read random numbers from file (optional)
+* -L loss threshold (optional)
+* -d output random numbers (optional)
 
 ##### Usage
 ```
@@ -179,7 +181,7 @@ The structure of the random number table is as follows;
 | rand              | float  |    4   | Random number between 0 and 1                                 |  0.75875    |
 
 ##### Calculation
-The program constructs a cdf for each item, based on matching the areaperil_id and vulnerability_id from the stdin and the exposure data. The stdin stream is a block of cdfs which are ordered by event.
+The program constructs a cdf for each item, based on matching the areaperil_id and vulnerability_id from the stdin and the exposure data. The stdin stream is a block of cdfs which are ordered by event_id, areaperil_id, vulnerability_id and bin_index asccending.
 
 For each item cdf and for the number of samples specified, the program reads a random number from the random number file and uses it to sample ground up loss from the cdf using one of three methods. If a random number file is not provided, a random number is generated on the fly for each event and group of items which have a common group_id using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler).
 
@@ -198,7 +200,7 @@ An example of the three cases and methods is given below;
 
 Each sampled damage is multiplied by the item TIV and output to the stdout stream.
 
-A second calculation which occurs in the gulcalc program is of the mean and standard deviation of ground up loss. For each cdf, the mean and standard deviation of damage is calculated by numerical integration and the result is multiplied by the item TIV. The results are output to the stdout stream as IDX=0 (mean) and IDX=-1 (standard deviation), for each item and event.
+A second calculation which occurs in the gulcalc program is of the mean and standard deviation of ground up loss. For each cdf, the mean and standard deviation of damage is calculated by numerical integration and the result is multiplied by the item TIV. The results are output to the stdout stream as IDX=-1 (mean) and IDX=-2 (standard deviation), for each item and event.
 
 [return to top](#referencemodel)
 
@@ -253,7 +255,7 @@ The program requires the FM Instance data, which is the Oasis native format data
 
 
 ##### Calculation
-fmcalc performs the same calculations as the Oasis Financial Module in R1.4.  Information about the Oasis FinancialModule can be found on the public area of the Oasis Loss Modelling Framework website, and detailed information and examples are available to Oasis community members in the members area.
+fmcalc performs the same calculations as the Oasis Financial Module in R1.4.  Information about the Oasis Financial Module can be found on the public area of the Oasis Loss Modelling Framework website, and detailed information and examples are available to Oasis community members in the members area.
 
 [return to top](#referencemodel)
 
