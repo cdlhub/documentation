@@ -1,4 +1,4 @@
-# Input data tools
+# Input data tools <a id="inputools"></a>
 
 The following components convert input data in csv format to the binary format required by the calculation components in the reference model;
 
@@ -59,6 +59,7 @@ $ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
 ```
 $ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
 ```
+[Return to top](#inputtools)
 
 ## Damage bins <a id="damagebins"></a>
 The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following filename format;
@@ -86,6 +87,7 @@ $ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
 ```
 $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
+[Return to top](#inputtools)
 
 <a id="exposures"></a>
 ## Exposures 
@@ -114,6 +116,8 @@ $ exposuretobin < exposures.csv > exposures.bin
 ```
 $ exposuretocsv < exposures.bin > exposures.csv
 ```
+
+[Return to top](#inputtools)
 
 <a id="random"></a>
 ## Random numbers 
@@ -149,6 +153,8 @@ $ randtobin < random_1.csv > random_1.bin
 $ randtocsv < random_1.bin > random_1.csv
 ```
 
+[Return to top](#inputtools)
+
 <a id="cdfs"></a>
 ## CDFs 
 One or more cdf data files are required for the getmodel component, as well as an index file containing the starting positions of each event block. These should be located in a cdf sub-directory of the main working directory and have the following filename format;
@@ -177,6 +183,8 @@ Not yet implemented. A component will be provided to produce both binary and ind
 ```
 $ cdfdatatocsv < damage_cdf_chunk_1.bin > damage_cdf_chunk_1.csv
 ```
+
+[Return to top](#inputtools)
 
 <a id="fmdata"></a>
 ## FM data 
@@ -220,6 +228,8 @@ $ fmdatatobin < fm_data.csv > fm_data.bin
 $ fmdatatocsv < fm_data.bin > fm_data.csv
 ``` 
 
+[Return to top](#inputtools)
+
 <a id="fmxref"></a>
 ## FM xref 
 The fmxref binary file contains cross reference data linking the output_id in the fmcalc output back to item_id, and is required for outputcalc only. This should be located in a fm sub-directory of the main working directory and have the following filename.
@@ -245,3 +255,9 @@ $ fmxreftobin < fmxref.csv > fmxref.bin
 ```
 $ fmxreftocsv < fmxref.bin > fmxref.csv
 ``` 
+
+[Return to top](#inputtools)
+
+[Go to Output data tools](Outputtools.md)
+
+[Back to Contents](Contents.md)
