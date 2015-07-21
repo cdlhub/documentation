@@ -10,7 +10,7 @@ The set of core components provided in this release is as follows;
 * **[outputcalc](#outputcalc)** performs an output analysis on the ground up or loss samples. The reference example is an event loss table containing TIV, sample mean and standard deviation for each event at portfolio/programme summary level. The results are written directly into csv file as there is no downstream processing.
 
 Other components in the Reference Model include;
-* **[Input data components](Inputtools.md)** to convert input data between csv to binary.
+* **[Input data components](Inputtools.md)** to convert input data between csv and binary.
 * **[Output data components](Outputtools.md)** to convert the binary data stream output to csv.
 
 Figure 1 shows the data stream workflow of the reference model with its particular internal data files.
@@ -20,9 +20,9 @@ Figure 1 shows the data stream workflow of the reference model with its particul
 
 The input data for the reference components, shown as red source files, are the events, Damage CDFs, Exposure Instance, Damage Bin Dictionary and FM Instance.  These are Oasis concepts with Oasis format data as outlined below.
 
-The following sections explain the usage and internal processes and data requirements of each of the reference components. The standard input and output data streams for the components are generic and are covered in the Specification.
+The following sections explain the usage and internal processes of each of the reference components. The standard input and output data streams for the components are generic and are covered in the Specification. The input data requirements are covered in [Input data components](Inputtools.md).
 
- <a id="eve"></a>
+<a id="eve"></a>
 ## eve
 eve takes as input a list of event ids in binary format and generates a partition of event ids as a binary data stream, according to the parameters supplied. 
 
@@ -54,7 +54,7 @@ The program requires an event binary. The file is picked up from the directory w
 
 The data structure of e_chunk_{chunk}_data.bin is a simple list of event ids (4 byte integers).
 
-[return to top](#referencemodel)
+[Return to top](#referencemodel)
 
 <a id="getmodel"></a>
 ## getmodel 
@@ -94,34 +94,14 @@ And in a cdf specific subdirectory;
 * cdf/damage_cdf_chunk_{chunk_id}.bin
 * cdf/damage_cdf_chunk_{chunk_id}.idx
 
-The data structure of damage_bin_dictionary.bin is as follows;
-
-| Name              | Type   |  Bytes | Description                                                   | Example     |
-|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| bin_index         | int    |    4   | Identifier of the damage bin                                  |     1       |
-| bin_from          | float  |    4   | Lower damage threshold for the bin                            |   0.01      |
-| bin_to            | float  |    4   | Upper damage threshold for the bin                            |   0.02      |
-| interpolation     | float  |    4   | Interpolation damage value for the bin (usually the mid-point)|   0.015     |
-| interval_type     | int    |    4   | Identifier of the interval type, e.g. closed, open            |    1201     |   
-
-The data structure of damage_cdf_chunk_{chunk_id}.bin is as follows;
-
-| Name              | Type   |  Bytes | Description                                                   | Example     |
-|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| event_id          | int    |    4   | Oasis event_id                                                |     1       |
-| areaperil_id      | int    |    4   | Oasis areaperil_id                                            |   4545      |
-| vulnerability_id  | int    |    4   | Oasis vulnerability_id                                        |   345456    |
-| bin_index         | int    |    4   | Identifier of the damage bin                                  |     10      |
-| prob_to           | float  |    4   | The cumulative probability at the upper damage bin threshold  |    0.765    | 
-
-The cdfs are ordered by event and streamed out in blocks for each event.  The index file damage_cdf_chunk_{chunk_id}.bin contains the position of each new event_id in the stream, for faster processing.
+The cdfs are ordered by event and streamed out in blocks for each event. 
 
 Note that the prob_from field from the existing database table structure of Oasis damage cdfs has been dropped to minimise the size of the table, as it is implied from the prior record prob_to field.
 
 ##### Calculation
 The program reads the damage bin mid-point (interpolation field) from the damage bin dictionary and includes it as a new field in the CDF stream as 'bin_mean'.  This field is the conditional mean damage for the bin and it is used to facilitate the calculation of mean and standard deviation in the gulcalc component. No calculations are performed except to construct the standard output stream.
 
-[return to top](#referencemodel)
+[Return to top](#referencemodel)
 
 <a id="gulcalc"></a>
 ## gulcalc 
@@ -164,26 +144,10 @@ The program requires the damage bin dictionary for the model and the exposure in
 If the user specifies -r as a parameter, then the program also picks up a random number file from the working directory. The filename is;
 random_{chunk_id}.bin
 
-The data structure of damage_bin_dictionary.bin is the same as for the getmodel component given above, and the data structure for the exposure instance is as follows;
-
-| Name              | Type   |  Bytes | Description                                                   | Example     |
-|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| item_id           | int    |    4   | Identifier of the exposure item                               |     1       |
-| areaperil_id      | int    |    4   | Identifier of the locator and peril of the item               |   4545      |
-| vulnerability_id  | int    |    4   | Identifier of the vulnerability distribution of the item      |   345456    |
-| tiv               | float  |    4   | The total insured value of the item                           |   200000    |
-| group_id          | int    |    4   | Identifier of the correlation group of the item               |    1        |   
-
-The structure of the random number table is as follows;
-
-| Name              | Type   |  Bytes | Description                                                   | Example     |
-|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| rand              | float  |    4   | Random number between 0 and 1                                 |  0.75875    |
-
 ##### Calculation
 The program constructs a cdf for each item, based on matching the areaperil_id and vulnerability_id from the stdin and the exposure data. The stdin stream is a block of cdfs which are ordered by event_id, areaperil_id, vulnerability_id and bin_index asccending.
 
-For each item cdf and for the number of samples specified, the program reads a random number from the random number file and uses it to sample ground up loss from the cdf using one of three methods. If a random number file is not provided, a random number is generated on the fly for each event and group of items which have a common group_id using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler).
+For each item cdf and for the number of samples specified, the program reads a random number from the random number file if the -r parameter is used and uses it to sample ground up loss from the cdf using one of three methods. If the -r parameter is not used, a random number is generated on the fly for each event and group of items which have a common group_id using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler).
 
 For a given damage interval corresponding to a cumulative probability interval that each random number falls within;
 * If the conditional mean damage (of the cdf) is the mid-point of the damage bin interval (of the damage bin dictionary) then the gulcalc program performs linear interpolation. 
@@ -200,9 +164,9 @@ An example of the three cases and methods is given below;
 
 Each sampled damage is multiplied by the item TIV and output to the stdout stream.
 
-A second calculation which occurs in the gulcalc program is of the mean and standard deviation of ground up loss. For each cdf, the mean and standard deviation of damage is calculated by numerical integration and the result is multiplied by the item TIV. The results are output to the stdout stream as IDX=-1 (mean) and IDX=-2 (standard deviation), for each item and event.
+A second calculation which occurs in the gulcalc program is of the mean and standard deviation of ground up loss. For each cdf, the mean and standard deviation of damage is calculated by numerical integration of the effective damageability probability distribution and the result is multiplied by the item TIV. The results are output to the stdout stream as IDX=-1 (mean) and IDX=-2 (standard deviation), for each item and event.
 
-[return to top](#referencemodel)
+[Return to top](#referencemodel)
 
 <a id="fmcalc"></a>
 ## fmcalc 
@@ -255,9 +219,9 @@ The program requires the FM Instance data, which is the Oasis native format data
 
 
 ##### Calculation
-fmcalc performs the same calculations as the Oasis Financial Module in R1.4.  Information about the Oasis Financial Module can be found on the public area of the Oasis Loss Modelling Framework website, and detailed information and examples are available to Oasis community members in the members area.
+fmcalc performs the same calculations as the Oasis Financial Module in R1.5.  Information about the Oasis Financial Module can be found on the public area of the Oasis Loss Modelling Framework website, and detailed information and examples are available to Oasis community members in the members area.
 
-[return to top](#referencemodel)
+[Return to top](#referencemodel)
 
 <a id="outputcalc"></a>
 ## outputcalc 
@@ -265,7 +229,7 @@ The reference example of an output produces an event loss table 'ELT' for either
 
 ##### Stream_id
 
-There is no output stream_id, the results table is exported directly to csv.
+There is no output stream_id, the results table is written directly to csv.
 
 ##### Parameters
 There are no parameters as all of the information is taken from the input stream and internal data.
@@ -287,22 +251,15 @@ $ outputcalc < fm.bin > output.csv
 ```
 
 ##### Internal data
-The program requires the exposure instance table as a binary file, and for fmcalc input it requires an additional cross reference file to relate the output_id from the fm stdout stream (which represents an abstract grouping of exposure items) back to the original item_id. This file is picked up from the fm subdirectory;
+The program requires the exposures.bin file, and for fmcalc input it requires an additional cross reference file to relate the output_id from the fm stdout stream (which represents an abstract grouping of exposure items) back to the original item_id. This file is picked up from the fm subdirectory;
 
 fm/fmxref.bin
-
-The data structure of exposures.bin is given in the gulcalc section above, and the data structure of fmxref.bin is as follows;
-
-| Name                        | Type   |  Bytes | Description                                    | Example     |
-|:----------------------------|--------|--------| :----------------------------------------------|------------:|
-| item_id                     | int    |    4   | Identifier of the exposure item                |    56745    |
-| output_id                   | int    |    4   | Oasis Financial Module output_id               |     546     |
 
 ##### Calculation
 The program sums the sampled losses from either gulcalc stream or fmstream across the portfolio/programme by event and sample, and then computes sample mean and standard deviation. It reads the TIVs from the exposure instance table and sums them for the group of items affected by each event.
 
-[return to top](#referencemodel)
+[Return to top](#referencemodel)
 
-[Go to Planned work](PlannedWork.md)
+[Go to Input data tools](Inputtools.md)
 
 [Back to Contents](Contents.md)
