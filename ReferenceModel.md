@@ -196,27 +196,9 @@ $ fmcalc < gul_chunk1.bin > fm_chunk1.bin
 ```
 
 ##### Internal data
-The program requires the FM Instance data, which is the Oasis native format data tables which describe an insurance programme. These four tables have been combined into one which has the following data structure;
+The program requires the FM Instance data, which is the Oasis native format data tables which describe an insurance programme. This file is picked up from the fm subdirectory;
 
-| Name                     | Type   |  Bytes | Description                                    | Example     |
-|:-------------------------|--------|--------| :----------------------------------------------|------------:|
-| item_id                  | int    |    4   | Identifier of the exposure item                |    56745    |
-| agg_id                   | int    |    4   | Oasis Financial Module agg_id                  |     546     |
-| prog_id                  | int    |    4   | Oasis Financial Module prog_id                 |     4       |
-| level_id                 | int    |    4   | Oasis Financial Module level_id                |     1       |
-| policytc_id              | int    |    4   | Oasis Financial Module policytc_id             |     34      |
-| layer_id                 | int    |    4   | Oasis Financial Module layer_id                |      1      |
-| calcrule_id              | int    |    4   | Oasis Financial Module calcrule_id             |      2      |
-| allocrule_id             | int    |    4   | Oasis Financial Module allocrule_id            |      0      |
-| deductible               | float  |    4   | Deductible                                     |   50        |
-| limit                    | float  |    4   | Limit                                          |   100000    |
-| share_prop_of_lim        | float  |    4   | Share/participation as a proportion of limit   |   0.25      |
-| deductible_prop_of_loss  | float  |    4   | Deductible as a proportion of loss             |   0.05      |
-| limit_prop_of_loss       | float  |    4   | Limit as a proportion of loss                  |   0.5       |
-| deductible_prop_of_tiv   | float  |    4   | Deductible as a proportion of TIV              |   0.05      |
-| limit_prop_of_tiv        | float  |    4   | Limit as a proportion of TIV                   |   0.8       |
-| deductible_prop_of_limit | float  |    4   | Deductible as a proportion of limit            |   0.1       |
-
+fm/fm_data.bin
 
 ##### Calculation
 fmcalc performs the same calculations as the Oasis Financial Module in R1.5.  Information about the Oasis Financial Module can be found on the public area of the Oasis Loss Modelling Framework website, and detailed information and examples are available to Oasis community members in the members area.
