@@ -175,7 +175,9 @@ $ cdfdatatocsv < damage_cdf_chunk_1.bin > damage_cdf_chunk_1.csv
 ```
 
 ## FM data <a id="fmdata"></a>
-The fmdata binary file contains the policy terms and conditions required to perform a loss calculation, and is required for fmcalc only. This should be located in a fm sub-directory of the main working directory and have the following filename.
+The fmdata binary file contains the policy terms and conditions required to perform a loss calculation, and is required for fmcalc only. The source format is Oasis FM Instance data, which is the Oasis native format data tables which describe an insurance programme. These four tables have been combined into one with the below structure.
+
+This file should be located in a fm sub-directory of the main working directory and have the following filename.
 * fm/fm_data.bin
 
 #### File format
