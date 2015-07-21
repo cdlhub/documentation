@@ -79,7 +79,7 @@ $ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
 $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
 
-## Exposures <a id="exposures"></a>k
+## Exposures <a id="exposures"></a>
 The exposures binary contains the list of exposures for which ground up loss will be sampled in the kernel calculations. The data format is that of the Oasis Exposure instance. It is required by gulcalc and outputcalc and must have the following filename format;
 * exposures.bin
 
@@ -104,7 +104,7 @@ $ exposuretobin < exposures.csv > exposures.bin
 $ exposuretocsv < exposures.bin > exposures.csv
 ```
 
-## Random numbers <a id="random"></a>k
+## Random numbers <a id="random"></a>
 One or more random number files may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It should be provided for the same number of chunks as events and must have the following filename format;
 * random_{chunk}.bin
 
