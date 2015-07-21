@@ -31,7 +31,8 @@ The following components convert the binary input data required by the calculati
 
 These components are provided for convenience of viewing the data and debugging.
 
-## Events <a id="events"></a>
+<a id="events"></a>
+## Events
 One or more event binaries are required by eve and getmodel. It must have the following filename format, each uniquely identified by a chunk number (integer >=0);
 * e_chunk_{chunk}_data.bin
 
@@ -86,7 +87,8 @@ $ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
 $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
 
-## Exposures <a id="exposures"></a>
+<a id="exposures"></a>
+## Exposures 
 The exposures binary contains the list of exposures for which ground up loss will be sampled in the kernel calculations. The data format is that of the Oasis Exposure instance. It is required by gulcalc and outputcalc and must have the following filename format;
 * exposures.bin
 
@@ -113,7 +115,8 @@ $ exposuretobin < exposures.csv > exposures.bin
 $ exposuretocsv < exposures.bin > exposures.csv
 ```
 
-## Random numbers <a id="random"></a>
+<a id="random"></a>
+## Random numbers 
 One or more random number files may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It should be provided for the same number of chunks as events and must have the following filename format;
 * random_{chunk}.bin
 
@@ -146,7 +149,8 @@ $ randtobin < random_1.csv > random_1.bin
 $ randtocsv < random_1.bin > random_1.csv
 ```
 
-## CDFs <a id="cdfs"></a>
+<a id="cdfs"></a>
+## CDFs 
 One or more cdf data files are required for the getmodel component, as well as an index file containing the starting positions of each event block. These should be located in a cdf sub-directory of the main working directory and have the following filename format;
 * cdf/damage_cdf_chunk_{chunk}.bin
 * cdf/damage_cdf_chunk_{chunk}.idx
@@ -174,7 +178,8 @@ Not yet implemented. A component will be provided to produce both binary and ind
 $ cdfdatatocsv < damage_cdf_chunk_1.bin > damage_cdf_chunk_1.csv
 ```
 
-## FM data <a id="fmdata"></a>
+<a id="fmdata"></a>
+## FM data 
 The fmdata binary file contains the policy terms and conditions required to perform a loss calculation, and is required for fmcalc only. The source format is Oasis FM Instance data, which is the Oasis native format data tables which describe an insurance programme. These four tables have been combined into one with the below structure.
 
 This file should be located in a fm sub-directory of the main working directory and have the following filename.
@@ -215,7 +220,8 @@ $ fmdatatobin < fm_data.csv > fm_data.bin
 $ fmdatatocsv < fm_data.bin > fm_data.csv
 ``` 
 
-## FM xref <a id="fmxref"></a>
+<a id="fmxref"></a>
+## FM xref 
 The fmxref binary file contains cross reference data linking the output_id in the fmcalc output back to item_id, and is required for outputcalc only. This should be located in a fm sub-directory of the main working directory and have the following filename.
 
 * fm/fmxref.bin
