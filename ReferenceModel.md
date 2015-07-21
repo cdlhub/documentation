@@ -9,20 +9,55 @@ The set of core components provided in this release is as follows;
 * **[fmcalc](#fmcalc)** performs the insured loss calculations on the ground up loss samples and mean. The output is the Oasis format loss sample table. The functionality covered in fmcalc is the same as the current financial Module in Oasis R1.4 (see R1.2 Financial Module documentation for more information).  The result can be output to a binary file or streamed into outputcalc.
 * **[outputcalc](#outputcalc)** performs an output analysis on the ground up or loss samples. The reference example is an event loss table containing TIV, sample mean and standard deviation for each event at portfolio/programme summary level. The results are written directly into csv file as there is no downstream processing.
 
+Other components in the Reference Model include;
+* **[Input data components](Inputtools.md)** to convert input data between csv to binary.
+* **[Output data components](Outputtools.md)** to convert the binary data stream output to csv.
+
 Figure 1 shows the data stream workflow of the reference model with its particular internal data files.
 
 ##### Figure 1. Reference Model Workflow
 ![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/KtoolsWorkflow.jpg "Reference Model Workflow")
 
-The input data for the reference components, shown as red source files, are the events, Damage CDFs, Exposure Instance, Damage Bin Dictionary and FM Instance.  These are Oasis concepts with Oasis format data as outlined below. 
+The input data for the reference components, shown as red source files, are the events, Damage CDFs, Exposure Instance, Damage Bin Dictionary and FM Instance.  These are Oasis concepts with Oasis format data as outlined below.
 
 The following sections explain the usage and internal processes and data requirements of each of the reference components. The standard input and output data streams for the components are generic and are covered in the Specification.
 
  <a id="eve"></a>
 ## eve
+eve takes as input a list of event ids in binary format and generates a partition of event ids as a binary data stream, according to the parameters supplied. 
+
+##### Stream_id
+None. The output stream is a simple list of event_ids (4 byte integers).
+
+##### Parameters
+* chunk number - corresponds to the chunk number in the input file (see below)
+* process number - the process number that determines which partition of events are streamed out
+* number of processes - the total number of processes which determines the number of partitions
+
+##### Usage
+```
+$ eve [parameters] > [output].bin
+$ eve [parameters] | getmodel [parameters] | gulcalc [parameters] > [stdout].bin
+```
+
+##### Example
+```
+$ eve 1 1 2 > events1_2.bin 
+$ eve 1 1 2 | getmodel 1 | gulcalc -C1 -S100 > gulcalc.bin
+```
+
+In this example, the events from the file e_chunk_1_data.bin will be read into memory and the first half (partition 1 of 2) would be streamed out to binary file, or downstream to a single process calculation workflow.
+
+##### Internal data
+The program requires an event binary. The file is picked up from the directory where the program is invoked and has the following filename;
+* e_chunk_{chunk}_data.bin
+
+The data structure of e_chunk_{chunk}_data.bin is a simple list of event ids (4 byte integers).
+
 [return to top](#referencemodel)
 
-## getmodel <a id="getmodel"></a>
+<a id="getmodel"></a>
+## getmodel 
 
 getmodel generates a stream of effective damageability distributions (cdfs) from an input list of events. Specifically, it reads pre-generated Oasis format cdfs and converts them into a binary stream. The source input data must have been generated as binary files by a separate program.
 
@@ -88,7 +123,8 @@ The program reads the damage bin mid-point (interpolation field) from the damage
 
 [return to top](#referencemodel)
 
-## gulcalc <a id="gulcalc"></a>
+<a id="gulcalc"></a>
+## gulcalc 
 The gulcalc program performs Monte Carlo sampling of ground up loss and calculates mean and standard deviation by numerical integration of the cdfs. The sampling methodology of Oasis classic has been extended beyond linear interpolation to include bin value sampling and quadratic interpolation. This supports damage bin intervals which represent a single discrete damage value, and damage distributions with cdfs that are described by a piecewise quadratic function. 
 
 ##### Stream_id
@@ -166,7 +202,8 @@ A second calculation which occurs in the gulcalc program is of the mean and stan
 
 [return to top](#referencemodel)
 
-## fmcalc <a id="fmcalc"></a>
+<a id="fmcalc"></a>
+## fmcalc 
 fmcalc is the in-memory implementation of the Oasis Financial Module. It applies policy terms and conditions to the ground up losses and produces insured loss sample output.
 
 ##### Stream_id
@@ -220,7 +257,8 @@ fmcalc performs the same calculations as the Oasis Financial Module in R1.4.  In
 
 [return to top](#referencemodel)
 
-## outputcalc <a id="outputcalc"></a>
+<a id="outputcalc"></a>
+## outputcalc 
 The reference example of an output produces an event loss table 'ELT' for either ground up loss or insured losses.
 
 ##### Stream_id
