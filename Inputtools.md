@@ -25,11 +25,28 @@ The following components convert the binary input data required by the calculati
 * **[fmxreftocsv](#fmxreftocsv)** is a utility to convert the Oasis FM xref binary into csv format.
 * **[cdfdatatocsv](#cdfdatatocsv)** is a utility to convert the Oasis cdf data binary into csv format.
 
-## Events
+## Events binary
+One or more event binaries are required by all calculation components and must have the following filename format, which each uniquely identified by a chunk number (integer >=0);
+* e_chunk_{chunk}_data.bin
+The chunks represent partitions of the event set.
+
+```
+In general more than 1 chunk of events is not necessary for the in-memory kernel as the computation can be parallelized across the processes. However it is theoretically possible to use the event chunk feature as a means of distributing work to multiple calculation back-ends if more computational power is required.
+```
 
 #### File format
-The csv file should have no header.
+The csv file should contain a list of event_ids (integers) and no header.
 
 | Name              | Type   |  Bytes | Description         | Example     |
 |:------------------|--------|--------| :-------------------|------------:|
 | event_id          | int    |    4   | Oasis event_id      |   4545      |
+
+#### evetobin
+```
+$ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
+```
+
+#### evetocsv
+```
+$ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
+```
