@@ -14,7 +14,10 @@ The following components convert input data in csv format to the binary format r
 These components are intended to allow users to generate the required input binaries from csv independently of the original data store and technical environment. All that needs to be done is first generate the csv files from the data store (SQL Server database, etc).
 
 ```
-Note that [oatools](https://github.com/OasisLMF/oatools) contains a component 'gendata' which generates all of the input binaries directly from a SQL Server Oasis back-end database. This component is specific to the implementation of the in-memory kernel as a calculation back-end to the Oasis mid-tier which is why it is kept in a separate project.
+Note that [oatools](https://github.com/OasisLMF/oatools) contains a component 'gendata' which generates all of 
+the input binaries directly from a SQL Server Oasis back-end database. This component is specific to the 
+implementation of the in-memory kernel as a calculation back-end to the Oasis mid-tier which is why it is kept
+in a separate project.
 ```
 
 The following components convert the binary input data required by the calculation components in the reference model into csv format;
@@ -34,7 +37,8 @@ One or more event binaries are required by eve and getmodel. It must have the fo
 The chunks represent subsets of events.
 
 ```
-In general more than 1 chunk of events is not necessary for the in-memory kernel as the computation can be parallelized across the processes. However it is theoretically possible to use the event chunk feature as a means of distributing work to multiple calculation back-ends if more computational power is required.
+In general more than 1 chunk of events is not necessary for the in-memory kernel as the computation can be 
+parallelized across the processes. This feature may be removed in future releases.
 ```
 
 #### File format
@@ -69,7 +73,7 @@ The csv file should contain the following fields and include a header row.
 | interpolation     | float  |    4   | Interpolation damage value for the bin (usually the mid-point)|   0.015     |
 | interval_type     | int    |    4   | Identifier of the interval type, e.g. closed, open            |   1201      | 
 
-The data should be ordered by bin_index ascending and bin_index should start from 1.
+The data should be ordered by bin_index ascending with bin_index starting from 1 and not contain nulls.
 
 #### damagetobin
 ```
@@ -95,6 +99,8 @@ The csv file should contain the following fields and include a header row.
 | vulnerability_id  | int    |    4   | Identifier of the vulnerability distribution of the item      |   345456    |
 | tiv               | float  |    4   | The total insured value of the item                           |   200000    |
 | group_id          | int    |    4   | Identifier of the correlation group of the item               |    1        |  
+
+The data should be ordered by areaperil_id, vulnerability_id ascending and not contain nulls.
 
 #### exposuretobin
 ```
@@ -139,10 +145,10 @@ $ randtobin < random_1.csv > random_1.bin
 $ randtocsv < random_1.bin > random_1.csv
 ```
 
-## CDF <a id="cdfs"></a>
-One or more cdf data files are required for the getmodel component, as well as an index file containing the starting positions of each event block. These should be located in a cdf sub-directory of the main working directory.
+## CDFs <a id="cdfs"></a>
+One or more cdf data files are required for the getmodel component, as well as an index file containing the starting positions of each event block. These should be located in a cdf sub-directory of the main working directory and have the following filename format;
 * cdf/damage_cdf_chunk_{chunk}.bin
-* cdf/damage_cdf_chunk_{chunk}.bin
+* cdf/damage_cdf_chunk_{chunk}.idx
 
 If chunked, the binary file should contain the cdf data for the same events as the corresponding chunk event binary. 
 
@@ -157,12 +163,76 @@ The csv file should contain the following fields and include a header row.
 | bin_index         | int    |    4   | Identifier of the damage bin                                  |     10      |
 | prob_to           | float  |    4   | The cumulative probability at the upper damage bin threshold  |    0.765    | 
 
-The data should be ordered by event_id, areaperil_id, vulnerability_id, bin_index ascending and bin_index should start at 1. All bins corresponding to the bin indexes in the damage bin dictionary should be present, except records may be truncated after the last bin where the prob_to = 1.
+The data should be ordered by event_id, areaperil_id, vulnerability_id, bin_index ascending with bin_index starting at 1, and not contain nulls. All bins corresponding to the bin indexes in the damage bin dictionary should be present, except records may be truncated after the last bin where the prob_to = 1.
 
 #### cdfdatatobin
-Not yet implemented. 
+Not yet implemented. A component will be provided to produce both binary and index file from the csv.
 
 #### cdfdatatocsv
 ```
 $ cdfdatatocsv < damage_cdf_chunk_1.bin > damage_cdf_chunk_1.csv
 ```
+
+## FM data <a id="fmdata"></a>
+The fmdata binary file contains the policy terms and conditions required to perform a loss calculation, and is required for fmcalc only. This should be located in a fm sub-directory of the main working directory and have the following filename.
+* fm/fm_data.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+
+| Name                     | Type   |  Bytes | Description                                    | Example     |
+|:-------------------------|--------|--------| :----------------------------------------------|------------:|
+| item_id                  | int    |    4   | Identifier of the exposure item                |    56745    |
+| agg_id                   | int    |    4   | Oasis Financial Module agg_id                  |     546     |
+| prog_id                  | int    |    4   | Oasis Financial Module prog_id                 |     4       |
+| level_id                 | int    |    4   | Oasis Financial Module level_id                |     1       |
+| policytc_id              | int    |    4   | Oasis Financial Module policytc_id             |     34      |
+| layer_id                 | int    |    4   | Oasis Financial Module layer_id                |      1      |
+| calcrule_id              | int    |    4   | Oasis Financial Module calcrule_id             |      2      |
+| allocrule_id             | int    |    4   | Oasis Financial Module allocrule_id            |      0      |
+| deductible               | float  |    4   | Deductible                                     |   50        |
+| limit                    | float  |    4   | Limit                                          |   100000    |
+| share_prop_of_lim        | float  |    4   | Share/participation as a proportion of limit   |   0.25      |
+| deductible_prop_of_loss  | float  |    4   | Deductible as a proportion of loss             |   0.05      |
+| limit_prop_of_loss       | float  |    4   | Limit as a proportion of loss                  |   0.5       |
+| deductible_prop_of_tiv   | float  |    4   | Deductible as a proportion of TIV              |   0.05      |
+| limit_prop_of_tiv        | float  |    4   | Limit as a proportion of TIV                   |   0.8       |
+| deductible_prop_of_limit | float  |    4   | Deductible as a proportion of limit            |   0.1       |
+
+The data should be ordered by item_id and not contain any nulls (replace with 0).
+
+#### fmdatatobin
+```
+$ fmdatatobin < fm_data.csv > fm_data.bin
+``` 
+
+#### fmdatatocsv
+```
+$ fmdatatocsv < fm_data.bin > fm_data.csv
+``` 
+
+## FM xref <a id="fmxref"></a>
+The fmxref binary file contains cross reference data linking the output_id in the fmcalc output back to item_id, and is required for outputcalc only. This should be located in a fm sub-directory of the main working directory and have the following filename.
+
+* fm/fmxref.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name                        | Type   |  Bytes | Description                                    | Example     |
+|:----------------------------|--------|--------| :----------------------------------------------|------------:|
+| item_id                     | int    |    4   | Identifier of the exposure item                |    56745    |
+| output_id                   | int    |    4   | Oasis Financial Module output_id               |     546     |
+
+The data should not contain any nulls (replace with 0).
+
+#### fmxreftobin
+```
+$ fmxreftobin < fmxref.csv > fmxref.bin
+``` 
+
+#### fmxreftocsv
+```
+$ fmxreftocsv < fmxref.bin > fmxref.csv
+``` 
