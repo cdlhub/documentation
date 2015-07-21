@@ -69,6 +69,8 @@ The csv file should contain the following fields and include a header row.
 | interpolation     | float  |    4   | Interpolation damage value for the bin (usually the mid-point)|   0.015     |
 | interval_type     | int    |    4   | Identifier of the interval type, e.g. closed, open            |   1201      | 
 
+The data should be ordered by bin_index ascending and bin_index should start from 1.
+
 #### damagetobin
 ```
 $ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
@@ -135,4 +137,32 @@ $ randtobin < random_1.csv > random_1.bin
 #### randtocsv
 ```
 $ randtocsv < random_1.bin > random_1.csv
+```
+
+## CDF <a id="cdfs"></a>
+One or more cdf data files are required for the getmodel component, as well as an index file containing the starting positions of each event block. These should be located in a cdf sub-directory of the main working directory.
+* cdf/damage_cdf_chunk_{chunk}.bin
+* cdf/damage_cdf_chunk_{chunk}.bin
+
+If chunked, the binary file should contain the cdf data for the same events as the corresponding chunk event binary. 
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name              | Type   |  Bytes | Description                                                   | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| event_id          | int    |    4   | Oasis event_id                                                |     1       |
+| areaperil_id      | int    |    4   | Oasis areaperil_id                                            |   4545      |
+| vulnerability_id  | int    |    4   | Oasis vulnerability_id                                        |   345456    |
+| bin_index         | int    |    4   | Identifier of the damage bin                                  |     10      |
+| prob_to           | float  |    4   | The cumulative probability at the upper damage bin threshold  |    0.765    | 
+
+The data should be ordered by event_id, areaperil_id, vulnerability_id, bin_index ascending and bin_index should start at 1. All bins corresponding to the bin indexes in the damage bin dictionary should be present, except records may be truncated after the last bin where the prob_to = 1.
+
+#### cdfdatatobin
+Not yet implemented. 
+
+#### cdfdatatocsv
+```
+$ cdfdatatocsv < damage_cdf_chunk_1.bin > damage_cdf_chunk_1.csv
 ```
