@@ -30,7 +30,7 @@ This will run 100 samples using dynamically generated random numbers.
 Random numbers are sampled dynamically using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler). 
 A buffer of 1 million random numbers is allocated to each event. The RIDX is generated from the group_id and sample index (sidx) using the following modulus function;
 
-ridx=mod(group_id x 500009 + sidx x 500029, 1000000)
+ridx=mod(group_id x sidx, 1000000)
 
 500,009 and 500,029 are the first two prime numbers which are greater than 500,000.  This formula pseudo-randomly assigns ridx indexes to each GROUP_ID and SIDX combo between 0 and 999,999. 
 
