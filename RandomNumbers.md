@@ -28,15 +28,15 @@ This will run 100 samples using dynamically generated random numbers.
 ##### Method
 
 Random numbers are sampled dynamically using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler). 
-A buffer of 1 million random numbers is allocated to each event. The RIDX is generated from the group_id and sample index (sidx) using the following modulus function;
+A sparse array capable of holding 1 million random numbers is allocated to each event. The RIDX is generated from the group_id and number of samples N using the following modulus function;
 
-ridx=mod(group_id x sidx, 1000000)
+ridx=mod(group_id x N, 1000000)
 
-500,009 and 500,029 are the first two prime numbers which are greater than 500,000.  This formula pseudo-randomly assigns ridx indexes to each GROUP_ID and SIDX combo between 0 and 999,999. 
+This formula pseudo-randomly assigns ridx indexes to each GROUP_ID between 0 and 999,999. 
 
-As a ridx is sampled, this section in the buffer starting at the ridx position of length N is populated with random numbers unless they have already been populated, in which case the existing random numbers are re-used.
+As a ridx is sampled, the section in the array starting at the ridx position of length N is populated with random numbers unless they have already been populated, in which case the existing random numbers are re-used.
 
-The buffer is cleared for the next event and a new set of random numbers is generated.  
+The array is cleared for the next event and a new set of random numbers is generated.  
 
 #### 2. Use numbers from random number file
 
