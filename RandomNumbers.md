@@ -78,6 +78,6 @@ Reconciliation mode uses the same method as 2. but calculates the ridx in the sa
 
 In Oasis classic, random numbers are held in a matrix with the sample index in columns and the ridx is a reference into a row of random numbers for a sample set of size N.  
 
-In reconciliation mode, the divisor D is set to the total number of rows, given the number of columns N.  The number of columns N is the first 4 byte integer value in the random number file.
+In reconciliation mode, the divisor D is set to the total number of rows. This is calculated from the number of columns N which is the first 4 byte integer value in the random number file.
 
 [Back to Contents](Contents.md)
