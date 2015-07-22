@@ -4,9 +4,9 @@ Simple uniform random numbers are assigned to each event, group and sample numbe
 
 #### Correlation
 
-Items (typically representing, in insurance terms, the underlying risk coverages) that are assigned the same group_id will use the same random number to sample damage for a given event and sample number. Items with different group_ids will be assigned independent random numbers.  Therefore sampled damage is fully correlated within groups and fully independent between groups, where group is an abstract collection of items and defined by the user.
+Items (typically representing, in insurance terms, the underlying risk coverages) that are assigned the same group_id will use the same random number to sample damage for a given event and sample number. Items with different group_ids will be assigned independent random numbers.  Therefore sampled damage is fully correlated within groups and fully independent between groups, where group is an abstract collection of items defined by the user.
 
-The item_id, group_id information is provided by the user in the exposure input file (exposures.bin).
+The item_id, group_id data is provided by the user in the exposure input file (exposures.bin).
 
 ### Methodology
 
