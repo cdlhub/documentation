@@ -4,9 +4,15 @@ This is the POSIX-compliant Oasis In-Memory Kernel toolkit.
 
 ### Release
 
-This library is currently in Beta. Please click [here](https://github.com/OasisLMF/ktools/releases) to download the latest release. 
+Please click [here](https://github.com/OasisLMF/ktools/releases) to download the latest release. 
 
 The source code will change on a regular basis but only the releases are supported. Support enquiries should be sent to support@oasislmf.org.
+
+The instructions for the Windows build below are for 32-bit executables as the Cygwin mingw cross compiler for Windows does not support 64-bit executables. Until an automated build process for 64-bit is made available, the 64-bit Windows executables will be provided with each release.
+
+Note that the dynamic random number option in the Windows build uses a deterministic seed due to a bug in the mingw compiler. We recommend the random number file option (gulcalc -r) should be used in Windows. 
+
+This issue will be handled in future releases by implementing the rdrand random number generator in all environments.
 
 ## Linux Installation
 
@@ -66,9 +72,10 @@ The following Cygwin add-in packages are required;
 * mingw64-i686-gcc-g++
 * mingw64-i686-gcc-core
 * make
+* diffutils
 
-Search for 'gcc' and 'make' to find all of the relevant packages (Only 'gcc' illustrated below).
-![alt text](docs/img/cygwin1.jpg "Add-in packages")
+Search for 'gcc', 'make' and 'diffutils' to find all of the relevant packages (Only 'gcc' illustrated below).
+![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/cygwin1.jpg "Add-in packages")
 
 ### Instructions
 
@@ -76,7 +83,7 @@ Copy ktools-[version].tar.gz onto your machine.
 
 Open a Cygwin terminal. 
 
-![alt text](docs/img/cygwin2.jpg "Cygwin terminal")
+![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/cygwin2.jpg "Cygwin terminal")
 
 Change directory to the location of the tar.gz.
 
@@ -108,7 +115,7 @@ $ make install
 
 The executables are located in C:/Oasis/bin. You should add this bin folder to your path in System Environment Variables.
 
-![alt text](docs/img/windowspath.jpg "Adding the path in system environment variables")
+![alt text](https://github.com/OasisLMF/ktools/blob/master/docs/img/windowspath.jpg "Adding the path in system environment variables")
 
 The installation is complete. Restart the Cygwin session to refresh the path before usage.
 
