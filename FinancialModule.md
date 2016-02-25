@@ -24,5 +24,90 @@ There are many ways an insurance loss can be calculated with many different term
 This is the Programme file which groups together ITEMs into LEVELs and for each LEVEL defines a way in which they are aggregated for the purpose of calculation.  We took the view that it was simpler throughout to refer back to the base ITEMs rather than use a hierarchy of aggregated loss calculations. So, for example, we could have calculated a loss at the site level and then used this calculated loss directly at the policy conditions level but instead what we have done is to allocate back to ITEM level and then re-aggregate to the next LEVEL. The reason for this is that intermediate conditions may only apply to certain ITEMs so if we didn’t go back to the base ITEM “ground-up” level then any higher LEVEL could have a complicated grouping of a LEVEL. Note that the design does not require this, it is just how we are currently implementing it.
 
 Loss values
-The initial input is the Ground-up Loss (GUL) table coming from the main Oasis calculation of ground-up losses. Here is an example, for a single event:
+The initial input is the Ground-up Loss (GUL) table coming from the main Oasis calculation of ground-up losses. Here is an example, for a single event and sample (IDX=1):
 
+| EVENT_ID | ITEM_ID  | IDX    | GUL    |
+|:---------|----------|--------| ------:|
+|       1  | 1        |    1   | 100,000|
+|       1  | 2        |    1   | 10,000 |
+|       1  | 3        |    1   | 2,500  |
+|       1  | 4        |    1   | 400    |
+
+The values represent a single ground-up loss sample for items belonging to an Account. We use “Programme” rather than Account as it is more general characteristic of a client’s exposure protection needs and allows a client to have multiple Programmes active for a given period.
+The linkage between Account and Programme can be provided by a user defined **Prog** Dictionary, for example;
+
+| PROG_ID  | ACCOUNT_ID  | PROG_NAME                |
+|:---------|-------------|-------------------------:|
+|       1  | 1           | Oasis hotels renewal 2011|
+|       2  | 1           | Oasis hotels renewal 2012|
+|       3  | 1           | Oasis hotels renewal 2013|
+|       4  | 1           | Oasis hotels renewal 2014|
+
+Items 1-4 represent Structure, Other Structure, Contents and Time Element coverage ground up losses for a single property, respectively, and this example is a simple residential policy with combined property coverage terms. For this policy type, the Structure, Other Structure and Contents losses are aggregated, and a deductible and limit is applied to the total. A separate set of terms, again a simple deductible and limit, is applied to the “time element” coverage which, for residential policies, generally means costs for temporary accommodation. The total insured loss is the sum of the output from the combined property terms and the time element terms.
+
+The actual Items falling into the Programme are specified in the **Programme** table together with the aggregation groupings that go into a given LEVEL calculation:
+
+| PROG _ID | ITEM _ID | LEVEL_ID| AGG_ID |
+|:---------|----------|---------| ------:|
+|       1  | 1        |     1   | 1      |
+|       1  | 2        |     1   | 1      |
+|       1  | 3        |     1   | 1      |
+|       1  | 4        |     1   | 2      |
+|       1  | 1        |     2   | 1      |
+|       1  | 2        |     2   | 1      |
+|       1  | 3        |     2   | 1      |
+|       1  | 4        |     2   | 1      |
+
+For example in LEVEL 1, Items 1, 2 and 3 all have AGG_ID =1 so losses will be summed together before applying the combined deductible and limit, but Item 4 (time) will be treated separately (not aggregated). For LEVEL 2 we have all 4 Items losses aggregated together as they have the same AGG_ID (value 1 in this case).
+
+Next we have the Profile Description table, which list the profiles representing general policy types. Our example is represented by two general profiles which specify the input fields and mathematical operations to perform. In this example, the Profile for the combined coverages and time is the same (albeit with different values) and requires a limit, a deductible, and an associated calculation rule, whereas the Profile for the policy requires a limit, deductible, and share, and an associated calculation rule.
+
+| ProfileID | Profile Description                          |
+|:----------|:---------------------------------------------|
+|       1   | Deductible and Limit (Function 1)            |
+|       6   | Deductible, Limit and Share (Function 2)     |
+
+
+There is a “Profile Value” table for each Profile containing the applicable policy terms, each identified by a POLICYTC_ID. The table below shows the list of policy terms for Profile 1.
+
+| POLICYTC_ID | CCY_ID | LIM       | DED   | CALCRULE_ID |
+|:------------|--------|-----------| ------|------------:|
+|       1     | 1      | 1,000,000 | 1,000 |     1       |
+|       2     | 1      |    18,000 | 2,000 |     1       |
+
+And next, for Profile 6, the values for the overall policy deductible, limit and share
+
+| POLICYTC_ID | CCY_ID | LIM       | DED   | SHARE  | CALCRULE_ID |
+|:------------|--------|-----------| ------|--------|------------:|
+|       3     | 1      | 1,000,000 | 1,000 |    0.1 |     2       |
+
+In the present implementation, all profile values are stored in a single flattened format which contains all supported profile fields. The actual **profile** table would like this;
+
+| POLICYTC_ID | CALCRULE_ID | ALLOCRULE_ID | SOURCERULE_ID | LEVELRULE_ID | CCY_ID | DED  | LIM     |  SHARE  | SHARE_PROP_OF_LIM | DEDUCTIBLE_PROP_OF_LOSS | LIMIT_PROP_OF_LOSS | DEDUCTIBLE_PROP_OF_TIV | LIMIT_PROP_OF_TIV | DEDUCTIBLE_PROP_OF_TIV | LIMIT_PROP_OF_TIV | DEDUCTIBLE_PROP_OF_LIMIT |
+|:------------|-------------|--------------|---------------|--------------|--------|------|---------|---------|-------------------|---------------------------|--------------------|------------------------|-------------------|------------------------|------------------|-------------------------:|
+|      1      | 1           |       -1     |        0      |       0      |    1   | 1,000|1,000,000|   0     |        0          |          0                |         0          |           0            |        0          |     0                  |   0              |         0                |
+
+The **PolicyTC** table specifies the insurance policies (a policy in Oasis FM is a combination of PROG_ID and LAYER_ID, there is no separate Policy dictionary required in the calculation) and the separate terms and conditions which will be applied to each LAYER_ID/AGG_ID for a given LEVEL. In our example, we have a limit and deductible with the same value applicable to the combination of the first three Items a limit and deductible for the fourth Item (time) in LEVEL 1, and then a limit, deductible, and line applicable at LEVEL 2 covering all Items. We’d represent this in terms of the distinct AGG_IDs as follows:
+
+| PROG_ID | LAYER_ID | LEVEL_ID | AGG_ID   | POLICYTC_ID |
+|:--------|----------|----------| ---------|------------:|
+|    1    |    1     |     1    |    1     |    1        |
+|    1    |    1     |     1    |    2     |    2        |
+|    1    |    1     |     2    |    1     |    3        |
+
+The data in the table means; 
+In Level 1;
+Apply POLICYTC_ID (calculation rule) 1 to (the sum of losses grouped by) AGG_ID 1
+Apply POLICYTC_ID 2 to AGG_ID 2
+Then in Level 2;
+Apply POLICYTC_ID 3 to AGG_ID 1
+
+Levels are processed in ascending order and the calculated losses from a previous level are the input losses to the next level.
+LEVEL_ID is included in the table to avoid duplicates if AGG_ID is not unique across Levels.
+
+For any given Profile we have four standard fields:
+ CALCRULE_ID, being the Function used to calculate the losses from the given profile’s fields. There are various families of such functions as shown in the list below
+ ALLOCRULE_ID, being the rule for allocating back to ITEM level. There are really only two meaningful values here – don’t allocate (0) used typically for the final level to avoid maintaining lots of detailed losses, or allocate back to ITEMs (1) used in all other cases which is in proportion to the latest values input to that level for the items being processed. When at a level where each ITEM is treated separately (e.g. coverage deductibles) then there is another value (-1) used to tell Oasis not to waste time allocating back to a level it is already at. (Allocation does not need to be on this basis, by the way, there could be other rules such as allocate back always on TIV or ground-up loss, but the simplest solution is to allocate back in proportion to the losses contributing at that level.)
+Oasis Data Interfaces Specification R1.1 Page 37
+ SOURCERULE_ID (not currently in R1.1), which is used for conditional logic if TIV (for example) needs to be used in a calculation.
+ LEVELRULE_ID (not currently in R1.1) used for processing level-specific rules such as “special conditions”.
