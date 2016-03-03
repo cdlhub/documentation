@@ -21,7 +21,25 @@ The Financial Module brings together three elements in order to undertake a calc
  
 There are many ways an insurance loss can be calculated with many different terms and conditions. For instance, there may be deductibles applied to each element of coverage (e.g. a buildings damage deductible), some site-specific deductibles or limits, and some overall policy deductibles and limits and line share. To undertake the calculation in the correct order and using the correct items (and their values) requires a file defining the structure and sequence of calculations. 
 
-This is the Programme file which groups together ITEMs into LEVELs and for each LEVEL defines a way in which they are aggregated for the purpose of calculation.  We took the view that it was simpler throughout to refer back to the base ITEMs rather than use a hierarchy of aggregated loss calculations. So, for example, we could have calculated a loss at the site level and then used this calculated loss directly at the policy conditions level but instead what we have done is to allocate back to ITEM level and then re-aggregate to the next LEVEL. The reason for this is that intermediate conditions may only apply to certain ITEMs so if we didn’t go back to the base ITEM “ground-up” level then any higher LEVEL could have a complicated grouping of a LEVEL. Note that the design does not require this, it is just how we are currently implementing it.
+This is the Programme file which defines a heirarchy of groups across a number of LEVELs.  The groups represent aggregations of losses on which to perform financial calculations.  The FROM_AGG_ID represents a grouping of the previous level of the heirarchy, and the TO_AGG_ID represents the grouping at the present level.
+
+``` sh
+### Programme table rules
+1) Must have at least one level
+2) For Level 1, the FROM_AGG_ID must be equal to the ITEM_ID which cross references to the input ground up loss stream (which has fields EVENT_ID, ITEM_ID, IDX, GUL).  Therefore Level 1 always represents a group of items.
+3) For subsequent levels, the FROM_AGG_ID must be the distinct values from the previous level TO_AGG_ID field.
+4) Each programme table may only have a single integer value in PROG_ID. Note that this field is a cross-reference to the PROG dictionary and business meaningful information such as account number, and is not currently used in calculations.  This field may be deprecated in future versions.
+5) The FROM_AGG_ID and TO_AGG_ID values, for each level, should be a contiguous block of integers (a sequence with no gaps).  This is not a strict rule in this version and it will work with non-contiguous integers, but it is recommended as best practice.
+```
+In R1.1 of Oasis we took the view that it was simpler throughout to refer back to the base ITEMs rather than use a hierarchy of aggregated loss calculations. So, for example, we could have calculated a loss at the site level and then used this calculated loss directly at the policy conditions level but instead we allocateed back to ITEM level and then re-aggregated to the next LEVEL. The reason for this was that intermediate conditions may only apply to certain ITEMs so if we didn’t go back to the base ITEM “ground-up” level then any higher LEVEL could have a complicated grouping of a LEVEL. 
+
+The implication was that we were always back-allocating to item at every level in a multi-level calculation even if it was not required, and this complicated execution path was the default.  In fact, the insurance policy structures provided as worked examples by Oasis members were simple heirarchies.   
+
+The default execution path now supports only simple heirarchies but we may change this by offering two different execution paths in future, if required by the Oasis members.
+
+Another difference versus R1.1 is that in R1.1 not all ITEMs needed to be defined at every LEVEL so it was quite possible, for example, to include one ITEM with a coverage deductible out of a hundred thousand ITEMs in a Programme.  In this version, all losses are explicitly included at every level in the heirarchy, and if no terms and conditions apply, then a null rule (zero deductible, for example) must be applied to all groupings.  
+
+We took the view that it was simpler throughout to refer back to the base ITEMs rather than use a hierarchy of aggregated loss calculations. So, for example, we could have calculated a loss at the site level and then used this calculated loss directly at the policy conditions level but instead what we have done is to allocate back to ITEM level and then re-aggregate to the next LEVEL. The reason for this is that intermediate conditions may only apply to certain ITEMs so if we didn’t go back to the base ITEM “ground-up” level then any higher LEVEL could have a complicated grouping of a LEVEL. Note that the design does not require this, it is just how we are currently implementing it.
 
 Loss values
 The initial input is the Ground-up Loss (GUL) table coming from the main Oasis calculation of ground-up losses. Here is an example, for a single event and sample (IDX=1):
