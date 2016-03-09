@@ -7,7 +7,10 @@ The following components convert input data in csv format to the binary format r
 * **[exposuretobin](#exposuretobin)** is a utility to convert the Oasis exposure instance table into binary format. 
 * **[randtobin](#randtobin)** is a utility to convert a list of random numbers into binary format. 
 * **[cdfdatatobin](#cdfdatatobin)** is a utility to convert the Oasis cdf data into binary format.
-* **[fmdatatobin](#fmdatatobin)** is a utility to convert the Oasis FM instance data into binary format.
+* **[fmdatatobin](#fmdatatobin)** is a utility to convert the Oasis FM instance data into binary format (to be deprecated).
+* **[fmprogrammetobin](#fmprogrammetobin)** is a utility to convert the Oasis FM programme data into binary format.
+* **[fmpolicytctobin](#fmpolicytctobin)** is a utility to convert the Oasis FM policytc data into binary format.
+* **[fmprofiletobin](#fmprofiletobin)** is a utility to convert the Oasis FM profile data into binary format.
 * **[fmxreftobin](#fmxreftobin)** is a utility to convert the Oasis FM xref table into binary format.
 
 
@@ -25,7 +28,10 @@ The following components convert the binary input data required by the calculati
 * **[exposuretocsv](#exposuretocsv)** is a utility to convert the Oasis exposure instance binary into csv format.
 * **[randtocsv](#randtocsv)** is a utility to convert the random numbers binary into csv format.
 * **[cdfdatatocsv](#cdfdatatocsv)** is a utility to convert the Oasis cdf data binary into csv format.
-* **[fmdatatocsv](#fmdatatocsv)** is a utility to convert the Oasis FM instance binary into csv format.
+* **[fmdatatocsv](#fmdatatocsv)** is a utility to convert the Oasis FM instance binary into csv format (to be deprecated).
+* **[fmprogrammetocsv](#fmprogrammetocsv)** is a utility to convert the Oasis FM programme data into csv format.
+* **[fmpolicytctocsv](#fmpolicytctocsv)** is a utility to convert the Oasis FM policytc data into csv format.
+* **[fmprofiletocsv](#fmprofiletocsv)** is a utility to convert the Oasis FM profile data into csv format.
 * **[fmxreftocsv](#fmxreftocsv)** is a utility to convert the Oasis FM xref binary into csv format.
 
 These components are provided for convenience of viewing the data and debugging.
@@ -176,7 +182,17 @@ The csv file should contain the following fields and include a header row.
 The data should be ordered by event_id, areaperil_id, vulnerability_id, bin_index ascending with bin_index starting at 1, and not contain nulls. All bins corresponding to the bin indexes in the damage bin dictionary should be present, except records may be truncated after the last bin where the prob_to = 1.
 
 #### cdfdatatobin
-Not yet implemented. A component will be provided to produce both binary and index file from the csv.
+```
+$ cdfdatatobin damage_cdf_chunk_1 102 < damage_cdf_chunk_1.bin
+```
+This command will create a binary file damage_cdf_chunk_1.bin and an index file damage_cdf_chunk_1.idx in the working directory.
+
+In general the usage is;
+
+```
+$ cdfdatatobin damage_cdf_chunk_[chunk] [maxbins] < input.csv
+```
+chunk is an integer and maxbins is the maximum number of bins in the cdf. input.csv must conform to the csv format given above.
 
 #### cdfdatatocsv
 ```
@@ -227,6 +243,101 @@ $ fmdatatobin < fm_data.csv > fm_data.bin
 $ fmdatatocsv < fm_data.bin > fm_data.csv
 ``` 
 
+<a id="fmprogramme"></a>
+## FM programme 
+The fmprogramme binary file contains the level heirarchy and defines aggregations of losses required to perform a loss calculation, and is required for fmcalc only. 
+
+This file should be located in a fm sub-directory of the main working directory and have the following filename.
+* fm/fm_programme.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+
+| Name                     | Type   |  Bytes | Description                                    | Example     |
+|:-------------------------|--------|--------| :----------------------------------------------|------------:|
+| prog_id                  | int    |    4   | Oasis Financial Module prog_id                 |    1        |
+| from_agg_id              | int    |    4   | Oasis Financial Module from_agg_id             |    1        |
+| level_id                 | int    |    4   | Oasis Financial Module level_id                |     1       |
+| to_agg_id                | int    |    4   | Oasis Financial Module to_agg_id               |     1       |
+
+#### fmprogrammetobin
+```
+$ fmprogrammetobin < fm_programme.csv > fm_programme.bin
+``` 
+
+#### fmprogrammetocsv
+```
+$ fmprogrammetocsv < fm_programme.bin > fm_programme.csv
+```
+
+<a id="fmpolicytc"></a>
+## FM policytc
+The fmpolicytc binary file contains the cross reference between the aggregations of losses defined in the fmprogramme file at a particular level and the calculation rule that should be applied as defined in the fmprofile file. This is required for fmcalc only. 
+
+This file should be located in a fm sub-directory of the main working directory and have the following filename.
+* fm/fm_policytc.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+
+| Name                     | Type   |  Bytes | Description                                    | Example     |
+|:-------------------------|--------|--------| :----------------------------------------------|------------:|
+| prog_id                  | int    |    4   | Oasis Financial Module prog_id                 |    1        |
+| layer_id                 | int    |    4   | Oasis Financial Module layer_id                |    1        |
+| level_id                 | int    |    4   | Oasis Financial Module level_id                |     1       |
+| agg_id                   | int    |    4   | Oasis Financial Module agg_id                  |     1       |
+| policytc_id              | int    |    4   | Oasis Financial Module policytc_id             |     1       |
+
+
+#### fmpolicytctobin
+```
+$ fmpolicytctobin < fm_policytc.csv > fm_policytc.bin
+``` 
+
+#### fmpolicytctocsv
+```
+$ fmpolicytctocsv < fm_policytc.bin > fm_policytc.csv
+```
+
+<a id="fmprofile"></a>
+## FM profile
+The fmprofile binary file contains the list of calculation rules with profile values that apply to the aggregations of losses at each level of the financial module calculation. This is required for fmcalc only. 
+
+This file should be located in a fm sub-directory of the main working directory and have the following filename.
+* fm/fm_profile.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name                     | Type   |  Bytes | Description                                    | Example     |
+|:-------------------------|--------|--------| :----------------------------------------------|------------:|
+| policytc_id              | int    |    4   | Oasis Financial Module policytc_id             |     34      |
+| calcrule_id              | int    |    4   | Oasis Financial Module calcrule_id             |      1      |
+| allocrule_id             | int    |    4   | Oasis Financial Module allocrule_id            |      0      |
+| sourcerule_id            | int    |    4   | Oasis Financial Module sourcerule_id           |      0      |
+| levelrule_id             | int    |    4   | Oasis Financial Module levelrule_id            |      0      |
+| ccy_id                   | int    |    4   | Oasis Financial Module ccy_id                  |      0      |
+| deductible               | float  |    4   | Deductible                                     |   50        |
+| limit                    | float  |    4   | Limit                                          |   100000    |
+| share_prop_of_lim        | float  |    4   | Share/participation as a proportion of limit   |   0         |
+| deductible_prop_of_loss  | float  |    4   | Deductible as a proportion of loss             |   0         |
+| limit_prop_of_loss       | float  |    4   | Limit as a proportion of loss                  |   0         |
+| deductible_prop_of_tiv   | float  |    4   | Deductible as a proportion of TIV              |   0         |
+| limit_prop_of_tiv        | float  |    4   | Limit as a proportion of TIV                   |   0         |
+| deductible_prop_of_limit | float  |    4   | Deductible as a proportion of limit            |   0         |
+
+
+#### fmprofiletobin
+```
+$ fmprofiletobin < fm_profile.csv > fm_profile.bin
+``` 
+
+#### fmprofiletocsv
+```
+$ fmprofiletocsv < fm_profile.bin > fm_profile.csv
+```
 [Return to top](#inputtools)
 
 <a id="fmxref"></a>
