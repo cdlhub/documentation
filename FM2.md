@@ -14,13 +14,13 @@ Note that other reference tables are referred to below do not appear explicitly 
 
 The Financial Module outputs sample by sample losses by (re)insurance policy/contract, or by item, which represents the individual coverage subject to economic loss. In the latter case, it is necessary to ‘back-allocate’ losses when they are calculated at a higher policy level.  The Financial Module does not, at present, output retained loss or ultimate net loss (UNL) perspectives. It does, though, allow the user to output losses at any stage of the calculation.
 
-The output contains anonymous keys representing the (re)insurance programme (PROG_ID) and policy (LAYER_ID) at the chosen output level (OUTPUT_ID) and a LOSS value. Losses by sample number (IDX) and event (EVENT_ID) are produced.  To make sense of the information, this output must be cross-referenced with Oasis dictionaries containing the information to make sense of the keys.
+The output contains anonymous keys representing the (re)insurance programme (prog_id) and policy (layer_id) at the chosen output level (output_id) and a loss value. Losses by sample number (idx) and event (event_id) are produced.  To make sense of the output, this output must be cross-referenced with Oasis dictionaries containing meaningful information.
 
 ## Profiles
 
 Profiles are used throughout the Oasis framework and are meta-data definitions with their associated data types and rules.  Profiles are used in the Financial Module to perform the elements of financial calculations used to calculate losses to (re)insurance policies.  For anything other than the most simple policy which has only a deductible and limit, say, a Profile do not represent a policy structure on its own, but rather it should be considered as a building block which can be combined with other building blocks to model a particular financial contract. In this way it is possible to model an unlimited range of structures with a limited number of Profiles.
 
-The FM Profiles form an extensible library of calculations defined within the fmcalc code that can be invoked by specifying a particular CALCRULE_ID and providing the required data values such as deductible and limit, as described below.
+The FM Profiles form an extensible library of calculations defined within the fmcalc code that can be invoked by specifying a particular **calcrule_id** and providing the required data values such as deductible and limit, as described below.
 
 The Profiles currently supported are as follows;
 
