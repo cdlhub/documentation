@@ -262,8 +262,8 @@ The csv file should contain the following fields and include a header row.
 | to_agg_id                | int    |    4   | Oasis Financial Module to_agg_id               |     1       |
 
 * All fields must have integer values and no nulls
-* Must have at least one level where LEVEL_ID = 1, 2, 3 ...
-* For level_id = 1, the set of values in from_agg_id must be equal to the set of item_ids in the input ground up loss stream (which has fields event_id, item_id, idx, gul).  Therefore Level 1 always represents a group of items.
+* Must have at least one level where level_id = 1, 2, 3 ...
+* For level_id = 1, the set of values in from_agg_id must be equal to the set of item_ids in the input ground up loss stream (which has fields event_id, item_id, idx, gul).  Therefore level 1 always defines a group of items.
 * For subsequent levels, the from_agg_id must be the distinct values from the previous level to_agg_id field.
 * Each programme table may only have a single integer value in prog_id. Note that this field is a cross-reference to a separate prog dictionary and business meaningful information such as account number, and is not currently used in calculations.  This field may be deprecated in future versions.
 * The from_agg_id and to_agg_id values, for each level, should be a contiguous block of integers (a sequence with no gaps).  This is not a strict rule in this version and it will work with non-contiguous integers, but it is recommended as best practice.
