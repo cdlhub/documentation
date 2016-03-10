@@ -1,5 +1,7 @@
 # FM Profiles
 
+This section specifies the attributes and rules for the following list of profiles.
+
 | Profile description                                                | profile_id| calcrule_id |
 |:-------------------------------------------------------------------|-----------|------------:|
 | Deductible and limit                                               | 1         |   1         |
