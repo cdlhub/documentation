@@ -138,7 +138,7 @@ else {
 | ccy_id                            | 1       |
 | deductible                        | 70000   |
 | limit                             | 1000000 |
-| share_prop_of_lim                 | 1000000 |
+| share_prop_of_lim                 | 0.1     |
 
 | Rules                             | Value   |
 |:----------------------------------|--------:|
@@ -216,7 +216,6 @@ if (loss > lim) loss = lim;
 | Attributes                        | Example |
 |:----------------------------------|--------:|
 | policytc_id                       | 1       |
-| ccy_id                            | 1       |
 | limit_prop_of_loss                | 0.3     |
 
 | Rules                             | Value   |
@@ -235,7 +234,6 @@ loss = loss * lim;
 | Attributes                        | Example |
 |:----------------------------------|--------:|
 | policytc_id                       | 1       |
-| ccy_id                            | 1       |
 | deductible_prop_of_loss           | 0.05    |
 
 | Rules                             | Value   |
