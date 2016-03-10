@@ -1,18 +1,18 @@
 # Financial Module
 
-The Oasis Financial Module is a data-driven process design for calculating the losses on insurance policies. It has an abstract design in order to cater for the many variations in source policy structures and conditions. The way Oasis works is to be fed data in order to execute calculations and so for the insurance calculations it needs to know the structure, parameters and calculation rules to be used. This data must be provided in the files used by the Oasis Financial Module:
+The Oasis Financial Module is a data-driven process design for calculating the losses on (re)insurance contracts. It has an abstract design in order to cater for the many variations in contract structures and terms. The way Oasis works is to be fed data in order to execute calculations, so for the insurance calculations it needs to know the structure, parameters and calculation rules to be used. This data must be provided in the files used by the Oasis Financial Module:
 
-* fm_programme
-* fm_profile
-* fm_policytc 
+* fm_programme: defines how coverages are grouped into accounts and programmes
+* fm_profile: defines the layers and terms
+* fm_policytc: defines the relationship of the contract layers
 
 This section explains the design of the Financial Module which has been implemented in the **fmcalc** component. The formats of the input files are covered in [Input Data](Inputtools.md). Runtime parameters and usage instructions for fmcalc are covered in [Reference Model](ReferenceModel.md).
 
-Note that other reference tables are referred to below do not appear explicitly in the kernel as they are not directly required for calculation.  It is expected that a front end system will hold all of the exposure and policy data and generate the above three input files required for the kernel calculation.
+Note that other reference tables are referred to below that do not appear explicitly in the kernel as they are not directly required for calculation.  It is expected that a front end system will hold all of the exposure and policy data and generate the above three input files required for the kernel calculation.
 
 ## Scope
 
-The Financial Module outputs sample by sample losses by (re)insurance policy/contract, or by item, which represents the individual coverage subject to economic loss. In the latter case, it is necessary to ‘back-allocate’ losses when they are calculated at a higher policy level.  The Financial Module does not, at present, output retained loss or ultimate net loss (UNL) perspectives. It does, though, allow the user to output losses at any stage of the calculation.
+The Financial Module outputs sample by sample losses by (re)insurance contract, or by item, which represents the individual coverage subject to economic loss. In the latter case, it is necessary to ‘back-allocate’ losses when they are calculated at a higher policy level.  The Financial Module does not, at present, output retained loss or ultimate net loss (UNL) perspectives. It does, though, allow the user to output losses at any stage of the calculation.
 
 The output contains anonymous keys representing the (re)insurance programme (prog_id) and policy (layer_id) at the chosen output level (output_id) and a loss value. Losses by sample number (idx) and event (event_id) are produced.  To make sense of the output, this output must be cross-referenced with Oasis dictionaries which contain the meaningful business information.
 
@@ -57,18 +57,16 @@ The profile not only provides the fields to be used in calculating losses (such 
 ## Data requirements
 
 The Financial Module brings together three elements in order to undertake a calculation:
-* Structural information, notably which items are protected by a (set of) policies.
+* Structural information, notably which items are covered by a set of policies.
 * Loss values of items.
 * Policy profiles and profile values.
 
-There are many ways an insurance loss can be calculated with many different terms and conditions. For instance, there may be deductibles applied to each element of coverage (e.g. a buildings damage deductible), some site-specific deductibles or limits, and some overall policy deductibles and limits and line share. To undertake the calculation in the correct order and using the correct items (and their values) requires a file defining the structure and sequence of calculations. 
-
-This is the **programme** file which defines a heirarchy of groups across a number of **levels**.  Levels drive the sequence of calculation. A financial calculation is performed at successive levels, depending on the structure of policy terms and conditions. For example there might be 3 levels representing coverage, site and policy terms and conditions. 
+There are many ways an insurance loss can be calculated with many different terms and conditions. For instance, there may be deductibles applied to each element of coverage (e.g. a buildings damage deductible), some site-specific deductibles or limits, and some overall policy deductibles and limits and share. To undertake the calculation in the correct order and using the correct items (and their values) the structure and sequence of calculations must be defined. This is done in the **programme** file which defines a heirarchy of groups across a number of **levels**.  Levels drive the sequence of calculation. A financial calculation is performed at successive levels, depending on the structure of policy terms and conditions. For example there might be 3 levels representing coverage, site and policy terms and conditions. 
 
 Groups are defined within levels and they represent aggregations of losses on which to perform the financial calculations.  The grouping fields are called FROM_AGG_ID and TO_AGG_ID which represent a grouping of losses at the previous level and the present level of the hierarchy, respectively.  
 
 ### Loss values
-The initial input is the ground-up loss (gul) table coming from the main Oasis calculation of ground-up losses. Here is an example, for a single event and sample (idx=1):
+The initial input is the ground-up loss (GUL) table, generally coming from the main Oasis calculation of ground-up losses. Here is an example, for a single event and sample (idx=1):
 
 | event_id | item_id  | idx    | gul    |
 |:---------|----------|--------| ------:|
@@ -77,6 +75,8 @@ The initial input is the ground-up loss (gul) table coming from the main Oasis c
 |       1  | 3        |    1   | 2,500  |
 |       1  | 4        |    1   | 400    |
 
+<MP> Would it worth showing multiple events, sample for clarity?
+
 The values represent a single ground-up loss sample for items belonging to an Account. We use “programme” rather than "account" as it is more general characteristic of a client’s exposure protection needs and allows a client to have multiple programmes active for a given period.
 The linkage between account and programme can be provided by a user defined **prog** dictionary, for example;
 
@@ -84,7 +84,10 @@ The linkage between account and programme can be provided by a user defined **pr
 |:---------|-------------|------------------------------:|
 |       1  | 1           | ABC Insurance Co. 2016 renewal|
 
+<MP> Are we assuming single peril?
+
 Items 1-4 represent Structure, Other Structure, Contents and Time Element coverage ground up losses for a single property, respectively, and this example is a simple residential policy with combined property coverage terms. For this policy type, the Structure, Other Structure and Contents losses are aggregated, and a deductible and limit is applied to the total. A separate set of terms, again a simple deductible and limit, is applied to the “time element” coverage which, for residential policies, generally means costs for temporary accommodation. The total insured loss is the sum of the output from the combined property terms and the time element terms.
+
 
 ### programme
 
@@ -152,7 +155,7 @@ Apply policytc_id 3 to agg_id 1
 Levels are processed in ascending order and the calculated losses from a previous level are summed according to the groupings defined in the programme table which become the input losses to the next level.
 
 For any given profile we have four standard fields:
-* calcrule_id, being the Function used to calculate the losses from the given Profile’s fields. There list of functions are shown below.
+* calcrule_id, being the Function used to calculate the losses from the given Profile’s fields. There list of functions are shown below. <MP> Where?
 * allocrule_id, being the rule for allocating back to ITEM level. There are really only two meaningful values here – don’t allocate (0) used typically for the final level to avoid maintaining lots of detailed losses, or allocate back to ITEMs (1) used in all other cases which is in proportion to the input ground up losses.
 (Allocation does not need to be on this basis, by the way, there could be other rules such as allocate back always on TIV or in proportion to the input losses from the previous level, but we have implemented a ground up loss back-allocation rule.
 * sourcerule_id (not currently used), which is used for conditional logic if TIV (for example) needs to be used in a calculation.
@@ -164,5 +167,5 @@ Note that the fields not currently used at all are levelrule_id, and sourcerule_
 
 In R1.1 of Oasis we took the view that it was simpler throughout to refer back to the base items rather than use a hierarchy of aggregated loss calculations. So, for example, we could have calculated a loss at the site level and then used this calculated loss directly at the policy conditions level but instead we allocated back to item level and then re-aggregated to the next level. The reason for this was that intermediate conditions may only apply to certain items so if we didn’t go back to the base item “ground-up” level then any higher level could have a complicated grouping of a level. 
 
-In the implementation this required back-allocating losses to item at every level in a multi-level calculation even the next level calculaton did not require it, which was inefficient.   The aggrgations are now defined in terms of the previous level groupings (from_agg_id in the programme table, rather than item_id) and the execution path now only supports simple hierarchies.
+In the implementation this required back-allocating losses to item at every level in a multi-level calculation even the next level calculaton did not require it, which was inefficient.   The aggregations are now defined in terms of the previous level groupings (from_agg_id in the programme table, rather than item_id) and the execution path now only supports simple hierarchies.
 
