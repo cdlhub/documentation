@@ -14,5 +14,44 @@
 | Limit as a proportion of loss                                      | 13        |   15        |
 | Deductible as a proportion of loss                                 | 14        |   16        |
 
-Deductible and limit
+#### 1. Deductible and limit
 
+| Attributes                        | Example |
+|:----------------------------------|--------:|
+| policytc_id                       | 1       |
+| ccy_id                            | 1       |
+| deductible                        | 50000   |
+| limit                             | 900000  |
+
+| Rules                             | Value   |
+|:----------------------------------|---------|
+| calcrule_id                       | 1       | 
+
+##### Logic
+
+loss = x.loss - ded;
+
+if (loss < 0) loss = 0;
+
+if (loss > lim) loss = lim;
+
+#### 1. Deductible and limit
+
+| Attributes                        | Example |
+|:----------------------------------|--------:|
+| policytc_id                       | 1       |
+| ccy_id                            | 1       |
+| deductible                        | 50000   |
+| limit                             | 900000  |
+
+| Rules                             | Value   |
+|:----------------------------------|---------|
+| calcrule_id                       | 1       | 
+
+##### Logic
+
+loss = x.loss - ded;
+
+if (loss < 0) loss = 0;
+
+if (loss > lim) loss = lim;
