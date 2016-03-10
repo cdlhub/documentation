@@ -23,7 +23,7 @@ In the following notation;
 * loss is the calculated loss 
 * ded, lim, and share are alias variables for the profile fields as required
 
-#### 1. Deductible and limit
+### 1. Deductible and limit
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -42,7 +42,7 @@ loss = x.loss - ded;
 if (loss < 0) loss = 0;
 if (loss > lim) loss = lim;
 ```
-#### 2. Franchise deductible and limit
+### 2. Franchise deductible and limit
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -63,7 +63,7 @@ if (x.loss < ded) loss = 0;
 if (loss > lim) loss = lim;
 ```
 
-#### 3. Deductible only
+### 3. Deductible only
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -82,7 +82,7 @@ loss = x.loss - ded;
 if (loss < 0) loss = 0;
 ```
 
-#### 4. Deductible as a cap on the retention of input losses
+### 4. Deductible as a cap on the retention of input losses
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -106,7 +106,7 @@ else {
      }
 ```
 
-#### 5. Deductible as a floor on the retention of input losses
+### 5. Deductible as a floor on the retention of input losses
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -130,7 +130,7 @@ else {
      }
 ```
 
-#### 6. Deductible, limit and share
+### 6. Deductible, limit and share
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -153,7 +153,7 @@ if (loss < 0) loss = 0;
 loss = loss * share;
 ```
 
-#### 10. Deductible and limit as a proportion of loss
+### 10. Deductible and limit as a proportion of loss
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -171,7 +171,7 @@ loss = loss * share;
 loss = x.loss * (lim - ded);
 ```
 
-#### 11. Limit with deductible as a proportion of limit
+### 11. Limit with deductible as a proportion of limit
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -192,7 +192,7 @@ if (loss < 0) loss = 0;
 if (loss > lim) loss = lim;
 ```
 
-#### 12. Limit only
+### 12. Limit only
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -211,7 +211,7 @@ loss = x.loss;
 if (loss > lim) loss = lim;
 ```
 
-#### 13. Limit as a proportion of loss
+### 13. Limit as a proportion of loss
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
@@ -230,7 +230,7 @@ loss = x.loss;
 loss = loss * lim;
 ```
 
-#### 14. Deductible as a proportion of loss
+### 14. Deductible as a proportion of loss
 
 | Attributes                        | Example |
 |:----------------------------------|--------:|
