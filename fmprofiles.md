@@ -33,7 +33,7 @@ In the following notation;
 | limit                             | 900000  |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 1       | 
 
 ##### Calculation logic
@@ -52,7 +52,7 @@ if (loss > lim) loss = lim;
 | limit                             | 1000000 |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 3       | 
 
 ##### Calculation logic
@@ -72,7 +72,7 @@ if (loss > lim) loss = lim;
 | deductible                        | 100000  |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 12      | 
 
 ##### Calculation logic
@@ -91,7 +91,7 @@ if (loss < 0) loss = 0;
 | deductible                        | 40000   |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 10      | 
 
 ##### Calculation logic
@@ -115,7 +115,7 @@ else {
 | deductible                        | 70000   |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 11      | 
 
 ##### Calculation logic
@@ -141,7 +141,7 @@ else {
 | share_prop_of_lim                 | 1000000 |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 2       | 
 
 ##### Calculation logic
@@ -162,7 +162,7 @@ loss = loss * share;
 | limit_prop_of_loss                | 0.3     |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 5       | 
 
 ##### Calculation logic
@@ -181,7 +181,7 @@ loss = x.loss * (lim - ded);
 | limit_prop_of_loss                | 100000  |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 9       | 
 
 ##### Calculation logic
@@ -202,7 +202,7 @@ if (loss > lim) loss = lim;
 
 | Rules                             | Value   |
 |:----------------------------------|---------|
-| calcrule_id                       | 14     | 
+| calcrule_id                       | 14      | 
 
 ##### Calculation logic
 
@@ -220,7 +220,7 @@ if (loss > lim) loss = lim;
 | limit_prop_of_loss                | 0.3     |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 15      | 
 
 ##### Calculation logic
@@ -239,7 +239,7 @@ loss = loss * lim;
 | deductible_prop_of_loss           | 0.05    |
 
 | Rules                             | Value   |
-|:----------------------------------|---------|
+|:----------------------------------|--------:|
 | calcrule_id                       | 16      | 
 
 ##### Calculation logic
