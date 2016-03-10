@@ -2,9 +2,9 @@
 
 The Oasis Financial Module is a data-driven process design for calculating the losses on (re)insurance contracts. It has an abstract design in order to cater for the many variations in contract structures and terms. The way Oasis works is to be fed data in order to execute calculations, so for the insurance calculations it needs to know the structure, parameters and calculation rules to be used. This data must be provided in the files used by the Oasis Financial Module:
 
-* fm_programme: defines how coverages are grouped into accounts and programmes
-* fm_profile: defines the layers and terms
-* fm_policytc: defines the relationship of the contract layers
+* **fm_programme**: defines how coverages are grouped into accounts and programmes
+* **fm_profile**: defines the layers and terms
+* **fm_policytc**: defines the relationship of the contract layers
 
 This section explains the design of the Financial Module which has been implemented in the **fmcalc** component. The formats of the input files are covered in [Input Data](Inputtools.md). Runtime parameters and usage instructions for fmcalc are covered in [Reference Model](ReferenceModel.md).
 
@@ -20,7 +20,7 @@ The Financial Module does not support multi-currency calculations, although curr
 
 ## Profiles
 
-Profiles are used throughout the Oasis framework and are meta-data definitions with their associated data types and rules.  Profiles are used in the Financial Module to perform the elements of financial calculations used to calculate losses to (re)insurance policies.  For anything other than the most simple policy which has a blanket deductible and limit, say, a Profile do not represent a policy structure on its own, but rather is to be used as a building block which can be combined with other building blocks to model a particular financial contract. In this way it is possible to model an unlimited range of structures with a limited number of Profiles.
+Profiles are used throughout the Oasis framework and are meta-data definitions with their associated data types and rules.  Profiles are used in the Financial Module to perform the elements of financial calculations used to calculate losses to (re)insurance policies.  For anything other than the most simple policy which has a blanket deductible and limit, say, a profile do not represent a policy structure on its own, but rather is to be used as a building block which can be combined with other building blocks to model a particular financial contract. In this way it is possible to model an unlimited range of structures with a limited number of profiles.
 
 The FM Profiles form an extensible library of calculations defined within the fmcalc code that can be invoked by specifying a particular **calcrule_id** and providing the required data values such as deductible and limit, as described below.
 
@@ -42,7 +42,7 @@ The Profiles currently supported are as follows;
 | Limit as a proportion of loss                                      | 13        |   15        |
 | Deductible as a proportion of loss                                 | 14        |   16        |
 
-See [FM Profiles][fmprofiles.md) for the more details. 
+See [FM Profiles][fmprofiles.md) for more details. 
 
 ## Design
 
@@ -63,10 +63,16 @@ The Financial Module brings together three elements in order to undertake a calc
 
 There are many ways an insurance loss can be calculated with many different terms and conditions. For instance, there may be deductibles applied to each element of coverage (e.g. a buildings damage deductible), some site-specific deductibles or limits, and some overall policy deductibles and limits and share. To undertake the calculation in the correct order and using the correct items (and their values) the structure and sequence of calculations must be defined. This is done in the **programme** file which defines a heirarchy of groups across a number of **levels**.  Levels drive the sequence of calculation. A financial calculation is performed at successive levels, depending on the structure of policy terms and conditions. For example there might be 3 levels representing coverage, site and policy terms and conditions. 
 
-Groups are defined within levels and they represent aggregations of losses on which to perform the financial calculations.  The grouping fields are called FROM_AGG_ID and TO_AGG_ID which represent a grouping of losses at the previous level and the present level of the hierarchy, respectively.  
+#### Figure 1. Example 3-level programme hierarchy
+![alt text](../img/fm1.jpg "3-level programme hierarchy")
+
+Groups are defined within levels and they represent aggregations of losses on which to perform the financial calculations.  The grouping fields are called from_agg_id and to_agg_id which represent a grouping of losses at the previous level and the present level of the hierarchy, respectively.  
+
+#### Figure 1. Example level 1 grouping
+![alt text](../img/fm2.jpg "Example level 1 grouping")
 
 ### Loss values
-The initial input is the ground-up loss (GUL) table, generally coming from the main Oasis calculation of ground-up losses. Here is an example, for a single event and sample (idx=1):
+The initial input is the ground-up loss (GUL) table, generally coming from the main Oasis calculation of ground-up losses. Here is an example, for a two events and 1 sample (idx=1):
 
 | event_id | item_id  | idx    | gul    |
 |:---------|----------|--------| ------:|
@@ -74,22 +80,23 @@ The initial input is the ground-up loss (GUL) table, generally coming from the m
 |       1  | 2        |    1   | 10,000 |
 |       1  | 3        |    1   | 2,500  |
 |       1  | 4        |    1   | 400    |
+|       2  | 1        |    1   | 90,000 |
+|       2  | 2        |    1   | 15,000 |
+|       2  | 3        |    1   | 3,000  |
+|       2  | 4        |    1   | 500    |
 
-<MP> Would it worth showing multiple events, sample for clarity?
 
-The values represent a single ground-up loss sample for items belonging to an Account. We use “programme” rather than "account" as it is more general characteristic of a client’s exposure protection needs and allows a client to have multiple programmes active for a given period.
+The values represent a single ground-up loss sample for items belonging to an account. We use “programme” rather than "account" as it is more general characteristic of a client’s exposure protection needs and allows a client to have multiple programmes active for a given period.
 The linkage between account and programme can be provided by a user defined **prog** dictionary, for example;
 
 | prog_id  | account_id  | prog_name                     |
 |:---------|-------------|------------------------------:|
 |       1  | 1           | ABC Insurance Co. 2016 renewal|
 
-<MP> Are we assuming single peril?
 
 Items 1-4 represent Structure, Other Structure, Contents and Time Element coverage ground up losses for a single property, respectively, and this example is a simple residential policy with combined property coverage terms. For this policy type, the Structure, Other Structure and Contents losses are aggregated, and a deductible and limit is applied to the total. A separate set of terms, again a simple deductible and limit, is applied to the “time element” coverage which, for residential policies, generally means costs for temporary accommodation. The total insured loss is the sum of the output from the combined property terms and the time element terms.
 
-
-### programme
+### Programme
 
 The actual items falling into the programme are specified in the **programme** table together with the aggregation groupings that go into a given level calculation:
 
@@ -106,7 +113,7 @@ Note that from_agg_id for level_id=1 is equal to the item_id in the input loss t
 
 In level 1, items 1, 2 and 3 all have to_agg_id =1 so losses will be summed together before applying the combined deductible and limit, but item 4 (time) will be treated separately (not aggregated) as it has to_agg_id = 2. For level 2 we have all 4 items losses (now represented by two groups from_agg_id =1 and 2 from the previous level) aggregated together as they have the same to_agg_id = 1.
 
-### profile
+### Profile
 
 Next we have the profile description table, which list the profiles representing general policy types. Our example is represented by two general profiles which specify the input fields and mathematical operations to perform. In this example, the profile for the combined coverages and time is the same (albeit with different values) and requires a limit, a deductible, and an associated calculation rule, whereas the profile for the policy requires a limit, deductible, and share, and an associated calculation rule.
 
@@ -118,20 +125,27 @@ Next we have the profile description table, which list the profiles representing
 
 There is a “profile value” table for each profile containing the applicable policy terms, each identified by a policytc_id. The table below shows the list of policy terms for profile_id 1.
 
-| policytc_id | ccy_id | limit     | deductible   | calcrule_id |
-|:------------|--------|-----------| -------------|------------:|
-|       1     | 1      | 1,000,000 | 1,000        |     1       |
-|       2     | 1      |    18,000 | 2,000        |     1       |
+| policytc_id | ccy_id | limit     | deductible   |
+|:------------|--------|-----------| -------------|
+|       1     | 1      | 1,000,000 | 1,000        |
+|       2     | 1      |    18,000 | 2,000        |
 
-And next, for Profile 6, the values for the overall policy deductible, limit and share
+And next, for profile 6, the values for the overall policy deductible, limit and share
 
-| policytc_id | ccy_id | limit     | deductible   | share_prop_of_lim  | calcrule_id |
-|:------------|--------|-----------| -------------|--------------------|------------:|
-|       3     | 1      | 1,000,000 | 1,000        |    0.1             |     2       |
+| policytc_id | ccy_id | limit     | deductible   | share_prop_of_lim  | 
+|:------------|--------|-----------| -------------|--------------------|
+|       3     | 1      | 1,000,000 | 1,000        |    0.1             |
 
 In practice, all profile values are stored in a single flattened format which contains all supported profile fields, but conceptually they belong in separate profile value tables (see fm profile in [Input tools](Inputtools.md)).
 
-### policytc
+For any given profile we have four standard rules:
+* **calcrule_id**, being the Function used to calculate the losses from the given Profile’s fields. More information about the functions can be found in [FM Profiles](fmprofiles.md).
+* **allocrule_id**, being the rule for allocating back to ITEM level. There are really only two meaningful values here – don’t allocate (0) used typically for the final level to avoid maintaining lots of detailed losses, or allocate back to ITEMs (1) used in all other cases which is in proportion to the input ground up losses.
+(Allocation does not need to be on this basis, by the way, there could be other rules such as allocate back always on TIV or in proportion to the input losses from the previous level, but we have implemented a ground up loss back-allocation rule.
+* **sourcerule_id** (not currently used), which is used for conditional logic if TIV (for example) needs to be used in a calculation.
+* **levelrule_id** (not currently used) used for processing level-specific rules such as “special conditions”.
+
+### Policytc
 The **policytc** table specifies the insurance policies (a policy in Oasis FM is a combination of prog_id and layer_id) and the separate terms and conditions which will be applied to each layer_id/agg_id for a given level. In our example, we have a limit and deductible with the same value applicable to the combination of the first three items, a limit and deductible for the fourth item (time) in level 1, and then a limit, deductible, and line applicable at level 2 covering all items. We’d represent this in terms of the distinct agg_ids as follows:
 
 | prog_id | layer_id | level_id | agg_id   | policytc_id |
@@ -154,14 +168,8 @@ Apply policytc_id 3 to agg_id 1
 
 Levels are processed in ascending order and the calculated losses from a previous level are summed according to the groupings defined in the programme table which become the input losses to the next level.
 
-For any given profile we have four standard fields:
-* calcrule_id, being the Function used to calculate the losses from the given Profile’s fields. There list of functions are shown below. <MP> Where?
-* allocrule_id, being the rule for allocating back to ITEM level. There are really only two meaningful values here – don’t allocate (0) used typically for the final level to avoid maintaining lots of detailed losses, or allocate back to ITEMs (1) used in all other cases which is in proportion to the input ground up losses.
-(Allocation does not need to be on this basis, by the way, there could be other rules such as allocate back always on TIV or in proportion to the input losses from the previous level, but we have implemented a ground up loss back-allocation rule.
-* sourcerule_id (not currently used), which is used for conditional logic if TIV (for example) needs to be used in a calculation.
-* levelrule_id (not currently used) used for processing level-specific rules such as “special conditions”.
-
-Note that the fields not currently used at all are levelrule_id, and sourcerule_id.
+#### Layers
+TO DO
 
 ## Back-allocation
 
