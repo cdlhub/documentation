@@ -14,6 +14,14 @@
 | Limit as a proportion of loss                                      | 13        |   15        |
 | Deductible as a proportion of loss                                 | 14        |   16        |
 
+
+In the following notation
+* x.loss is the input loss to the calculation.
+* x.retained_loss is the input retained loss to the calculation (where required)
+* loss is the calculated loss 
+* retained_loss is the calculated retained loss
+* ded, lim, share are alias variables for the profile fields
+
 #### 1. Deductible and limit
 
 | Attributes                        | Example |
@@ -28,13 +36,11 @@
 | calcrule_id                       | 1       | 
 
 ##### Logic
-
+``` sh
 loss = x.loss - ded;
-
 if (loss < 0) loss = 0;
-
 if (loss > lim) loss = lim;
-
+```
 #### 2. Franchise deductible and limit
 
 | Attributes                        | Example |
@@ -50,11 +56,11 @@ if (loss > lim) loss = lim;
 
 ##### Logic
 
-if (loss < ded) loss = 0;
-
-else loss = loss;
-  
+``` sh
+if (x.loss < ded) loss = 0;
+	else loss = x.loss;
 if (loss > lim) loss = lim;
+```
 
 #### 3. Deductible only
 
@@ -70,9 +76,10 @@ if (loss > lim) loss = lim;
 
 ##### Logic
 
-loss = x.loss - deductible;
-
+``` sh
+loss = x.loss - ded;
 if (loss < 0) loss = 0;
+```
 
 #### 4. Deductible as a cap on the retention of input losses
 
@@ -88,18 +95,15 @@ if (loss < 0) loss = 0;
 
 ##### Logic
 
+``` sh
 if (x.retained_loss > ded) { 
-
 	loss = x.loss + x.retained_loss - ded;
-	
 	if (loss < 0) loss = 0;
-	
-	x.retained_loss = x.retained_loss + ( x.loss - loss);
-} else { 
-
+	}
+else {
 	loss = x.loss;
-	
-}
+     }
+```
 
 #### 5. Deductible as a floor on the retention of input losses
 
@@ -115,19 +119,15 @@ if (x.retained_loss > ded) {
 
 ##### Logic
 
-if (x.retained_loss < ded) {
-
+``` sh
+if (x.retained_loss < ded) { 
 	loss = x.loss + x.retained_loss - ded;
-	
 	if (loss < 0) loss = 0;
-	
-	x.retained_loss = x.retained_loss + ( x.loss - loss);
- 
-} else { 
-
+	}
+else {
 	loss = x.loss;
-	
-}
+     }
+```
 
 #### 6. Deductible, limit and share
 
@@ -145,14 +145,13 @@ if (x.retained_loss < ded) {
 
 ##### Logic
 
+``` sh
 if (x.loss > (ded + lim)) loss = lim;
-
 	else loss = x.loss - ded;
-				
 if (loss < 0) loss = 0;
-				
-	x.loss = loss * share;
-				
+loss = loss * share;
+```
+
 #### 10. Deductible and limit as a proportion of loss
 
 | Attributes                        | Example |
@@ -184,12 +183,12 @@ loss = x.loss * (lim - ded);
 
 ##### Logic
 
+``` sh
 loss = x.loss - (ded * lim);
-
 if (loss < 0) loss = 0;
-
 if (loss > lim) loss = lim;
-				
+```
+
 #### 12. Limit only
 
 | Attributes                        | Example |
@@ -204,9 +203,10 @@ if (loss > lim) loss = lim;
 
 ##### Logic
 
+``` sh
 loss = x.loss;
-
 if (loss > lim) loss = lim;
+```
 
 #### 13. Limit as a proportion of loss
 
@@ -222,9 +222,10 @@ if (loss > lim) loss = lim;
 
 ##### Logic
 
+``` sh
 loss = x.loss;
-
 loss = loss * lim;
+```
 
 #### 14. Deductible as a proportion of loss
 
@@ -240,8 +241,8 @@ loss = loss * lim;
 
 ##### Logic
 
+``` sh
 loss = x.loss;
-
 loss = loss - (loss * ded);
-
 if (loss < 0) loss = 0;
+```
