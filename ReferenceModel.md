@@ -6,7 +6,7 @@ The set of core components provided in this release is as follows;
 * **[eve](#eve)** is the event distributing utility. Based on the number of events in the input and the number of processes specified as a parameter, eve outputs subsets of the events as a stream. The output streams into getmodel.
 * **[getmodel](#getmodel)** generates a stream of effective damageability cdfs for the input stream of events. The reference example reads in Oasis format damage cdf data from binary file. getmodel streams into gulcalc or can be output to a binary file.
 * **[gulcalc](#gulcalc)** performs the ground up loss sampling calculations and numerical integration. The output is the Oasis kernel gul sample table. This can be output to a binary file or streamed into  fmcalc or outputcalc.
-* **[fmcalc](#fmcalc)** performs the insured loss calculations on the ground up loss samples and mean. The output is the Oasis format loss sample table. The functionality covered in fmcalc is the same as the current financial Module in Oasis R1.4 (see R1.2 Financial Module documentation for more information).  The result can be output to a binary file or streamed into outputcalc.
+* **[fmcalc](#fmcalc)** performs the insured loss calculations on the ground up loss samples and mean. The output is the Oasis format loss sample table. The functionality is explained in [Financial Module](FinancialModule.md).  The result can be output to a binary file or streamed into outputcalc.
 * **[outputcalc](#outputcalc)** performs an output analysis on the ground up or loss samples. The reference example is an event loss table containing TIV, sample mean and standard deviation for each event at portfolio/programme summary level. The results are written directly into csv file as there is no downstream processing.
 
 Other components in the Reference Model include;
@@ -179,29 +179,33 @@ fmcalc is the in-memory implementation of the Oasis Financial Module. It applies
 |    2   |     1     |  fmcalc reference example                      |
 
 ##### Parameters
-There are no parameters as all of the information is taken from the gul stdout stream and internal data.
+There is a single optional parameter -M which is the maxmimum level number to output.  If provided, fmcalc will truncate the calculation and output results for the specified level. The maximum level number must be less than the maxmimum level_id specified in the fm input files.
+
+For example, fmcalc -M2 can be used if the maximum level_id in the input files is greater than or equal to 2.
 
 ##### Usage
 ```
-$ [stdin component] | fmcalc | [stout component]
-$ [stdin component] | fmcalc > [stdout].bin
-$ fmcalc < [stdin].bin > [stdout].bin
+$ [stdin component] | fmcalc [parameter] | [stout component]
+$ [stdin component] | fmcalc [parameter] > [stdout].bin
+$ fmcalc [parameter] < [stdin].bin > [stdout].bin
 ```
 
-##### Example
+##### Examples
 ```
 $ eve 1 1 1 | getmodel 1 | gulcalc -C1 -S100 | fmcalc | outputcalc > output.csv
 $ eve 1 1 1 | getmodel 1 | gulcalc -C1 -S100 | fmcalc > fm_chunk1.bin
-$ fmcalc < gul_chunk1.bin > fm_chunk1.bin 
+$ fmcalc -M2 < gul_chunk1.bin > fm_chunk1.bin 
 ```
 
 ##### Internal data
-The program requires the FM Instance data, which is the Oasis native format data tables which describe an insurance programme. This file is picked up from the fm subdirectory;
+The program requires the FM programme, policytc and profile files, which are the Oasis native format data tables which describe an insurance programme. These files are picked up from the fm subdirectory;
 
-fm/fm_data.bin
+* fm/fm_programme.bin
+* fm/fm_policytc.bin
+* fm/fm_profile.bin
 
 ##### Calculation
-fmcalc performs the same calculations as the Oasis Financial Module in R1.5.  Information about the Oasis Financial Module can be found on the public area of the Oasis Loss Modelling Framework website, and detailed information and examples are available to Oasis community members in the members area.
+See [Financial Module](FinancialModule.md).
 
 [Return to top](#referencemodel)
 
