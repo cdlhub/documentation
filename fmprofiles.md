@@ -15,12 +15,11 @@
 | Deductible as a proportion of loss                                 | 14        |   16        |
 
 
-In the following notation
-* x.loss is the input loss to the calculation.
+In the following notation;
+* x.loss is the input loss to the calculation
 * x.retained_loss is the input retained loss to the calculation (where required)
 * loss is the calculated loss 
-* retained_loss is the calculated retained loss
-* ded, lim, share are alias variables for the profile fields
+* ded, lim, and share are alias variables for the profile fields as required
 
 #### 1. Deductible and limit
 
@@ -35,7 +34,7 @@ In the following notation
 |:----------------------------------|---------|
 | calcrule_id                       | 1       | 
 
-##### Logic
+##### Calculation logic
 ``` sh
 loss = x.loss - ded;
 if (loss < 0) loss = 0;
@@ -54,7 +53,7 @@ if (loss > lim) loss = lim;
 |:----------------------------------|---------|
 | calcrule_id                       | 3       | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 if (x.loss < ded) loss = 0;
@@ -74,7 +73,7 @@ if (loss > lim) loss = lim;
 |:----------------------------------|---------|
 | calcrule_id                       | 12      | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 loss = x.loss - ded;
@@ -93,7 +92,7 @@ if (loss < 0) loss = 0;
 |:----------------------------------|---------|
 | calcrule_id                       | 10      | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 if (x.retained_loss > ded) { 
@@ -117,7 +116,7 @@ else {
 |:----------------------------------|---------|
 | calcrule_id                       | 11      | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 if (x.retained_loss < ded) { 
@@ -143,7 +142,7 @@ else {
 |:----------------------------------|---------|
 | calcrule_id                       | 2       | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 if (x.loss > (ded + lim)) loss = lim;
@@ -164,9 +163,11 @@ loss = loss * share;
 |:----------------------------------|---------|
 | calcrule_id                       | 5       | 
 
-##### Logic
+##### Calculation logic
 
+``` sh
 loss = x.loss * (lim - ded);
+```
 
 #### 11. Limit with deductible as a proportion of limit
 
@@ -181,7 +182,7 @@ loss = x.loss * (lim - ded);
 |:----------------------------------|---------|
 | calcrule_id                       | 9       | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 loss = x.loss - (ded * lim);
@@ -201,7 +202,7 @@ if (loss > lim) loss = lim;
 |:----------------------------------|---------|
 | calcrule_id                       | 14     | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 loss = x.loss;
@@ -220,7 +221,7 @@ if (loss > lim) loss = lim;
 |:----------------------------------|---------|
 | calcrule_id                       | 15      | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 loss = x.loss;
@@ -239,7 +240,7 @@ loss = loss * lim;
 |:----------------------------------|---------|
 | calcrule_id                       | 16      | 
 
-##### Logic
+##### Calculation logic
 
 ``` sh
 loss = x.loss;
