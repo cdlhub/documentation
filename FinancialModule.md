@@ -6,7 +6,11 @@ The Oasis Financial Module is a data-driven process design for calculating the l
 * **fm_profile**: defines the layers and terms
 * **fm_policytc**: defines the relationship of the contract layers
 
-This section explains the design of the Financial Module which has been implemented in the **fmcalc** component. The formats of the input files are covered in [Input Data](Inputtools.md). Runtime parameters and usage instructions for fmcalc are covered in [Reference Model](ReferenceModel.md).
+This section explains the design of the Financial Module which has been implemented in the **fmcalc** component. 
+* Runtime parameters and usage instructions for fmcalc are covered in [Reference Model](ReferenceModel.md). 
+* The formats of the input files are covered in [Input Data](Inputtools.md). 
+ 
+In addition, there separate github repository [ktest](https://github.com/OasisLMF/ktest) which is an extended test suite for ktools and contains a library of financial module worked examples provided by Oasis Members with a full set of input and output files (access on request).
 
 Note that other reference tables are referred to below that do not appear explicitly in the kernel as they are not directly required for calculation.  It is expected that a front end system will hold all of the exposure and policy data and generate the above three input files required for the kernel calculation.
 
@@ -68,7 +72,7 @@ There are many ways an insurance loss can be calculated with many different term
 
 Groups are defined within levels and they represent aggregations of losses on which to perform the financial calculations.  The grouping fields are called from_agg_id and to_agg_id which represent a grouping of losses at the previous level and the present level of the hierarchy, respectively.  
 
-#### Figure 1. Example level 1 grouping
+#### Figure 2. Example level 1 grouping
 ![alt text](../img/fm2.jpg "Example level 1 grouping")
 
 ### Loss values
@@ -169,9 +173,33 @@ Apply policytc_id 3 to agg_id 1
 Levels are processed in ascending order and the calculated losses from a previous level are summed according to the groupings defined in the programme table which become the input losses to the next level.
 
 #### Layers
-TO DO
+Layers can be used to model multiple sets of terms and conditions applied to the same losses, such as excess policies. For the lower level calculations and in the general case where there is a single contract, layer_id should be set to 1. For a given level_id and agg_id, multiple layers can be defined by setting layer_id =1,2,3 etc, and assigning a different calculation policytc_id to each.
 
-## Back-allocation
+#### Figure 3. Example of multiple layers
+![alt text](../img/fm3.jpg "Example layers")
+
+For this example at level 3, the policytc data might look as follows;
+
+| prog_id | layer_id | level_id | agg_id   | policytc_id |
+|:--------|----------|----------| ---------|------------:|
+|    1    |    1     |     3    |    1     |    22       |
+|    1    |    2     |     3    |    1     |    23       |
+
+
+## Outputs and back-allocation
+
+Losses are output by event, programme, layer, output level and sample.  The table looks like this;
+
+| event_id|  prog_id | layer_id | output_id| sidx  |  loss    |
+|:--------|----------|----------| ---------|-------|---------:|
+|    1    |    1     |     1    |    1     |    1  |   455.24 |
+|    2    |    1     |     1    |    1     |    1  |   345.6  |
+
+The output_id represents some grouping of items, depending on what allocation rule is applied at the final level of calculation;
+* If allocrule_id = 0 for all policytc_ids at the final level then output_id = agg_id of the final level
+* If allocrule_id = 1 for all policytc_ids at the final level then output_id = from_agg_id of the first level.
+
+In other words, losses are either output at the contract level or back-allocated to the lowest level, which is item_id. To avoid unnecessary computation, it is recommended not to back-allocate unless losses are required to be reported at a more detailed level than the contract level (site or zip code, for example). In this case, losses are re-aggregated up from item level in a separate output module, using an item_id to summary level cross reference table.
 
 In R1.1 of Oasis we took the view that it was simpler throughout to refer back to the base items rather than use a hierarchy of aggregated loss calculations. So, for example, we could have calculated a loss at the site level and then used this calculated loss directly at the policy conditions level but instead we allocated back to item level and then re-aggregated to the next level. The reason for this was that intermediate conditions may only apply to certain items so if we didn’t go back to the base item “ground-up” level then any higher level could have a complicated grouping of a level. 
 
