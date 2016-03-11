@@ -247,3 +247,5 @@ loss = x.loss;
 loss = loss - (loss * ded);
 if (loss < 0) loss = 0;
 ```
+
+[Back to Contents](Contents.md)
