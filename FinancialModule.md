@@ -205,3 +205,6 @@ In R1.1 of Oasis we took the view that it was simpler throughout to refer back t
 
 In the implementation this required back-allocating losses to item at every level in a multi-level calculation even the next level calculaton did not require it, which was inefficient.   The aggregations are now defined in terms of the previous level groupings (from_agg_id in the programme table, rather than item_id) and the execution path now only supports simple hierarchies.
 
+[Go to FM profiles](fmprofiles.md)
+
+[Back to Contents](Contents.md)
