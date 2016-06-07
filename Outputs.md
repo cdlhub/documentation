@@ -10,42 +10,43 @@ summarycalc is the input to the following output calculation components.
 * **[leccalc](#leccalc)** outputs loss exceedance curves 'lec' to a csv. 
 * **[pltcalc](#pltcalc)** outputs period loss tables 'plt' to a csv.
 * **[aalcalc](#aalcalc)** outputs average annual losses 'aal' to a csv.
-* **[elhcalc](#elhcalc)** outputs event loss histograms 'elh' to a csv.
+* **[elhcalc](#elhcalc)** outputs event loss histograms 'elh' to a csv. Future.
 
 ##### Stdin stream_id
 
-summarycalc takes either gulcalc standard output or fm standard output as a streamed input, or a binary file of the same format can be input.
+summarycalc takes either gulcalc standard output or fm standard output as a streamed input, or a binary file of the same format can be piped in.
 
 | Byte 1 | Bytes 2-4 |  Description                  |
 |:-------|-----------|:------------------------------|
 |    1   |     2     |  gulcalc coverage stdout      |
 |    2   |     1     |  fmcalc stdout                |
 
-The other output components take summarycalc standard output as a streamed input, or a binary file of the same format can be input.
+The other output components take summarycalc standard output as a streamed input, or a binary file of the same format can be piped in.
 
 | Byte 1 | Bytes 2-4 |  Description         |
 |:-------|-----------|:---------------------|
 |    3   |     1     |  summarycalc stdout  |
 
-A binary file of the same format as summarycalc standard output can be piped into the components.
+A binary file of the same format as summarycalc standard output can be piped into the output components.
 
 ## summarycalc <a id="summarycalc"></a>
 
 ##### Parameters
 
+The input stream should be identified explicitly as -g for gulcalc stream or -f for fmcalc stream.
 summarycalc supports up to 10 concurrent outputs.  This is achieved by explictly directing each output to a named pipe, file, or to standard output.  
 For each output stream, the following tuple of parameters must be specified for at least one summary set;
 
 * summaryset_id number. valid values are -0 to -9
-* destination pipe. Use either - for standard output, or -[name] for a named pipe.
+* destination pipe or file. Use either - for standard output, or -[name] for a named pipe or file.
 
 For example the following parameter choices are valid;
 ```
-$ summarycalc -1 -                                       'outputs summaryset 1 results to standard output
-$ summarycalc -1 summarycalc1.bin                        'outputs summaryset 1 results to a file (or named pipe)
-$ summarycalc -1 summarycalc1.bin -2 summarycalc2.bin    'outputs summaryset 1 and 2 results to a file (or named pipe)
+$ summarycalc -g -1 -                                       'outputs summaryset 1 results to standard output
+$ summarycalc -g -1 summarycalc1.bin                        'outputs summaryset 1 results to a file (or named pipe)
+$ summarycalc -g -1 summarycalc1.bin -2 summarycalc2.bin    'outputs summaryset 1 and 2 results to a file (or named pipe)
 ```
-Note that the summaryset_id relates to a summaryset_id in the required input data file **summary.bin** and represents a user specified reporting summary level, for example site, zipcode or portfolio.
+Note that the summaryset_id relates to a summaryset_id in the required input data file **gulsummaryxref.bin** or **fmsummaryxref.bin** for a gulcalc input stream or a fmcalc input stream, respectively, and represents a user specified summary reporting level, for example site, zipcode or portfolio.
 
 ##### Usage
 ```
@@ -58,14 +59,17 @@ $ summarycalc [parameters] < [stdin].bin > [stdout].bin
 
 Single output
 ```
-$ eve 1 1 1 | getmodel 1 | gulcalc -S100 -C1 | summarycalc -1 - | eltcalc > elt.csv
-$ eve 1 1 1 | getmodel 1 | gulcalc -S100 -C1 | summarycalc -1 summarycalc.bin 
-$ summarycalc -1 summarycalc.bin < fm.bin
+$ eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 - | eltcalc > eltcalc.csv
+$ eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 > gulsummarycalc.bin 
+$ summarycalc -f -1 fmsummarycalc.bin < fmcalc.bin
 ```
 
 Multiple outputs
 ```
-To do
+eltcalc < pipe1 > eltcalc1.csv
+eltcalc < pipe2 > eltcalc2.csv
+eltcalc < pipe3 > eltcalc3.csv
+eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 pipe1 -2 pipe2 -3 pipe3
 ```
 
 ## eltcalc <a id="eltcalc"></a>
@@ -84,7 +88,7 @@ $ eltcalc < [stdin].bin > elt.csv
 
 ##### Example
 ```
-$ eve 1 1 1 | getmodel 1 | gulcalc -S100 -C1 | summarycalc -1 - | eltcalc > elt.csv
+$ eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 - | eltcalc > elt.csv
 $ eltcalc < summarycalc.bin > elt.csv 
 ```
 
@@ -107,15 +111,16 @@ Csv file with the following fields;
 blah blah blah
 
 ##### Parameters
-
-* Results type. Use -A for Aggregate or -O for Occurrence
-* Analysis type. Use -F for Full Uncertainty, -W for Wheatsheaf, -M for Mean, -A for Average of Wheatsheaf
-* Return period (optional). Use -r if you are providing a file with a specific list of return periods. If this is not present then all calculated return periods will be returned. 
+* -K the subdirectory containing the input summarycalc binary files.
+The following tuple of parameters must be specified for at least one analysis type;
+* Analysis type. Use -F for Full Uncertainty Aggregate, -f for Full Uncertainty Occurrence, -W for Wheatsheaf Aggregate,  -w for Wheatsheaf Occurrence, -S for Sample Mean Aggregate, -s for Sample Mean Occurrence, -M for Mean of Wheatsheaf Aggregate, -m for Mean of Wheatsheaf Occurrence
+* Output filename (csv)
+* Return period (optional). Use -r if you are providing a file with a specific list of return periods. If this is not present then all calculated return periods will be returned, for losses greater than zero. 
 
 ##### Usage
 ```
-$ [stdin component] | leccalc [parameters] > lec.csv
-$ leccalc [parameters] < [stdin].bin > lec.csv
+$ leccalc [parameters] > lec.csv
+
 ```
 
 ##### Example
