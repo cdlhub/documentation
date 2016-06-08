@@ -245,7 +245,7 @@ The sidx field is the same as the sidx in the gul stdout stream.
 
 ## outputcalc <a id="outputcalc"></a>
 
-outputcalc is the component which performs results analysis such as an event loss table or EP curve on the sampled output from either the gulcalc or fmcalc program.  The output is a results table in csv format.  Four examples are provided in the Reference Model.
+outputcalc performs results analysis such as an event loss table or loss exceedance curve on the sampled output from either the gulcalc or fmcalc program.  The output is a results table in csv format.  Four examples are provided in the Reference Model.
 
 ##### Input
 summarycalc stdout. Binary files of the same data structures can be piped into the outputcalc component.
