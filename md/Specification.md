@@ -14,7 +14,7 @@ These components are;
 
 Most components have a standard input (stdin) and output (stdout) data stream structure. These data structures are not defined explicitly as meta data in the code as they would be in a database language, and they have been designed to minimise the volume flowing through the pipeline. For example, indexes which are common to a block of data are defined as a header record and then only the variable data records that are relevant to the header key are part of the data stream. The names of the data fields given below are unimportant, only their position in the data stream in order to perform the calculations defined in the program.
 
-A single implementation of each of the above components is provided in the Reference Model,  with the exception of outputcalc where four reference implementations are provided. These are called eltcalc, leccalc, aalcalc, and pltcalc. The output from these components vary and it is up to the developer to decide what form the output takes. This specification covers the gengeral input stream requirements of outputcalc, which represents one of a potentially unlimited set of output components.  
+A single implementation of each of the above components is provided in the Reference Model,  with the exception of outputcalc where four reference implementations are provided. These are called eltcalc, leccalc, aalcalc, and pltcalc. The output from these components vary and it is up to the developer to decide what form the output takes. This specification covers the general input stream requirements of outputcalc, which represents one of a potentially unlimited set of output components.  
 
 #### Stream types
 
