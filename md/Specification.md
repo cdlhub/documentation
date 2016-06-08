@@ -46,10 +46,10 @@ Reserved stream_ids;
 outputcalc has no stream_id as it output results directly to csv.
 
 There are rules about which stream types can be accepted as inputs to the components. These are;
-* gulcalc can only take stream type 0/1 (getmodel output) as input
-* fmcalc can only take stream type 1/1 (gulcalc item level output) as input
-* summarycalc can take either stream type 1/2 (gulcalc coverage level output) or 2/1 (fmcalc standard output) as input
-* outputcalc can take only stream type 3/1 (summarycalc output) as input
+* gulcalc can only take stream 0/1 (getmodel output) as input
+* fmcalc can only take stream 1/1 (gulcalc item level output) as input
+* summarycalc can take either stream 1/2 (gulcalc coverage level output) or 2/1 (fmcalc standard output) as input
+* outputcalc can take only stream 3/1 (summarycalc output) as input
 
 <a id="eve"></a>
 ## eve 
