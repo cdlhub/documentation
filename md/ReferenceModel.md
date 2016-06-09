@@ -23,7 +23,7 @@ Other components in the Reference Model include;
 Figure 1 shows the core data stream workflow of the reference model with its particular internal data files.
 
 ##### Figure 1. Core workflow and required data
-![alt text](../img/KtoolsRequiredData.jpg "Core workflow and required data")
+![alt text](../img/KtoolsRequiredData1.jpg "Core workflow and required data")
 
 The model / static data for the core workflow, shown as red source files, are the event footprint, vulnerability, damage bin dictionary and random number file.  These are stored in the 'static' sub-directory of the working folder.  
 
@@ -46,36 +46,35 @@ eve takes as input a list of event ids in binary format and generates a partitio
 None. The output stream is a simple list of event_ids (4 byte integers).
 
 ##### Parameters
-* chunk number - corresponds to the chunk number in the input file (see below)
-* process number - the process number that determines which partition of events are streamed out
-* number of processes - the total number of processes which determines the number of partitions
+* process number - determines which partition of events to output to a single process
+* number of processes - determines the total number of partitions of events to distribute to processes
 
 ##### Usage
 ```
 $ eve [parameters] > [output].bin
-$ eve [parameters] | getmodel [parameters] | gulcalc [parameters] > [stdout].bin
+$ eve [parameters] | getmodel | gulcalc [parameters] > [stdout].bin
 ```
 
 ##### Example
 ```
-$ eve 1 1 2 > events1_2.bin 
-$ eve 1 1 2 | getmodel 1 | gulcalc -C1 -S100 > gulcalc.bin
+$ eve 1 2 > events1_2.bin 
+$ eve 1 2 | getmodel | gulcalc -S100 -i - > gulcalc.bin
 ```
 
-In this example, the events from the file e_chunk_1_data.bin will be read into memory and the first half (partition 1 of 2) would be streamed out to binary file, or downstream to a single process calculation workflow.
+In this example, the events from the file **events.bin** will be read into memory and the first half (partition 1 of 2) would be streamed out to binary file, or downstream to a single process calculation workflow.
 
 ##### Internal data
-The program requires an event binary. The file is picked up from the directory where the program is invoked and has the following filename;
-* e_chunk_{chunk}_data.bin
+The program requires an event binary. The file is picked up from the **input** sub-directory relative to where the program is invoked and has the following filename;
+* input/events.bin
 
-The data structure of e_chunk_{chunk}_data.bin is a simple list of event ids (4 byte integers).
+The data structure of events.bin is a simple list of event ids (4 byte integers).
 
 [Return to top](#referencemodel)
 
 <a id="getmodel"></a>
 ## getmodel 
 
-getmodel generates a stream of effective damageability distributions (cdfs) from an input list of events. Specifically, it reads pre-generated Oasis format cdfs and converts them into a binary stream. The source input data must have been generated as binary files by a separate program.
+getmodel generates a stream of effective damageability distributions (cdfs) from an input list of events. Specifically, it combines the probability distributions from the model files, eventfootprint.bin and vulnerability.bin, to generate effectice damageability cdfs for the subset of exposures contained in the items.bin file and converts them into a binary stream. The source input data must have been generated as binary files by a separate program.
 
 This is reference example of the class of programs which generates the damage distributions for an event set and streams them into memory. It is envisaged that model developers who wish to use the toolkit as a back-end calculator of their existing platforms can write their own version of getmodel, reading in their own source data and converting it into the standard output stream. As long as the standard input and output structures are adhered to, the program can be written in any language and read any input data.
 
@@ -86,36 +85,35 @@ This is reference example of the class of programs which generates the damage di
 |    0   |     1     |  getmodel reference example                    |
 
 ##### Parameters
-The single parameter is chunk_id (int). 
+None
 
 ##### Usage
 ```
-$ [stdin component] | getmodel [parameters] | [stout component]
-$ [stdin component] | getmodel [parameters] > [stdout].bin
-$ getmodel [parameters] < [stdin].bin > [stdout].bin
+$ [stdin component] | getmodel | [stout component]
+$ [stdin component] | getmodel > [stdout].bin
+$ getmodel < [stdin].bin > [stdout].bin
 ```
 
 ##### Example
 ```
-$ eve 1 1 1 | getmodel 1 | gulcalc -C1 -S100
-$ eve 1 1 1 | getmodel 1 > cdf_chunk1.bin
-$ getmodel 1 < e_chunk1_data.bin > cdf_chunk1.bin 
+$ eve 1 1 | getmodel | gulcalc -r -S100 -i -
+$ eve 1 1 | getmodel > damagecdf.bin
+$ getmodel < events.bin > damagecdf.bin 
 ```
 
 ##### Internal data
-The program requires the damage bin dictionary for the model, the Oasis damage cdf in chunks, and an index file for each cdf chunk as binary files. The files are picked up from the directory where the program is invoked and have the following filenames;
-* damage_bin_dictionary.bin
+The program requires the eventfootprint binary and index file for the model, the vulnerability binary model file, the items file representing the user's exposures. The files are picked up from sub-directories relative to where the program is invoked, named as follows;
 
-And in a cdf specific subdirectory;
-* cdf/damage_cdf_chunk_{chunk_id}.bin
-* cdf/damage_cdf_chunk_{chunk_id}.idx
+* static/eventfootprint.bin
+* static/eventfootprint.idx
+* static/vulnerability.bin
+* static/damage_bin_dict.bin
+* input/items.bin
 
-The cdfs are ordered by event and streamed out in blocks for each event. 
-
-Note that the prob_from field from the existing database table structure of Oasis damage cdfs has been dropped to minimise the size of the table, as it is implied from the prior record prob_to field.
+The getmodel output stream is ordered by event and streamed out in blocks for each event. 
 
 ##### Calculation
-The program reads the damage bin mid-point (interpolation field) from the damage bin dictionary and includes it as a new field in the CDF stream as 'bin_mean'.  This field is the conditional mean damage for the bin and it is used to facilitate the calculation of mean and standard deviation in the gulcalc component. No calculations are performed except to construct the standard output stream.
+The program filters the eventfootprint file for all 'areaperil_id's which appear in the items file. This effectively selects the event footprints that affect the exposures, and discards the rest.  Similarly the program filters the vulnerability file for 'vulnerability_id's that appear in the items file. This removes damage distributions which are not relevant for the exposures. Then a cartesian product of the eventfootprint and vulnerability distributions is created for every combination of areaperil_id and vulnerability_id in the items file. The effective damage probabilities are calculated by a sum product of conditional damage probabilities with intensity probability for each event, areaperil, vulnerability combination and each damage bin.  The resulting discrete probability distributions are converted into discrete cumulative distribution functions 'cdfs'.  Finally, the damage bin mid-point from the damage bin dictionary is read in as a new field in the cdf stream as 'bin_mean'.  This field is the conditional mean damage for the bin and it is used to facilitate the calculation of mean and standard deviation in the gulcalc component. 
 
 [Return to top](#referencemodel)
 
