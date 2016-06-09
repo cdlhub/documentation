@@ -97,8 +97,8 @@ $ getmodel < [stdin].bin > [stdout].bin
 ##### Example
 ```
 $ eve 1 1 | getmodel | gulcalc -r -S100 -i -
-$ eve 1 1 | getmodel > damagecdf.bin
-$ getmodel < events.bin > damagecdf.bin 
+$ eve 1 1 | getmodel > getmodel.bin
+$ getmodel < events.bin > getmodel.bin 
 ```
 
 ##### Internal data
@@ -113,7 +113,7 @@ The program requires the eventfootprint binary and index file for the model, the
 The getmodel output stream is ordered by event and streamed out in blocks for each event. 
 
 ##### Calculation
-The program filters the eventfootprint binary file for all 'areaperil_id's which appear in the items file. This effectively selects the event footprints that affect the exposures based on their location, and discards the rest.  Similarly the program filters the vulnerability file for 'vulnerability_id's that appear in the items file. This removes damage distributions which are not relevant for the exposures. Then the eventfootprint intensity distributions and vulnerability conditional damage distributions are convolved for every combination of areaperil_id and vulnerability_id in the items file. The effective damage probabilities are calculated by a sum product of conditional damage probabilities with intensity probability for each event, areaperil, vulnerability combination and each damage bin.  The resulting discrete probability distributions are converted into discrete cumulative distribution functions 'cdfs'.  Finally, the damage bin mid-point from the damage bin dictionary ('interpolation' field) is read in as a new field in the cdf stream as 'bin_mean'.  This field is the conditional mean damage for the bin and it is used to facilitate the calculation of mean and standard deviation in the gulcalc component. 
+The program filters the eventfootprint binary file for all 'areaperil_id's which appear in the items file. This selects the event footprints that affect the exposures on the basis on their location, and discards the rest.  Similarly the program filters the vulnerability file for 'vulnerability_id's that appear in the items file. This removes damage distributions which are not relevant for the exposures. Then the intensity distributions from the eventfootprint file and conditional damage distributions from the vulnerability file are convolved for every combination of areaperil_id and vulnerability_id in the items file. The effective damage probabilities are calculated by a sum product of conditional damage probabilities with intensity probabilities for each event, areaperil, vulnerability combination and each damage bin.  The resulting discrete probability distributions are converted into discrete cumulative distribution functions 'cdfs'.  Finally, the damage bin mid-point from the damage bin dictionary ('interpolation' field) is read in as a new field in the cdf stream as 'bin_mean'.  This field is the conditional mean damage for the bin and it is used to facilitate the calculation of mean and standard deviation in the gulcalc component. 
 
 [Return to top](#referencemodel)
 
@@ -222,7 +222,7 @@ $ fmcalc < gulcalc.bin > fmcalc.bin
 ```
 
 ##### Internal data
-The program requires the item, coverage and fm input data, which are Oasis abstract data formats that describe an insurance programme. This data is picked up from the following files relative to the working directory;
+The program requires the item, coverage and fm input data, which are Oasis abstract data objects that describe an insurance programme. This data is picked up from the following files relative to the working directory;
 
 * input/items.bin
 * input/coverages.bin
@@ -238,13 +238,211 @@ See [Financial Module](FinancialModule.md)
 
 <a id="summarycalc"></a>
 ## summarycalc 
-The purpose of summarycalc is firstly to aggregate the samples of loss to a level of interest for reporting, thereby reducing the volume of data in the stream. This is the first step which applies to all of the downstream output calculations.  Secondly, it unifies the formats of the gulcalc and fmcalc streams, so that they are transformed into an identical stream type for downstream outputs. Finally, it can generate multiple summary level outputs in one go.
+The purpose of summarycalc is firstly to aggregate the samples of loss to a level of interest for reporting, thereby reducing the volume of data in the stream. This is the first step which applies to all of the downstream output calculations.  Secondly, it unifies the formats of the gulcalc and fmcalc streams, so that they are transformed into an identical stream type for downstream outputs. Finally, it can generate up to 10 summary level outputs in one go, creating multiple output streams or files.
+
+The output is similar to the gulcalc or fmcalc input which are losses are by sample index and by event, but the coverage or policy input losses are grouped to an abstract level represented by a summary_id.  The relationship between the input identifier and the summary_id are defined in cross reference files called **gulsummaryxref** and **fmsummaryxref**.
 
 ##### Stream_id
 
 | Byte 1 | Bytes 2-4 |  Description                                   |
 |:-------|-----------|:-----------------------------------------------|
-|    2   |     1     |  fmcalc reference example                      |
+|    3   |     1     |  summarycalc reference example                 |
+
+##### Parameters
+
+The input stream should be identified explicitly as -g for gulcalc stream or -f for fmcalc stream.
+
+summarycalc supports up to 10 concurrent outputs.  This is achieved by explictly directing each output to a named pipe, file, or to standard output.  
+For each output stream, the following tuple of parameters must be specified for at least one summary set;
+
+* summaryset_id number. valid values are -0 to -9
+* destination pipe or file. Use either - for standard output, or -[name] for a named pipe or file.
+
+For example the following parameter choices are valid;
+```
+$ summarycalc -g -1 -                                       
+'outputs summaryset 1 results to standard output
+$ summarycalc -g -1 summarycalc1.bin                        
+'outputs summaryset 1 results to a file (or named pipe)
+$ summarycalc -g -1 summarycalc1.bin -2 summarycalc2.bin    
+'outputs summaryset 1 and 2 results to a file (or named pipe)
+```
+Note that the summaryset_id relates to a summaryset_id in the required input data file **gulsummaryxref.bin** or **fmsummaryxref.bin** for a gulcalc input stream or a fmcalc input stream, respectively, and represents a user specified summary reporting level. For example summaryset_id = 1 represents portfolio level, summaryset_id = 2 represents zipcode level and summaryset_id 3 represents site level.
+
+##### Usage
+```
+$ [stdin component] | summarycalc [parameters] | [stdout component]
+$ [stdin component] | summarycalc [parameters]
+$ summarycalc [parameters] < [stdin].bin
+```
+
+##### Example
+
+```
+$ eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 - | eltcalc > eltcalc.csv
+$ eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 gulsummarycalc.bin 
+$ summarycalc -f -1 fmsummarycalc.bin < fmcalc.bin
+```
+
+##### Internal data
+The program requires the gulsummaryxref file for gulcalc input (-g option), or the fmsummaryxref file for fmcalc input (-f option). This data is picked up from the following files relative to the working directory;
+
+* input/gulsummaryxref.bin
+* input/fmsummaryxref.bin
+
+##### Calculation
+summarycalc takes either ground up loss (by coverage) or insured loss samples (by policy) as input and aggregates them to a user-defined summary reporting level. The output is similar to the input which are losses are by sample index and by event, but the coverage or policy input losses are grouped to an abstract level represented by a summary_id.  The relationship between the input identifier, coverage_id for gulcalc or output_id for fmcalc, and the summary_id are defined in the internal data files.
+
+summarycalc also calculates the maximum exposure value by summary_id and event_id. This is carried through in the stream header and output by eltcalc, aalcalc and pltcalc. For ground up losses this is the sum of TIV for all coverages which have a non-zero ground up loss for a given event. For insured losses, this is the sum of the losses for sample index -3 from the fmcalc stdout stream.  Sample index -3 is the TIV of the items in the programme which have been passed through the financial module calculations to take account of the deductibles and limits.  Essentially, it is a 100% damage scenario.
+
+## eltcalc <a id="eltcalc"></a>
+
+The program outputs sample mean and standard deviation by summary_id and by event_id.
+
+##### Parameters
+
+None
+
+##### Usage
+```
+$ [stdin component] | eltcalc > elt.csv
+$ eltcalc < [stdin].bin > elt.csv
+```
+
+##### Example
+```
+$ eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 - | eltcalc > elt.csv
+$ eltcalc < summarycalc.bin > elt.csv 
+```
+
+##### Internal data
+
+No additional data is required, all the information is contained within the input stream. 
+
+##### Calculation
+
+For each summary_id and event_id, the sample mean and standard deviation is calculated from the sampled losses in the summarycalc stream and output to file.  The exposure_value, which is carried in the event_id, summary_id header of the stream is also output.
+
+##### Output
+csv file with the following fields;
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| summary_id        | int    |    4   | summary_id representing a grouping of losses                        |   10        |
+| event_id          | int    |    4   | Oasis event_id                                                      |  45567      |
+| mean              | float  |    4   | sample mean                                                         |   1345.678  |
+| standard_deviation| float  |    4   | sample standard deviation                                           |    945.89   | 
+| exposure_value    | float  |    4   | sum of TIV for summary_id affected by event_id                      |   70000     |
+
+
+[Return to top](#outputs)
+
+## leccalc <a id="leccalc"></a>
+
+Loss exceedance curves, also known as exceedance probability curves, are computed by a rank ordering a set of losses by period and computing the probability of exceedance for each level of loss in any given period based on relative frequency. Period losses are first computed by reference to the **occurrence** file which contains the event occurrences against each period. Event losses are summed within each period for an Aggregate loss exceedance curve, or the maximum of the event losses in each period is taken for an Occurrence loss exceedance curve.  From this point, there are a few variants available as follows;
+
+* Full uncertainty - all sampled losses by period are rank ordered to produce a single loss exceedance curve
+* Wheatsheaf - losses by period are rank ordered for each sample, which produces many loss exceedance curve - one for each sample
+* Sample mean - the losses by period are first averaged across the samples, and then a single loss exceedance curve is created from the period sample mean losses.
+* Wheatsheaf mean - the loss exceedance curves from the Wheatsheaf are averaged across each return period, which produces a single loss exceedance curve.
+
+##### Parameters
+* -K the subdirectory containing the input summarycalc binary files.
+The following tuple of parameters must be specified for at least one analysis type;
+* Analysis type. Use -F for Full Uncertainty Aggregate, -f for Full Uncertainty Occurrence, -W for Wheatsheaf Aggregate,  -w for Wheatsheaf Occurrence, -S for Sample Mean Aggregate, -s for Sample Mean Occurrence, -M for Mean of Wheatsheaf Aggregate, -m for Mean of Wheatsheaf Occurrence
+* Output filename (csv)
+* Return period (optional). Use -r if you are providing a file with a specific list of return periods. If this is not present then all calculated return periods will be returned, for losses greater than zero. 
+
+##### Usage
+```
+$ leccalc [parameters] > lec.csv
+
+```
+
+##### Example
+```
+$ eve 1 1 1 | getmodel | gulcalc -S100 -C1 | summarycalc -1 - | leccalc -A -F -r > lec.csv
+$ leccalc -O -M < summarycalc.bin > lec.csv 
+```
+
+##### Output
+csv file with the following fields;
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| summary_id        | int    |    4   | summary_id representing a grouping of losses                        |   10        |
+| return_period     | float  |    4   | return period interval                                              |    250      |
+| loss              | float  |    4   | loss exceedance threshold for return period                         |    546577.8 |
+
+If -W Wheatsheaf output is specified, the sample index is output as an additional column;
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| summary_id        | int    |    4   | summary_id representing a grouping of losses                        |   10        |
+| sidx              | int    |    4   | Oasis sample index                                                  |    100      |
+| return_period     | float  |    4   | return period interval                                              |    250      |
+| loss              | float  |    4   | loss exceedance threshold for return period                         |    546577.8 |
+
+## pltcalc <a id="pltcalc"></a>
+
+blah blah blah
+
+##### Parameters
+
+None
+
+##### Usage
+```
+$ [stdin component] | pltcalc > plt.csv
+$ pltcalc < [stdin].bin > plt.csv
+```
+
+##### Example
+```
+$ eve 1 1 1 | getmodel | gulcalc -S100 -C1 | summarycalc -1 - | pltcalc > plt.csv
+$ pltcalc < summarycalc.bin > plt.csv 
+```
+
+##### Output
+csv file with the following fields;
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| occurrence_id     | int    |    4   | identifier of a distinct occurrence of an event_id                  |   10        |
+| event_id          | int    |    4   | Oasis event_id                                                      |  45567      |
+| period_num        | int    |    4   | identifying an abstract period of time, such as a year              |  876        |
+| mean              | float  |    4   | sample mean                                                         |   1345.678  |
+| standard_deviation| float  |    4   | sample standard deviation                                           |    945.89   | 
+| exposure_value    | float  |    4   | sum of TIV for summary_id affected by the event                     |   70000     |
+
+## aalcalc <a id="aalcalc"></a>
+
+blah blah blah
+
+##### Parameters
+
+None
+
+##### Usage
+```
+$ [stdin component] | aalcalc > aal.csv
+$ aalcalc < [stdin].bin > aal.csv
+```
+
+##### Example
+```
+$ eve 1 1 1 | getmodel | gulcalc -S100 -C1 | summarycalc -g - | aalcalc > aal.csv
+$ aalcalc < summarycalc.bin > aal.csv 
+```
+
+##### Output
+Csv file with the following fields;
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| summary_id        | int    |    4   | summary_id representing a grouping of losses                        |   10        |
+| mean              | float  |    4   | average annual loss                                                 |    67856.9  |
+| standard_deviation| float  |    4   | standard deviation of annual loss                                   |    546577.8 |
 
 ##### Parameters
 There are no parameters as all of the information is taken from the gul stdout stream and fm input data.
