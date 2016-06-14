@@ -2,49 +2,51 @@
 
 The following components convert input data in csv format to the binary format required by the calculation components in the reference model;
 
-* **[evetobin](#events)** is a utility to convert a list of event_ids into binary format.
-* **[damagetobin](#damagebins)** is a utility to convert the Oasis damage bin dictionary table into binary format. 
-* **[exposuretobin](#exposuretobin)** is a utility to convert the Oasis exposure instance table into binary format. 
-* **[randtobin](#randtobin)** is a utility to convert a list of random numbers into binary format. 
-* **[cdfdatatobin](#cdfdatatobin)** is a utility to convert the Oasis cdf data into binary format.
-* **[fmprogrammetobin](#fmprogrammetobin)** is a utility to convert the Oasis FM programme data into binary format.
-* **[fmprofiletobin](#fmprofiletobin)** is a utility to convert the Oasis FM profile data into binary format.
-* **[fmpolicytctobin](#fmpolicytctobin)** is a utility to convert the Oasis FM policytc data into binary format.
-* **[fmxreftobin](#fmxreftobin)** is a utility to convert the Oasis FM xref table into binary format.
+Static data
+* **[damagebintobin](#damagebins)** converts the damage bin dictionary. 
+* **[footprinttobin](#footprint)** converts the event footprint.
+* **[occurrencetobin](#occurrence)** converts the event occurrence data.
+* **[randtobin](#rand)** converts a list of random numbers. 
+* **[vulnerabilitytobin](#vulnerability)** converts the vulnerability data.
 
+Input data
+* **[coveragetobin](#coverage)** converts the coverages data.
+* **[evetobin](#events)** converts a list of event_ids.
+* **[itemtobin](#item)** converts the items data.
+* **[gulsummaryxreftobin](#gulsummaryxref)** converts the gul summary xref data.
+* **[fmpolicytctobin](#fmpolicytc)** converts the fm policytc data.
+* **[fmprogrammetobin](#fmprogramme)** converts the fm programme data.
+* **[fmprofiletobin](#fmprofile)** converts the fm profile data.
+* **[fmsummaryxreftobin](#fmsummaryxref)** converts the fm summary xref data.
+* **[fmxreftobin](#fmxref)** converts the fm xref data.
 
 These components are intended to allow users to generate the required input binaries from csv independently of the original data store and technical environment. All that needs to be done is first generate the csv files from the data store (SQL Server database, etc).
 
-```
-Note that oatools contains a component 'gendata' which generates all of the input binaries directly from a SQL 
-Server Oasis back-end database. This component is specific to the implementation of the in-memory kernel as a
-calculation back-end to the Oasis mid-tier which is why it is kept in a separate project.
-```
-
 The following components convert the binary input data required by the calculation components in the reference model into csv format;
-* **[evetocsv](#events)** is a utility to convert the event binary into csv format.
-* **[damagetocsv](#damagebins)** is a utility to convert the Oasis damage bin dictionary binary into csv format.
-* **[exposuretocsv](#exposuretocsv)** is a utility to convert the Oasis exposure instance binary into csv format.
-* **[randtocsv](#randtocsv)** is a utility to convert the random numbers binary into csv format.
-* **[cdfdatatocsv](#cdfdatatocsv)** is a utility to convert the Oasis cdf data binary into csv format.
-* **[fmprogrammetocsv](#fmprogrammetocsv)** is a utility to convert the Oasis FM programme data into csv format.
-* **[fmprofiletocsv](#fmprofiletocsv)** is a utility to convert the Oasis FM profile data into csv format.
-* **[fmpolicytctocsv](#fmpolicytctocsv)** is a utility to convert the Oasis FM policytc data into csv format.
-* **[fmxreftocsv](#fmxreftocsv)** is a utility to convert the Oasis FM xref binary into csv format.
+Static data
+* **[damagebintocsv](#damagebins)** converts the damage bin dictionary. 
+* **[footprinttocsv](#footprint)** converts the event footprint.
+* **[occurrencetocsv](#occurrence)** converts the event occurrence data.
+* **[randtocsv](#rand)** converts a list of random numbers. 
+* **[vulnerabilitytocsv](#vulnerability)** converts the vulnerability data.
 
-These components are provided for convenience of viewing the data and debugging.
+Input data
+* **[coveragetocsv](#coverage)** converts the coverages data.
+* **[evetocsv](#events)** converts a list of event_ids.
+* **[itemtocsv](#item)** converts the items data.
+* **[gulsummaryxreftocsv](#gulsummaryxref)** converts the gul summary xref data.
+* **[fmpolicytctocsv](#fmpolicytc)** converts the fm policytc data.
+* **[fmprogrammetocsv](#fmprogramme)** converts the fm programme data.
+* **[fmprofiletocsv](#fmprofile)** converts the fm profile data.
+* **[fmsummaryxreftocsv](#fmsummaryxref)** converts the fm summary xref data.
+* **[fmxreftocsv](#fmxref)** converts the fm xref data.
+
+These components are provided for the convenience of viewing the data and debugging.
 
 <a id="events"></a>
 ## Events
-One or more event binaries are required by eve and getmodel. It must have the following filename format, each uniquely identified by a chunk number (integer >=0);
-* e_chunk_{chunk}_data.bin
-
-The chunks represent subsets of events.
-
-```
-In general more than 1 chunk of events is not necessary for the in-memory kernel as the computation can be 
-parallelized across the processes. This feature may be removed in future releases.
-```
+One or more event binaries are required by eve and getmodel. It must have the following location and filename format;
+* input/events.bin
 
 #### File format
 The csv file should contain a list of event_ids (integers) and no header.
@@ -62,11 +64,12 @@ $ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
 ```
 $ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
 ```
-[Return to top](#inputtools)
+[Return to top](#dataconversioncomponents)
 
 ## Damage bins <a id="damagebins"></a>
-The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following filename format;
-* damage_bin_dict.bin
+The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following location and filename format;
+
+* static/damage_bin_dict.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
@@ -90,12 +93,12 @@ $ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
 ```
 $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
-[Return to top](#inputtools)
+[Return to top](#dataconversioncomponents)
 
-<a id="exposures"></a>
-## Exposures 
-The exposures binary contains the list of exposures for which ground up loss will be sampled in the kernel calculations. The data format is that of the Oasis Exposure instance. It is required by gulcalc and outputcalc and must have the following filename format;
-* exposures.bin
+<a id="item"></a>
+## Items
+The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following filename format and location;
+* input/items.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
@@ -103,101 +106,125 @@ The csv file should contain the following fields and include a header row.
 | Name              | Type   |  Bytes | Description                                                   | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------|------------:|
 | item_id           | int    |    4   | Identifier of the exposure item                               |     1       |
+| coverage _id      | int    |    4   | Identifier of the coverage                                    |   1         |
 | areaperil_id      | int    |    4   | Identifier of the locator and peril of the item               |   4545      |
 | vulnerability_id  | int    |    4   | Identifier of the vulnerability distribution of the item      |   345456    |
-| tiv               | float  |    4   | The total insured value of the item                           |   200000    |
 | group_id          | int    |    4   | Identifier of the correlation group of the item               |    1        |  
 
 The data should be ordered by areaperil_id, vulnerability_id ascending and not contain nulls.
 
-#### exposuretobin
+| Name              | Type   |  Bytes | Description                                                   | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| coverage_id       | int    |    4   | Identifier of the coverage                                    |     1       |
+| tiv               | float  |    4   | The total insured value of the coverage                       |   200000    |
+
+#### itemtobin
 ```
-$ exposuretobin < exposures.csv > exposures.bin
-```
-
-#### exposuretocsv
-```
-$ exposuretocsv < exposures.bin > exposures.csv
-```
-
-[Return to top](#inputtools)
-
-<a id="random"></a>
-## Random numbers 
-One or more random number files may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It should be provided for the same number of chunks as events and must have the following filename format;
-* random_{chunk}.bin
-
-If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are generated dynamically in the calculation. 
-
-#### File format
-The csv file should contain the runtime number of samples as the first value followed by a simple list of random numbers. It should not contain any headers.
-
-First value;
-
-| Name              | Type     |  Bytes | Description                  Example     |
-|:------------------|----------|--------| :--------------------------|------------:|
-| number of samples | integer  |    4   | Runtime number of samples  |  100        |
-
-Subsequent values;
-
-| Name              | Type   |  Bytes | Description                    | Example     |
-|:------------------|--------|--------| :------------------------------|------------:|
-| rand              | float  |    4   | Random number between 0 and 1  |  0.75875    |  
-
-The first value in the file is an exception and should contain the runtime number of samples (integer > 0).  This is required for running gulcalc in 'Reconciliation mode' (using gulcalc -R parameter) which uses the same random numbers as Oasis classic and produces identical sampled values.  If not running in reconciliation mode, it is not used and can be set to 1.
-
-#### randtobin
-```
-$ randtobin < random_1.csv > random_1.bin
+$ itemtobin < items.csv > items.bin
 ```
 
-#### randtocsv
+#### itemstocsv
 ```
-$ randtocsv < random_1.bin > random_1.csv
+$ itemstocsv < items.bin > items.csv
 ```
 
-[Return to top](#inputtools)
+[Return to top](#dataconversioncomponents)
 
-<a id="cdfs"></a>
-## CDFs 
-One or more cdf data files are required for the getmodel component, as well as an index file containing the starting positions of each event block. These should be located in a cdf sub-directory of the main working directory and have the following filename format;
-* cdf/damage_cdf_chunk_{chunk}.bin
-* cdf/damage_cdf_chunk_{chunk}.idx
+<a id="coverage"></a>
+## Coverages
+The coverages binary contains the list of coverages and the coverage TIVs. The data format is as follows. It is required by gulcalc and fmcalc and must have the following location and filename format;
 
-If chunked, the binary file should contain the cdf data for the same events as the corresponding chunk event binary. 
+* input/coverages.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
 
 | Name              | Type   |  Bytes | Description                                                   | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| event_id          | int    |    4   | Oasis event_id                                                |     1       |
-| areaperil_id      | int    |    4   | Oasis areaperil_id                                            |   4545      |
-| vulnerability_id  | int    |    4   | Oasis vulnerability_id                                        |   345456    |
-| bin_index         | int    |    4   | Identifier of the damage bin                                  |     10      |
-| prob_to           | float  |    4   | The cumulative probability at the upper damage bin threshold  |    0.765    | 
+| coverage_id       | int    |    4   | Identifier of the coverage                                    |     1       |
+| tiv               | float  |    4   | The total insured value of the coverage                       |   200000    |
 
-The data should be ordered by event_id, areaperil_id, vulnerability_id, bin_index ascending with bin_index starting at 1, and not contain nulls. All bins corresponding to the bin indexes in the damage bin dictionary should be present, except records may be truncated after the last bin where the prob_to = 1.
+The data should not contain nulls.
 
-#### cdfdatatobin
+#### coveragetobin
 ```
-$ cdfdatatobin damage_cdf_chunk_1 102 < damage_cdf_chunk_1.bin
+$ coveragetobin < coverages.csv > coverages.bin
 ```
-This command will create a binary file damage_cdf_chunk_1.bin and an index file damage_cdf_chunk_1.idx in the working directory.
+
+#### coveragetocsv
+```
+$ coveragestocsv < coverages.bin > coverages.csv
+```
+
+[Return to top](#dataconversioncomponents)
+
+<a id="rand"></a>
+## Random numbers 
+A random number file may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It must have the following location and filename format;
+* static/random.bin
+
+If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are generated dynamically in the calculation. 
+
+#### File format
+The csv file should contain a simple list of random numbers. It should not contain any headers.
+
+| Name              | Type   |  Bytes | Description                    | Example     |
+|:------------------|--------|--------| :------------------------------|------------:|
+| rand              | float  |    4   | Random number between 0 and 1  |  0.75875    |  
+
+
+#### randtobin
+```
+$ randtobin < random.csv > random.bin
+```
+
+#### randtocsv
+```
+$ randtocsv < random.bin > random.csv
+```
+
+[Return to top](#dataconversioncomponents)
+
+<a id="event footprint"></a>
+## Event footprint
+The event footprint is  required for the getmodel component, as well as an index file containing the starting positions of each event block. These must be in the following location with filename formats;
+
+* static/eventfootprint.bin
+* static/eventfootprint.idx
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name               | Type   |  Bytes | Description                                                   | Example     |
+|:-------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| event_id           | int    |    4   | Oasis event_id                                                |     1       |
+| areaperil_id       | int    |    4   | Oasis areaperil_id                                            |   4545      |
+| intensity_bin_index| int    |    4   | Identifier of the intensity damage bin                        |     10      |
+| prob               | float  |    4   | The probability mass for the intensity bin between 0 and 1    |    0.765    | 
+
+The data should be ordered by event_id, areaperil_id with bin_index starting at 1, and not contain nulls. 
+
+| vulnerability_id   | int    |    4   | Oasis vulnerability_id                                        |   345456    |
+
+#### footprinttobin
+```
+$ footprinttobin -bin eventfootprint.bin -idx eventfootprint.idx < eventfootprint.csv
+```
+This command will create a binary file eventfootprint.bin and an index file eventfootprint.idx in the working directory.
 
 In general the usage is;
 
 ```
-$ cdfdatatobin damage_cdf_chunk_[chunk] [maxbins] < input.csv
+$ footprinttobin -bin {binary file name} -idx {index file name} < input.csv
 ```
-chunk is an integer and maxbins is the maximum number of bins in the cdf. input.csv must conform to the csv format given above.
+input.csv must conform to the csv format given above.
 
-#### cdfdatatocsv
+#### footprinttocsv
 ```
-$ cdfdatatocsv < damage_cdf_chunk_1.bin > damage_cdf_chunk_1.csv
+$ footprinttocsv < eventfootprint.bin > eventfootprint.csv
 ```
 
-[Return to top](#inputtools)
+[Return to top](#dataconversioncomponents)
 
 <a id="fmprogramme"></a>
 ## fm programme 
