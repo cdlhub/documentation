@@ -285,3 +285,9 @@ fm/fmxref.bin
 
 ##### Calculation
 The program sums the sampled losses from either gulcalc stream or fmstream across the portfolio/programme by event and sample, and then computes sample mean and standard deviation. It reads the TIVs from the exposure instance table and sums them for the group of items affected by each event.
+
+[Return to top](#outputcomponents)
+
+[Go to Data conversion components section](DataConversionComponents.md)
+
+[Back to Contents](Contents.md)
