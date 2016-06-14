@@ -2,7 +2,7 @@
 
 ## eltcalc <a id="eltcalc"></a>
 
-The program outputs sample mean and standard deviation by summary_id and by event_id.
+The program calculats sample mean and standard deviation of loss by summary_id and by event_id.
 
 ##### Parameters
 
@@ -44,7 +44,7 @@ csv file with the following fields;
 
 ## leccalc <a id="leccalc"></a>
 
-Loss exceedance curves, also known as exceedance probability curves, are computed by a rank ordering a set of losses by period and computing the probability of exceedance for each level of loss in any given period based on relative frequency. Period losses are first computed by reference to the **occurrence** file which contains the event occurrences against each period. Event losses are summed within each period for an Aggregate loss exceedance curve, or the maximum of the event losses in each period is taken for an Occurrence loss exceedance curve.  From this point, there are a few variants available as follows;
+Loss exceedance curves, also known as exceedance probability curves, are computed by a rank ordering a set of losses by period and computing the probability of exceedance for each level of loss in any given period based on relative frequency. Period losses are first computed by reference to the **occurrence** file which contains the event occurrences against each period. Event losses are summed within each period for an aggregate loss exceedance curve, or the maximum of the event losses in each period is taken for an occurrence loss exceedance curve.  From this point, there are a few variants available as follows;
 
 * Full uncertainty
 * Wheatsheaf
@@ -83,13 +83,13 @@ leccalc does not have a standard input that can be streamed in. Instead, it read
 * work/summarycalc2.bin
 * work/summarycalc3.bin
 
-The user must ensure the work subdirectory exists.  The user may also specify a subdirectory of work to store these files. e.g.
+The user must ensure the work subdirectory exists.  The user may also specify a subdirectory of /work to store these files. e.g.
 
 * work/summaryset1/summarycalc1.bin
 * work/summaryset1/summarycalc2.bin
 * work/summaryset1/summarycalc3.bin
 
-The reason for leccalc not having an input stream is that the calculation is not valid on a subset of events, i.e. within a single process when distributing events across multiple processes.  It must bring together all event losses before assigning event losses to periods and ranking losses by period.  The summarycalc losses for all events (all processes) must be written to the input folder before running leccalc.
+The reason for leccalc not having an input stream is that the calculation is not valid on a subset of events, i.e. within a single process when distributing events across multiple processes.  It must bring together all event losses before assigning event losses to periods and ranking losses by period.  The summarycalc losses for all events (all processes) must be written to the /work folder before running leccalc.
 
 ##### Calculation
 
@@ -106,9 +106,9 @@ Then the calculation differs by lec type, as follows;
 * Sample mean - the losses by period are first averaged across the samples, and then a single loss exceedance curve is created from the period sample mean losses.
 * Wheatsheaf mean - the loss exceedance curves from the Wheatsheaf are averaged across each return period, which produces a single loss exceedance curve.
 
-* For the Sample mean and Wheatsheaf mean curves, the analytical mean loss (sidx = -1) is kept separate and output as a separate exceedance probability curve.  If the calculation is run with 0 samples, then leccalc will still return the analytical mean loss exceedance curve.  The 'type' field in the output identifies the type of loss exceedance curve, which is 1 for analytical mean, and 2 for the mean calculated from the samples.
+* For the Sample mean and Wheatsheaf mean curves, the analytical mean loss (sidx = -1) is output as a separate exceedance probability curve.  If the calculation is run with 0 samples, then leccalc will still return the analytical mean loss exceedance curve.  The 'type' field in the output identifies the type of loss exceedance curve, which is 1 for analytical mean, and 2 for the mean calculated from the samples.
 
-The total number of periods is carried in the header of the occurrence file.  The ranked losses represent the first, second, third (etc..) largest loss periods within the total number of periods of say 10,000 years.  The relative frequency of these periods of loss is interpreted as the probability of loss exceedance, that is to say that the top ranked loss has an exceedance probability of 1 in 10000, or 0.01%, the second largest loss has an exceedance probability of 0.02%, and so on.  In the output file, the exceedance probability is expressed as a return period, which is the reciprocal of the exceedance probability multiplied by the total number of periods.  Only non-zero loss periods are returned.
+The total number of periods is carried in the header of the occurrence file.  The ranked losses represent the first, second, third,  etc.. largest loss periods within the total number of periods of say 10,000 years.  The relative frequency of these periods of loss is interpreted as the probability of loss exceedance, that is to say that the top ranked loss has an exceedance probability of 1 in 10000, or 0.01%, the second largest loss has an exceedance probability of 0.02%, and so on.  In the output file, the exceedance probability is expressed as a return period, which is the reciprocal of the exceedance probability multiplied by the total number of periods.  Only non-zero loss periods are returned.
 
 ##### Output
 csv file with the following fields;
@@ -163,7 +163,7 @@ $ pltcalc < summarycalc.bin > plt.csv
 The occurrence.bin file is read into memory.  For each summary_id,  event_id and period_num, the sample mean and standard deviation is calculated from the sampled losses in the summarycalc stream and output to file.  The exposure_value, which is carried in the event_id, summary_id header of the stream is also output, as well as the date field(s) from the occurrence file.
 
 ##### Output
-There are two output formats, depending on whether an event occurrence date is an integer offset to some base date that most external programs can interpret as a real date (to the nearest day), or a day in a numbered scenario year. The output format will depend on the format of the date fields in the occurrence.bin file.  
+There are two output formats, depending on whether an event occurrence date is an integer offset to some base date that most external programs can interpret as a real date, or a day in a numbered scenario year. The output format will depend on the format of the date fields in the occurrence.bin file.  
 
 In the former case, the output format is; 
 
@@ -193,7 +193,7 @@ In the latter case, the output format is;
 
 ## aalcalc <a id="aalcalc"></a>
 
-blah blah blah
+aalcalc computes the average annual loss and standard deviation of loss for each summary_id. Technically, this is calculated on a period by period basis because aalcalc, like leccalc and pltcalc, uses the occurrence file in which the periods of event occurrence are defined, and these are not necessarily annual periods.
 
 ##### Parameters
 
@@ -217,74 +217,36 @@ Csv file with the following fields;
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | summary_id        | int    |    4   | summary_id representing a grouping of losses                        |   10        |
+| type              | int    |    4   | 1 for analytical mean, 2 for mean calculated from samples           |    1        |
 | mean              | float  |    4   | average annual loss                                                 |    67856.9  |
 | standard_deviation| float  |    4   | standard deviation of annual loss                                   |    546577.8 |
+| exposure_value    | float  |    4   | maximum exposure value across all periods                           |    10098730 |
 
 ##### Parameters
-There are no parameters as all of the information is taken from the gul stdout stream and fm input data.
+
+None
 
 ##### Usage
 ```
-$ [stdin component] | fmcalc | [stout component]
-$ [stdin component] | fmcalc > [stdout].bin
+$ [stdin component] | aalcalc | [stout component]
+$ [stdin component] | aalcalc > [stdout].bin
 $ fmcalc < [stdin].bin > [stdout].bin
 ```
 
 ##### Example
 ```
-$ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | eltcalc > elt.csv
+$ eve 1 1 | getmodel | gulcalc -r -S100 -c - | summarycalc -g | aalcalc > elt.csv
 $ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc > fmcalc.bin
 $ fmcalc < gulcalc.bin > fmcalc.bin 
 ```
 
 ##### Internal data
-The program requires the item, coverage and fm input data, which are Oasis abstract data formats that describe an insurance programme. This data is picked up from the following files relative to the working directory;
+The program requires the occurrence file;
 
-* input/items.bin
-* input/coverages.bin
-* input/fm_programme.bin
-* input/fm_policytc.bin
-* input/fm_profile.bin
-* input/fm_xref.bin
+* static/occurrence.bin
 
 ##### Calculation
-See [Financial Module](FinancialModule.md)
-
-[Return to top](#referencemodel)
-<a id="eltcalc"></a>
-## outputcalc 
-The reference example of an output produces an event loss table 'elt' for either ground up loss or insured losses.
-
-##### Stream_id
-
-There is no output stream_id, the results table is written directly to csv.
-
-##### Parameters
-There are no parameters as all of the information is taken from the input stream and internal data.
-
-##### Usage
-Either gulcalc or fmcalc stdout can be input streams to outputcalc
-```
-$ [stdin component] | outputcalc | [output].csv
-$ outputcalc < [stdin].bin > [output].csv
-```
-
-##### Example
-Either gulcalc or fmcalc stdout streams can be input streams to outputcalc. For example;
-```
-$ eve 1 1 1 | getmodel 1 | gulcalc -C1 -S100 | outputcalc > output.csv
-$ eve 1 1 1 | getmodel 1 | gulcalc -C1 -S100 | fmcalc | outputcalc > output.csv
-$ outputcalc < gul.bin > output.csv
-$ outputcalc < fm.bin > output.csv
-```
-
-##### Internal data
-The program requires the exposures.bin file, and for fmcalc input it requires an additional cross reference file to relate the output_id from the fm stdout stream (which represents an abstract grouping of exposure items) back to the original item_id. This file is picked up from the fm subdirectory;
-
-fm/fmxref.bin
-
-##### Calculation
-The program sums the sampled losses from either gulcalc stream or fmstream across the portfolio/programme by event and sample, and then computes sample mean and standard deviation. It reads the TIVs from the exposure instance table and sums them for the group of items affected by each event.
+The occurrence file is read into memory.
 
 [Return to top](#outputcomponents)
 
