@@ -96,7 +96,7 @@ $ getmodel < [stdin].bin > [stdout].bin
 
 ##### Example
 ```
-$ eve 1 1 | getmodel | gulcalc -r -S100 -i -
+$ eve 1 1 | getmodel | gulcalc -r -S100 -i gulcalci.bin
 $ eve 1 1 | getmodel > getmodel.bin
 $ getmodel < events.bin > getmodel.bin 
 ```
@@ -119,7 +119,7 @@ The program filters the eventfootprint binary file for all 'areaperil_id's which
 
 <a id="gulcalc"></a>
 ## gulcalc 
-The gulcalc program performs Monte Carlo sampling of ground up loss and calculates mean and standard deviation by numerical integration of the cdfs. The sampling methodology of Oasis classic has been extended beyond linear interpolation to include bin value sampling and quadratic interpolation. This supports damage bin intervals which represent a single discrete damage value, and damage distributions with cdfs that are described by a piecewise quadratic function. 
+The gulcalc program performs Monte Carlo sampling of ground up loss and calculates mean and standard deviation by numerical integration of the cdfs. The sampling methodology has been extended beyond linear interpolation to include point value sampling and quadratic interpolation. This supports damage bin intervals which represent a single discrete damage value, and damage distributions with cdfs that are described by a piecewise quadratic function. 
 
 ##### Stream_id
 
@@ -129,14 +129,14 @@ The gulcalc program performs Monte Carlo sampling of ground up loss and calculat
 
 ##### Parameters
 Required parameters are;
-* -R or -r.  Number of random numbers to generate or read random numbers from file
-* -S number of samples
+* -R{number} or -r.  Number of random numbers to generate or read random numbers from file
+* -S{number}. Number of samples
 * -c or -i {destination}. There are two alternative streams, 'coverage' or 'item'. 
-The destination is either a filename or pipe or use - for standard output.
+The destination is either a filename or named pipe, or use - for standard output.
 
 Optional parameters are;
 
-* -L loss threshold (optional)
+* -L{number} loss threshold (optional) excludes losses below the threshold from the output stream
 * -d debug mode - output random numbers rather than losses (optional)
 
 ##### Usage
@@ -148,7 +148,7 @@ $ gulcalc [parameters] < [stdin].bin
 
 ##### Example
 ```
-$ eve 1 1 | getmodel | gulcalc -R1000000 -S100 -i - | fmcalc
+$ eve 1 1 | getmodel | gulcalc -R1000000 -S100 -i - | fmcalc > fmcalc.bin
 $ eve 1 1 | getmodel | gulcalc -R1000000 -S100 -c - | summarycalc -g -1 summarycalc1.bin
 $ eve 1 1 | getmodel | gulcalc -r -S100 -i gulcalci.bin
 $ eve 1 1 | getmodel | gulcalc -r -S100 -c gulcalcc.bin
@@ -156,7 +156,7 @@ $ gulcalc -r -S100 -c gulcalcc.bin < getmodel.bin
 ```
 
 ##### Internal data
-The program requires the damage bin dictionary for the static folder and the item and coverage files from the input folder, all as binary files. The files are found in the following locations relative to the working directory with the filenames;
+The program requires the damage bin dictionary for the static folder and the item and coverage files from the input folder, all binary files. The files are found in the following locations relative to the working directory with the filenames;
 
 * static/damage_bin_dictionary.bin
 * input/items.bin
@@ -166,9 +166,9 @@ If the user specifies -r as a parameter, then the program also picks up a random
 * static/random.bin
 
 ##### Calculation
-The program constructs a cdf for each item, based on matching the areaperil_id and vulnerability_id from the stdin and the item file. The stdin stream is a block of cdfs which are ordered by event_id, areaperil_id, vulnerability_id and bin_index asccending.
+The stdin stream is a block of cdfs which are ordered by event_id, areaperil_id, vulnerability_id and bin_index asccending, from getmodel. The gulcalc program constructs a cdf for each item, based on matching the areaperil_id and vulnerability_id from the stdin and the item file.
 
-For each item cdf and for the number of samples specified, the program reads a random number from the random number file if the -r parameter is used and uses it to sample ground up loss from the cdf using one of three methods. If the -R parameter is used along with a specified number of random numbers, R random number's are generated on the fly for each event and group of items which have a common group_id using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler). 
+For each item cdf and for the number of samples specified, the program draws a random number and uses it to sample ground up loss from the cdf using one of three methods, as follows;
 
 For a given damage interval corresponding to a cumulative probability interval that each random number falls within;
 * If the conditional mean damage (of the cdf) is the mid-point of the damage bin interval (of the damage bin dictionary) then the gulcalc program performs linear interpolation. 
@@ -186,11 +186,13 @@ An example of the three cases and methods is given below;
 Each sampled damage is multiplied by the item TIV, looked up from the coverage file.
 
 If the -i parameter is specified, then the ground up losses for the items are output to the stream (stream_id 1).
-If the -c parameter is specified, then the ground up losses for the items are grouped by coverage and the ground up losses for the coverages are output to the stream (stream_id 2).
+If the -c parameter is specified, then the ground up losses for the items are grouped by coverage and capped to the coverage TIV, and the ground up losses for the coverages are output to the stream (stream_id 2).
 
 The purpose of the coverage stream is to cap losses to the coverage TIV where items represent damage to the same coverage from different perils.
 
-A final calculation which occurs in the gulcalc program is of the mean and standard deviation of ground up loss. For each cdf, the mean and standard deviation of damage is calculated by numerical integration of the effective damageability probability distribution and the result is multiplied by the item TIV. The results are included in the output to the stdout stream as sidx=-1 (mean) and sidx=-2 (standard deviation), for each event and item (or coverage).
+A final calculation which occurs in the gulcalc program is of the mean and standard deviation of ground up loss. For each cdf, the mean and standard deviation of damage is calculated by numerical integration of the effective damageability probability distribution and the result is multiplied by the TIV. The results are included in the output to the stdout stream as sidx=-1 (mean) and sidx=-2 (standard deviation), for each event and item (or coverage).
+
+If the -R parameter is used along with a specified number of random numbers then random numbers used for sampling are generated on the fly for each event and group of items which have a common group_id using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler).  if the -r parameter is used, gulcalc reads a random number from the provided random number file. See [Random Numbers](RandomNumbers.md) for more details.
 
 [Return to top](#referencemodel)
 
@@ -216,7 +218,7 @@ $ fmcalc < [stdin].bin > [stdout].bin
 
 ##### Example
 ```
-$ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | eltcalc > elt.csv
+$ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | eltcalc > elt.csv
 $ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc > fmcalc.bin
 $ fmcalc < gulcalc.bin > fmcalc.bin 
 ```
@@ -238,7 +240,7 @@ See [Financial Module](FinancialModule.md)
 
 <a id="summarycalc"></a>
 ## summarycalc 
-The purpose of summarycalc is firstly to aggregate the samples of loss to a level of interest for reporting, thereby reducing the volume of data in the stream. This is the first step which applies to all of the downstream output calculations.  Secondly, it unifies the formats of the gulcalc and fmcalc streams, so that they are transformed into an identical stream type for downstream outputs. Finally, it can generate up to 10 summary level outputs in one go, creating multiple output streams or files.
+The purpose of summarycalc is firstly to aggregate the samples of loss to a level of interest for reporting, thereby reducing the volume of data in the stream. This is a general first step which precedes all of the downstream output calculations.  Secondly, it unifies the formats of the gulcalc and fmcalc streams, so that they are transformed into an identical stream type for downstream outputs. Finally, it can generate up to 10 summary level outputs in one go, creating multiple output streams or files.
 
 The output is similar to the gulcalc or fmcalc input which are losses are by sample index and by event, but the coverage or policy input losses are grouped to an abstract level represented by a summary_id.  The relationship between the input identifier and the summary_id are defined in cross reference files called **gulsummaryxref** and **fmsummaryxref**.
 
@@ -253,10 +255,11 @@ The output is similar to the gulcalc or fmcalc input which are losses are by sam
 The input stream should be identified explicitly as -g for gulcalc stream or -f for fmcalc stream.
 
 summarycalc supports up to 10 concurrent outputs.  This is achieved by explictly directing each output to a named pipe, file, or to standard output.  
+
 For each output stream, the following tuple of parameters must be specified for at least one summary set;
 
 * summaryset_id number. valid values are -0 to -9
-* destination pipe or file. Use either - for standard output, or -[name] for a named pipe or file.
+* destination pipe or file. Use either - for standard output, or {name} for a named pipe or file.
 
 For example the following parameter choices are valid;
 ```
@@ -293,7 +296,7 @@ The program requires the gulsummaryxref file for gulcalc input (-g option), or t
 ##### Calculation
 summarycalc takes either ground up loss (by coverage) or insured loss samples (by policy) as input and aggregates them to a user-defined summary reporting level. The output is similar to the input which are losses are by sample index and by event, but the coverage or policy input losses are grouped to an abstract level represented by a summary_id.  The relationship between the input identifier, coverage_id for gulcalc or output_id for fmcalc, and the summary_id are defined in the internal data files.
 
-summarycalc also calculates the maximum exposure value by summary_id and event_id. This is carried through in the stream header and output by eltcalc, aalcalc and pltcalc. For ground up losses this is the sum of TIV for all coverages which have a non-zero ground up loss for a given event. For insured losses, this is the sum of the losses for sample index -3 from the fmcalc stdout stream.  Sample index -3 is the TIV of the items in the programme which have been passed through the financial module calculations to take account of the deductibles and limits.  Essentially, it is a 100% damage scenario.
+summarycalc also calculates the maximum exposure value by summary_id and event_id. This is carried through in the stream header and output by eltcalc, aalcalc and pltcalc. For ground up losses this is the sum of TIV for all coverages which have a non-zero sampled ground up loss for a given event. For insured losses, this is the sum of the losses for sample index -3 from the fmcalc stdout stream.  Sample index -3 is the TIV of the items in the programme which have been passed through the financial module calculations to take account of the deductibles and limits.  Essentially, it is a 100% damage scenario for all items simultaneously.
 
 ## eltcalc <a id="eltcalc"></a>
 
@@ -342,16 +345,17 @@ csv file with the following fields;
 Loss exceedance curves, also known as exceedance probability curves, are computed by a rank ordering a set of losses by period and computing the probability of exceedance for each level of loss in any given period based on relative frequency. Period losses are first computed by reference to the **occurrence** file which contains the event occurrences against each period. Event losses are summed within each period for an Aggregate loss exceedance curve, or the maximum of the event losses in each period is taken for an Occurrence loss exceedance curve.  From this point, there are a few variants available as follows;
 
 * Full uncertainty - all sampled losses by period are rank ordered to produce a single loss exceedance curve
-* Wheatsheaf - losses by period are rank ordered for each sample, which produces many loss exceedance curve - one for each sample
+* Wheatsheaf - losses by period are rank ordered for each sample, which produces many loss exceedance curves - one for each sample
 * Sample mean - the losses by period are first averaged across the samples, and then a single loss exceedance curve is created from the period sample mean losses.
 * Wheatsheaf mean - the loss exceedance curves from the Wheatsheaf are averaged across each return period, which produces a single loss exceedance curve.
 
 ##### Parameters
-* -K the subdirectory containing the input summarycalc binary files.
-The following tuple of parameters must be specified for at least one analysis type;
+* -K{sub-directory}. The subdirectory of /work containing the input summarycalc binary files.
+* -r. Use return period file - use this parameter if you are providing a file with a specific list of return periods. If this file is not present then all calculated return periods will be returned, for losses greater than zero.
+Then the following tuple of parameters must be specified for at least one analysis type;
 * Analysis type. Use -F for Full Uncertainty Aggregate, -f for Full Uncertainty Occurrence, -W for Wheatsheaf Aggregate,  -w for Wheatsheaf Occurrence, -S for Sample Mean Aggregate, -s for Sample Mean Occurrence, -M for Mean of Wheatsheaf Aggregate, -m for Mean of Wheatsheaf Occurrence
-* Output filename (csv)
-* Return period (optional). Use -r if you are providing a file with a specific list of return periods. If this is not present then all calculated return periods will be returned, for losses greater than zero. 
+* Output filename
+ 
 
 ##### Usage
 ```
@@ -361,9 +365,13 @@ $ leccalc [parameters] > lec.csv
 
 ##### Example
 ```
-$ eve 1 1 1 | getmodel | gulcalc -S100 -C1 | summarycalc -1 - | leccalc -A -F -r > lec.csv
-$ leccalc -O -M < summarycalc.bin > lec.csv 
+$ eve 1 1 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - > work/summary1/summarycalc1.bin
+$ leccalc -Ksummary1 -F lec_full_uncertainty_agg.csv -f lec_full_uncertainty_occ.csv -W wheatsheaf_agg.csv -w wheatsheaf_occ.csv 
 ```
+
+##### Internal data
+
+No additional data is required, all the information is contained within the input stream. 
 
 ##### Output
 csv file with the following fields;
