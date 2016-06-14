@@ -1,4 +1,4 @@
-# Output data tools <a id="outputtools"></a>
+# Stream conversion components <a id="streamconversioncomponents"></a>
 
 The following components convert the binary output of each calculation component to csv format;
 * **[cdftocsv](#cdftocsv)** is a utility to convert binary format CDFs to a csv. getmodel standard output can be streamed directly into cdftocsv, or a binary file of the same format can be input.
@@ -123,7 +123,7 @@ Csv file with the following fields;
 | sidx              | int    |    4   | Sample index                                                        |    10       |
 | loss              | float  |    4   | The insured loss value                                              | 5375.675    |
 
-[Return to top](#outputtools)
+[Return to top](#streamconversioncomponents)
 
 [Go to Planned work](PlannedWork.md)
 
