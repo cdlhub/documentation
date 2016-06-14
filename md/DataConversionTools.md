@@ -1,4 +1,4 @@
-# Input data tools <a id="inputtools"></a>
+# Data conversion components <a id="dataconversioncomponents"></a>
 
 The following components convert input data in csv format to the binary format required by the calculation components in the reference model;
 
@@ -340,8 +340,8 @@ $ fmxreftobin < fmxref.csv > fmxref.bin
 $ fmxreftocsv < fmxref.bin > fmxref.csv
 ``` 
 
-[Return to top](#inputtools)
+[Return to top](#dataconversioncomponents)
 
-[Go to Output data tools](Outputtools.md)
+[Go to Stream conversion components section](StreamConversionComponents.md)
 
 [Back to Contents](Contents.md)
