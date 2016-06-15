@@ -23,6 +23,7 @@ Input data
 These components are intended to allow users to generate the required input binaries from csv independently of the original data store and technical environment. All that needs to be done is first generate the csv files from the data store (SQL Server database, etc).
 
 The following components convert the binary input data required by the calculation components in the reference model into csv format;
+
 Static data
 * **[damagebintocsv](#damagebins)** converts the damage bin dictionary. 
 * **[footprinttocsv](#footprint)** converts the event footprint.
@@ -43,30 +44,9 @@ Input data
 
 These components are provided for the convenience of viewing the data and debugging.
 
-<a id="events"></a>
-## Events
-One or more event binaries are required by eve and getmodel. It must have the following location and filename format;
-* input/events.bin
+## Static data
 
-#### File format
-The csv file should contain a list of event_ids (integers) and no header.
-
-| Name              | Type   |  Bytes | Description         | Example     |
-|:------------------|--------|--------| :-------------------|------------:|
-| event_id          | int    |    4   | Oasis event_id      |   4545      |
-
-#### evetobin
-```
-$ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
-```
-
-#### evetocsv
-```
-$ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
-```
-[Return to top](#dataconversioncomponents)
-
-## Damage bins <a id="damagebins"></a>
+### damage bins <a id="damagebins"></a>
 The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following location and filename format;
 
 * static/damage_bin_dict.bin
@@ -95,6 +75,80 @@ $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
 [Return to top](#dataconversioncomponents)
 
+<a id="event footprint"></a>
+### footprint
+The event footprint is  required for the getmodel component, as well as an index file containing the starting positions of each event block. These must be in the following location with filename formats;
+
+* static/eventfootprint.bin
+* static/eventfootprint.idx
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name               | Type   |  Bytes | Description                                                   | Example     |
+|:-------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| event_id           | int    |    4   | Oasis event_id                                                |     1       |
+| areaperil_id       | int    |    4   | Oasis areaperil_id                                            |   4545      |
+| intensity_bin_index| int    |    4   | Identifier of the intensity damage bin                        |     10      |
+| prob               | float  |    4   | The probability mass for the intensity bin between 0 and 1    |    0.765    | 
+
+The data should be ordered by event_id, areaperil_id with bin_index starting at 1, and not contain nulls. 
+
+| vulnerability_id   | int    |    4   | Oasis vulnerability_id                                        |   345456    |
+
+#### footprinttobin
+```
+$ footprinttobin -bin eventfootprint.bin -idx eventfootprint.idx < eventfootprint.csv
+```
+This command will create a binary file eventfootprint.bin and an index file eventfootprint.idx in the working directory.
+
+In general the usage is;
+
+```
+$ footprinttobin -bin {binary file name} -idx {index file name} < input.csv
+```
+input.csv must conform to the csv format given above.
+
+#### footprinttocsv
+```
+$ footprinttocsv < eventfootprint.bin > eventfootprint.csv
+```
+
+[Return to top](#dataconversioncomponents)
+
+### occurrence
+The occurrence file is required for certain output components which, in the reference model, are leccalc, pltcalc and aalcalc.  In general, some form of event occurence file is required for any output which involves the calculation of loss metrics over a period of time.  The occurrence file assigns occurrences of the event_ids to numbered periods. A period can represent any length of time, such as a year or 2 years, or 18 months. The output metrics such as mean, standard deviation or loss exceedance probabilities are with respect to the chosen period length.  Most frequently, the period of interest is a year.
+
+The occurrence file also includes date fields.  There are two options;
+* date_id: An integer representing an offset number of days to some real date.
+* occ_year, occ_month, occ_day. These are all integers representing occurrence year, month and day.
+
+
+<a id="events"></a>
+## Events
+One or more event binaries are required by eve and getmodel. It must have the following location and filename format;
+* input/events.bin
+
+#### File format
+The csv file should contain a list of event_ids (integers) and no header.
+
+| Name              | Type   |  Bytes | Description         | Example     |
+|:------------------|--------|--------| :-------------------|------------:|
+| event_id          | int    |    4   | Oasis event_id      |   4545      |
+
+#### evetobin
+```
+$ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
+```
+
+#### evetocsv
+```
+$ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
+```
+[Return to top](#dataconversioncomponents)
+
+
+
 <a id="item"></a>
 ## Items
 The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following filename format and location;
@@ -113,19 +167,14 @@ The csv file should contain the following fields and include a header row.
 
 The data should be ordered by areaperil_id, vulnerability_id ascending and not contain nulls.
 
-| Name              | Type   |  Bytes | Description                                                   | Example     |
-|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| coverage_id       | int    |    4   | Identifier of the coverage                                    |     1       |
-| tiv               | float  |    4   | The total insured value of the coverage                       |   200000    |
-
 #### itemtobin
 ```
 $ itemtobin < items.csv > items.bin
 ```
 
-#### itemstocsv
+#### itemtocsv
 ```
-$ itemstocsv < items.bin > items.csv
+$ itemtocsv < items.bin > items.csv
 ```
 
 [Return to top](#dataconversioncomponents)
@@ -185,53 +234,14 @@ $ randtocsv < random.bin > random.csv
 
 [Return to top](#dataconversioncomponents)
 
-<a id="event footprint"></a>
-## Event footprint
-The event footprint is  required for the getmodel component, as well as an index file containing the starting positions of each event block. These must be in the following location with filename formats;
 
-* static/eventfootprint.bin
-* static/eventfootprint.idx
-
-#### File format
-The csv file should contain the following fields and include a header row.
-
-| Name               | Type   |  Bytes | Description                                                   | Example     |
-|:-------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| event_id           | int    |    4   | Oasis event_id                                                |     1       |
-| areaperil_id       | int    |    4   | Oasis areaperil_id                                            |   4545      |
-| intensity_bin_index| int    |    4   | Identifier of the intensity damage bin                        |     10      |
-| prob               | float  |    4   | The probability mass for the intensity bin between 0 and 1    |    0.765    | 
-
-The data should be ordered by event_id, areaperil_id with bin_index starting at 1, and not contain nulls. 
-
-| vulnerability_id   | int    |    4   | Oasis vulnerability_id                                        |   345456    |
-
-#### footprinttobin
-```
-$ footprinttobin -bin eventfootprint.bin -idx eventfootprint.idx < eventfootprint.csv
-```
-This command will create a binary file eventfootprint.bin and an index file eventfootprint.idx in the working directory.
-
-In general the usage is;
-
-```
-$ footprinttobin -bin {binary file name} -idx {index file name} < input.csv
-```
-input.csv must conform to the csv format given above.
-
-#### footprinttocsv
-```
-$ footprinttocsv < eventfootprint.bin > eventfootprint.csv
-```
-
-[Return to top](#dataconversioncomponents)
 
 <a id="fmprogramme"></a>
 ## fm programme 
 The fm programme binary file contains the level heirarchy and defines aggregations of losses required to perform a loss calculation, and is required for fmcalc only. 
 
-This file should be located in a fm sub-directory of the main working directory and have the following filename.
-* fm/fm_programme.bin
+This must be in the following location with filename format;
+* input/fm_programme.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
@@ -239,7 +249,6 @@ The csv file should contain the following fields and include a header row.
 
 | Name                     | Type   |  Bytes | Description                                    | Example     |
 |:-------------------------|--------|--------| :----------------------------------------------|------------:|
-| prog_id                  | int    |    4   | Oasis Financial Module prog_id                 |    1        |
 | from_agg_id              | int    |    4   | Oasis Financial Module from_agg_id             |    1        |
 | level_id                 | int    |    4   | Oasis Financial Module level_id                |     1       |
 | to_agg_id                | int    |    4   | Oasis Financial Module to_agg_id               |     1       |
@@ -248,7 +257,6 @@ The csv file should contain the following fields and include a header row.
 * Must have at least one level where level_id = 1, 2, 3 ...
 * For level_id = 1, the set of values in from_agg_id must be equal to the set of item_ids in the input ground up loss stream (which has fields event_id, item_id, idx, gul).  Therefore level 1 always defines a group of items.
 * For subsequent levels, the from_agg_id must be the distinct values from the previous level to_agg_id field.
-* Each programme table may only have a single integer value in prog_id. Note that this field is a cross-reference to a separate prog dictionary and business meaningful information such as account number, and is not currently used in calculations.  This field may be deprecated in future versions.
 * The from_agg_id and to_agg_id values, for each level, should be a contiguous block of integers (a sequence with no gaps).  This is not a strict rule in this version and it will work with non-contiguous integers, but it is recommended as best practice.
 
 #### fmprogrammetobin
@@ -265,8 +273,8 @@ $ fmprogrammetocsv < fm_programme.bin > fm_programme.csv
 ## fm profile
 The fmprofile binary file contains the list of calculation rules with profile values (policytc_ids) that appear in the policytc file. This is required for fmcalc only. 
 
-This file should be located in a fm sub-directory of the main working directory and have the following filename.
-* fm/fm_profile.bin
+This must be in the following location with filename format;
+* input/fm_profile.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
@@ -276,8 +284,6 @@ The csv file should contain the following fields and include a header row.
 | policytc_id              | int    |    4   | Oasis Financial Module policytc_id             |     34      |
 | calcrule_id              | int    |    4   | Oasis Financial Module calcrule_id             |      1      |
 | allocrule_id             | int    |    4   | Oasis Financial Module allocrule_id            |      0      |
-| sourcerule_id            | int    |    4   | Oasis Financial Module sourcerule_id           |      0      |
-| levelrule_id             | int    |    4   | Oasis Financial Module levelrule_id            |      0      |
 | ccy_id                   | int    |    4   | Oasis Financial Module ccy_id                  |      0      |
 | deductible               | float  |    4   | Deductible                                     |   50        |
 | limit                    | float  |    4   | Limit                                          |   100000    |
@@ -292,7 +298,7 @@ The csv file should contain the following fields and include a header row.
 * All data fields that are required by the relevant profile must be provided, with the correct calcrule_id (see FM Profiles)
 * Any fields that are not required for the profile should be set to zero.
 * allocrule_id may be set to 0 or 1 for each policytc_id.  Generally, it is recommended to use 0 everywhere except for the final level calculations when back-allocated losses are required, else 0 everywhere.
-* The fields not currently used at all are ccy_id, sourcerule_id and levelrule_id
+* The ccy_id field is currently not used.
 
 #### fmprofiletobin
 ```
@@ -308,8 +314,8 @@ $ fmprofiletocsv < fm_profile.bin > fm_profile.csv
 ## fm policytc
 The fm policytc binary file contains the cross reference between the aggregations of losses defined in the fm programme file at a particular level and the calculation rule that should be applied as defined in the fm profile file. This is required for fmcalc only. 
 
-This file should be located in a fm sub-directory of the main working directory and have the following filename.
-* fm/fm_policytc.bin
+This must be in the following location with filename format;
+* input/fm_policytc.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
@@ -317,7 +323,6 @@ The csv file should contain the following fields and include a header row.
 
 | Name                     | Type   |  Bytes | Description                                    | Example     |
 |:-------------------------|--------|--------| :----------------------------------------------|------------:|
-| prog_id                  | int    |    4   | Oasis Financial Module prog_id                 |    1        |
 | layer_id                 | int    |    4   | Oasis Financial Module layer_id                |    1        |
 | level_id                 | int    |    4   | Oasis Financial Module level_id                |     1       |
 | agg_id                   | int    |    4   | Oasis Financial Module agg_id                  |     1       |
@@ -343,28 +348,56 @@ $ fmpolicytctocsv < fm_policytc.bin > fm_policytc.csv
 
 <a id="fmxref"></a>
 ## fm xref 
-The fmxref binary file contains cross reference data linking the output_id in the fmcalc output back to item_id, and is required for outputcalc only. This should be located in a fm sub-directory of the main working directory and have the following filename.
+The fmxref binary file contains cross reference data specifying the output_id in the fmcalc as a combination of agg_id and layer_id, and is required for fmcalc only. 
 
-* fm/fmxref.bin
+This must be in the following location with filename format;
+* input/fm_xref.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
 
 | Name                        | Type   |  Bytes | Description                                    | Example     |
 |:----------------------------|--------|--------| :----------------------------------------------|------------:|
-| item_id                     | int    |    4   | Identifier of the exposure item                |    56745    |
-| output_id                   | int    |    4   | Oasis Financial Module output_id               |     546     |
+| output_id                   | int    |    4   | Identifier of the output group of losses       |     1       |
+| agg_id                      | int    |    4   | Identifier of the agg_id to output             |     1       |
+| layer_id                    | int    |    4   | Identifier of the layer_id to output           |     1       |
 
 The data should not contain any nulls.
 
+The output_id represents the summary level at which losses are output from fmcalc, as specified by the user.
+
+There are two cases;
+* losses are output at the final level of aggregation (represented by the final level to_agg_id's from the fm programme file ) for each contract or layer (represented by the final level layer_id's in the fm policytc file)
+* losses are back-allocated to the item level and output by item (represented by the from_agg_id of level 1 from the fm programme file) for each policy contract / layer (represented by the final level layer_id's in the fm policytc file)
+
+For example, say there are two policy layers (with layer_ids=1 and 2) which applies to the sum of losses from 4 items (the summary level represented by agg_id=1). Without back-allocation, the policy summary level of losses can be represented as two output_id's as follows;
+
+| output_id | agg_id   | layer_id    |
+|:----------|----------|------------:|
+| 1         | 1        |    1        | 
+| 2         | 1        |    2        | 
+
+If the user wants to back-allocate policy losses to the items and output the losses by item and policy, then the item-policy summary level of losses would be represented by 8 output_id's, as follows;
+
+| output_id | agg_id   | layer_id    |
+|:----------|----------|------------:|
+| 1         | 1        |    1        | 
+| 2         | 2        |    1        | 
+| 3         | 3        |    1        | 
+| 4         | 4        |    1        |
+| 5         | 1        |    2        | 
+| 6         | 2        |    2        |
+| 7         | 3        |    2        | 
+| 8         | 4        |    2        |
+
 #### fmxreftobin
 ```
-$ fmxreftobin < fmxref.csv > fmxref.bin
+$ fmxreftobin < fm_xref.csv > fm_xref.bin
 ``` 
 
 #### fmxreftocsv
 ```
-$ fmxreftocsv < fmxref.bin > fmxref.csv
+$ fmxreftocsv < fm_xref.bin > fm_xref.csv
 ``` 
 
 [Return to top](#dataconversioncomponents)
