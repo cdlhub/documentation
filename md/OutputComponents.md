@@ -1,7 +1,7 @@
 # Output Components <a id="outputcomponents"></a>
 
-## eltcalc <a id="eltcalc"></a>
-
+### eltcalc <a id="eltcalc"></a>
+***
 The program calculats sample mean and standard deviation of loss by summary_id and by event_id.
 
 ##### Parameters
@@ -42,8 +42,8 @@ csv file with the following fields;
 
 [Return to top](#outputs)
 
-## leccalc <a id="leccalc"></a>
-
+### leccalc <a id="leccalc"></a>
+***
 Loss exceedance curves, also known as exceedance probability curves, are computed by a rank ordering a set of losses by period and computing the probability of exceedance for each level of loss in any given period based on relative frequency. Period losses are first computed by reference to the **occurrence** file which contains the event occurrences against each period. Event losses are summed within each period for an aggregate loss exceedance curve, or the maximum of the event losses in each period is taken for an occurrence loss exceedance curve.  From this point, there are a few variants available as follows;
 
 * Full uncertainty
@@ -139,8 +139,8 @@ csv file with the following fields;
 | return_period     | float  |    4   | return period interval                                              |    250      |
 | loss              | float  |    4   | loss exceedance threshold for return period                         |    546577.8 |
 
-## pltcalc <a id="pltcalc"></a>
-
+### pltcalc <a id="pltcalc"></a>
+***
 The program outputs sample mean and standard deviation by summary_id,  event_id and period_num.  It also outputs an event occurrence date.
 
 ##### Parameters
@@ -191,8 +191,8 @@ In the latter case, the output format is;
 | occ_month         | int    |    4   | the month of the event occurrence                                   |   5         |
 | occ_year          | int    |    4   | the day of the event occurrence                                     |   16        |
 
-## aalcalc <a id="aalcalc"></a>
-
+### aalcalc <a id="aalcalc"></a>
+***
 aalcalc computes the average annual loss and standard deviation of loss for each summary_id. Technically, this is calculated on a period by period basis because aalcalc, like leccalc and pltcalc, uses the occurrence file in which the periods of event occurrence are defined, and these are not necessarily annual periods.
 
 ##### Parameters
