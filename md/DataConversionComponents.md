@@ -47,7 +47,7 @@ These components are provided for the convenience of viewing the data and debugg
 ## Static data
 
 ### damage bins <a id="damagebins"></a>
-The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following location and filename format;
+The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following location and filename;
 
 * static/damage_bin_dict.bin
 
@@ -77,7 +77,7 @@ $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 
 <a id="event footprint"></a>
 ### footprint
-The event footprint is  required for the getmodel component, as well as an index file containing the starting positions of each event block. These must be in the following location with filename formats;
+The event footprint is  required for the getmodel component, as well as an index file containing the starting positions of each event block. These must have the following location and filenames;
 
 * static/eventfootprint.bin
 * static/eventfootprint.idx
@@ -92,9 +92,7 @@ The csv file should contain the following fields and include a header row.
 | intensity_bin_index| int    |    4   | Identifier of the intensity damage bin                        |     10      |
 | prob               | float  |    4   | The probability mass for the intensity bin between 0 and 1    |    0.765    | 
 
-The data should be ordered by event_id, areaperil_id with bin_index starting at 1, and not contain nulls. 
-
-| vulnerability_id   | int    |    4   | Oasis vulnerability_id                                        |   345456    |
+The data should be ordered by event_id, areaperil_id and not contain nulls. 
 
 #### footprinttobin
 ```
@@ -105,9 +103,9 @@ This command will create a binary file eventfootprint.bin and an index file even
 In general the usage is;
 
 ```
-$ footprinttobin -bin {binary file name} -idx {index file name} < input.csv
+$ footprinttobin -bin {binary filename} -idx {index filename} < input.csv
 ```
-input.csv must conform to the csv format given above.
+input.csv must conform to the csv format above.
 
 #### footprinttocsv
 ```
@@ -119,7 +117,7 @@ $ footprinttocsv < eventfootprint.bin > eventfootprint.csv
 ### occurrence
 The occurrence file is required for certain output components which, in the reference model, are leccalc, pltcalc and aalcalc.  In general, some form of event occurence file is required for any output which involves the calculation of loss metrics over a period of time.  The occurrence file assigns occurrences of the event_ids to numbered periods. A period can represent any length of time, such as a year or 2 years, or 18 months. The output metrics such as mean, standard deviation or loss exceedance probabilities are with respect to the chosen period length.  Most commonly, the period of interest is a year.
 
-The occurrence file also includes date fields.  There are two options for providing the date;
+The occurrence file also includes date fields.  There are two formats for providing the date;
 * occ_year, occ_month, occ_day. These are all integers representing occurrence year, month and day.
 * occ_date_id: An integer representing an offset number of days relative to some arbitrary base date.
 
@@ -138,7 +136,7 @@ Option 1. occ_year, occ_month, occ_day
 
 The occurrence year in this example is a scenario numbered year, which cannot be expressed as a real date in a standard calendar.
 
-Option 2. date_id
+Option 2. occ_date_id
 
 | Name               | Type   |  Bytes | Description                                                       | Example     |
 |:-------------------|--------|--------| :-----------------------------------------------------------------|------------:|
@@ -166,17 +164,17 @@ $ occurrencetocsv < occurrence.bin > occurrence.csv
 [Return to top](#dataconversioncomponents)
 
 ## Random numbers <a id="rand"></a>
-A random number file may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It must have the following location and filename format;
+A random number file may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It must have the following location and filename;
 * static/random.bin
 
-If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are generated dynamically in the calculation. 
+If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are instead generated dynamically during the calculation. 
 
 #### File format
 The csv file should contain a simple list of random numbers. It should not contain any headers.
 
 | Name              | Type   |  Bytes | Description                    | Example     |
 |:------------------|--------|--------| :------------------------------|------------:|
-| rand              | float  |    4   | Random number between 0 and 1  |  0.75875    |  
+| rand              | float  |    4   | Number between 0 and 1         |  0.75875    |  
 
 
 #### randtobin
@@ -193,7 +191,7 @@ $ randtocsv < random.bin > random.csv
 
 <a id="vulnerability"></a>
 ### vulnerability
-The vulnerability file is  required for the getmodel component. It contains the conditional distributions of damage for each intensity bin and for each vulnerability_id. This file must be in the following location with filename;
+The vulnerability file is  required for the getmodel component. It contains the conditional distributions of damage for each intensity bin and for each vulnerability_id. This file must have the following location and filename;
 
 * static/vulnerability.bin
 
@@ -224,7 +222,7 @@ $ vulnerabilitytocsv < vulnerability.bin > vulnerability.csv
 
 <a id="coverage"></a>
 ## Coverages
-The coverages binary contains the list of coverages and the coverage TIVs. The data format is as follows. It is required by gulcalc and fmcalc and must have the following location and filename format;
+The coverages binary contains the list of coverages and the coverage TIVs. The data format is as follows. It is required by gulcalc and fmcalc and must have the following location and filename;
 
 * input/coverages.bin
 
@@ -233,7 +231,7 @@ The csv file should contain the following fields and include a header row.
 
 | Name              | Type   |  Bytes | Description                                                   | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| coverage_id       | int    |    4   | Identifier of the coverage                                    |     1       |
+| coverage_id       | int    |    4   | Identifier of the coverage                                    |     3       |
 | tiv               | float  |    4   | The total insured value of the coverage                       |   200000    |
 
 The data should not contain nulls.
@@ -245,14 +243,14 @@ $ coveragetobin < coverages.csv > coverages.bin
 
 #### coveragetocsv
 ```
-$ coveragestocsv < coverages.bin > coverages.csv
+$ coveragetocsv < coverages.bin > coverages.csv
 ```
 
 [Return to top](#dataconversioncomponents)
 
 <a id="events"></a>
 ## events
-One or more event binaries are required by eve and getmodel. It must have the following location and filename format;
+One or more event binaries are required by eve and getmodel. It must have the following location and filename;
 * input/events.bin
 
 #### File format
@@ -264,18 +262,19 @@ The csv file should contain a list of event_ids (integers) and no header.
 
 #### evetobin
 ```
-$ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
+$ evetobin < events.csv > events.bin
 ```
 
 #### evetocsv
 ```
-$ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
+$ evetocsv < events.bin > events.csv
 ```
 [Return to top](#dataconversioncomponents)
 
 <a id="item"></a>
 ## items
-The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following filename format and location;
+The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following location and filename;
+
 * input/items.bin
 
 #### File format
@@ -284,7 +283,7 @@ The csv file should contain the following fields and include a header row.
 | Name              | Type   |  Bytes | Description                                                   | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------|------------:|
 | item_id           | int    |    4   | Identifier of the exposure item                               |     1       |
-| coverage _id      | int    |    4   | Identifier of the coverage                                    |   1         |
+| coverage _id      | int    |    4   | Identifier of the coverage                                    |   3         |
 | areaperil_id      | int    |    4   | Identifier of the locator and peril of the item               |   4545      |
 | vulnerability_id  | int    |    4   | Identifier of the vulnerability distribution of the item      |   345456    |
 | group_id          | int    |    4   | Identifier of the correlation group of the item               |    1        |  
@@ -305,7 +304,8 @@ $ itemtocsv < items.bin > items.csv
 
 <a id="gulsummaryxref"></a>
 ## gul summary xref
-The gulsummaryxref binary is a cross reference file which determines how coverage losses from gulcalc output are summed together into at various summary levels in summarycalc. It is required by summarycalc and must have the following filename format and location;
+The gulsummaryxref binary is a cross reference file which determines how coverage losses from gulcalc output are summed together into at various summary levels in summarycalc. It is required by summarycalc and must have the following location and filename;
+
 * input/gulsummaryxref.bin
 
 #### File format
@@ -315,11 +315,13 @@ The csv file should contain the following fields and include a header row.
 |:------------------|--------|--------| :--------------------------------------------------------------|------------:|
 | coverage _id      | int    |    4   | Identifier of the coverage                                     |   3         |
 | summary_id        | int    |    4   | Identifier of the summary level group for one or more coverages|   1         |
-| summaryset_id     | int    |    4   | Identifier of the vulnerability distribution of the item       |   1         |
+| summaryset_id     | int    |    4   | Identifier of the summary set (0 to 9 inclusive)               |   1         |
 
-The data should not contain nulls. There should be at least one summary set in the file.  Valid entries for summaryset_id is all integers between 0 and 9 inclusive.
+* The data should not contain nulls and there should be at least one summary set in the file.  
+* Valid entries for summaryset_id is all integers between 0 and 9 inclusive. 
+* Within each summary set, all coverages_id's from the coverages file must be present.
 
-One summary set consists of all coverage_ids (from the coverages file) assigned a summary_id with a common summaryset_id. An example is as follows.
+One summary set consists of a common summaryset_id and each coverage_id being assigned a summary_id. An example is as follows.
 
 | coverage_id | summary_id   | summaryset_id    |
 |:------------|--------------|-----------------:|
@@ -330,9 +332,9 @@ One summary set consists of all coverage_ids (from the coverages file) assigned 
 | 5           | 2            |    1             |
 | 6           | 2            |    1             |
 
-This shows coverages 1-3 being grouped into summary_id = 1 and coverages 4-6 being grouped into summary_id = 2.  This could be an example of a 'site' level grouping, for example.
+This shows, for summaryset_id=1, coverages 1-3 being grouped into summary_id = 1 and coverages 4-6 being grouped into summary_id = 2.  This could be an example of a 'site' level grouping, for example.
 
-Up to 10 summary sets may be provided in this file, depending on the required summary reporting levels for the analysis. Here is an example of a 'site' summary level with summaryset_id=1, plus an 'account' summary level with summaryset_id = 2. In the second set, the account summary level includes both sites.
+Up to 10 summary sets may be provided in this file, depending on the required summary reporting levels for the analysis. Here is an example of the 'site' summary level with summaryset_id=1, plus an 'account' summary level with summaryset_id = 2. In summary set 2, the account summary level includes both sites because all coverages are assigned a summary_id of 1.
 
 | coverage_id | summary_id   | summaryset_id    |
 |:------------|--------------|-----------------:|
@@ -352,12 +354,12 @@ Up to 10 summary sets may be provided in this file, depending on the required su
 
 #### gulsummaryxreftobin
 ```
-$ itemtobin < items.csv > items.bin
+$ gulsummaryxreftobin < gulsummaryxref.csv > gulsummaryxref.bin
 ```
 
 #### gulsummaryxreftocsv
 ```
-$ itemtocsv < items.bin > items.csv
+$ gulsummaryxreftocsv < gulsummaryxref.bin > gulsummaryxref.csv
 ```
 
 [Return to top](#dataconversioncomponents)
@@ -366,7 +368,7 @@ $ itemtocsv < items.bin > items.csv
 ## fm programme 
 The fm programme binary file contains the level heirarchy and defines aggregations of losses required to perform a loss calculation, and is required for fmcalc only. 
 
-This must be in the following location with filename format;
+This must have the following location and filename;
 * input/fm_programme.bin
 
 #### File format
@@ -380,7 +382,7 @@ The csv file should contain the following fields and include a header row.
 | to_agg_id                | int    |    4   | Oasis Financial Module to_agg_id               |     1       |
 
 * All fields must have integer values and no nulls
-* Must have at least one level where level_id = 1, 2, 3 ...
+* Must have at least one level, starting from level_id = 1, 2 3 ...
 * For level_id = 1, the set of values in from_agg_id must be equal to the set of item_ids in the input ground up loss stream (which has fields event_id, item_id, idx, gul).  Therefore level 1 always defines a group of items.
 * For subsequent levels, the from_agg_id must be the distinct values from the previous level to_agg_id field.
 * The from_agg_id and to_agg_id values, for each level, should be a contiguous block of integers (a sequence with no gaps).  This is not a strict rule in this version and it will work with non-contiguous integers, but it is recommended as best practice.
@@ -394,6 +396,8 @@ $ fmprogrammetobin < fm_programme.csv > fm_programme.bin
 ```
 $ fmprogrammetocsv < fm_programme.bin > fm_programme.csv
 ```
+
+[Return to top](#dataconversioncomponents)
 
 <a id="fmprofile"></a>
 ## fm profile
@@ -438,9 +442,9 @@ $ fmprofiletocsv < fm_profile.bin > fm_profile.csv
 
 <a id="fmpolicytc"></a>
 ## fm policytc
-The fm policytc binary file contains the cross reference between the aggregations of losses defined in the fm programme file at a particular level and the calculation rule that should be applied as defined in the fm profile file. This is required for fmcalc only. 
+The fm policytc binary file contains the cross reference between the aggregations of losses defined in the fm programme file at a particular level and the calculation rule that should be applied as defined in the fm profile file. This file is required for fmcalc only. 
 
-This must be in the following location with filename format;
+This  must have the following location and filename;
 * input/fm_policytc.bin
 
 #### File format
@@ -469,8 +473,59 @@ $ fmpolicytctobin < fm_policytc.csv > fm_policytc.bin
 $ fmpolicytctocsv < fm_policytc.bin > fm_policytc.csv
 ```
 
-[Return to top](#inputtools)
+[Return to top](#dataconversioncomponents)
 
+<a id="fmsummaryxref"></a>
+## fm summary xref
+The gulsummaryxref binary is a cross reference file which determines how losses from fmcalc output are summed together into at various summary levels in summarycalc. It is required by summarycalc and must have the following location and filename;
+
+* input/fmsummaryxref.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name              | Type   |  Bytes | Description                                                    | Example     |
+|:------------------|--------|--------| :--------------------------------------------------------------|------------:|
+| output   _id      | int    |    4   | Identifier of the coverage                                     |   3         |
+| summary_id        | int    |    4   | Identifier of the summary level group for one or more coverages|   1         |
+| summaryset_id     | int    |    4   | Identifier of the summary set (0 to 9 inclusive)               |   1         |
+
+* The data should not contain nulls and there should be at least one summary set in the file.  
+* Valid entries for summaryset_id is all integers between 0 and 9 inclusive. 
+* Within each summary set, all output_id's from the fm xref file must be present.
+
+One summary set consists of a common summaryset_id and each output_id being assigned a summary_id. An example is as follows.
+
+| output_id   | summary_id   | summaryset_id    |
+|:------------|--------------|-----------------:|
+| 1           | 1            |    1             | 
+| 2           | 2            |    1             | 
+
+
+This shows, for summaryset_id=1, output_id=1 being assigned summary_id = 1 and output_id=1 being assigned summary_id = 2.  If the output_id represents a policy level loss output from fmcalc (the meaning of output_id is defined in the fm xref file) then no further grouping is performed by summarycalc and this is an example of a 'policy' summary level grouping.
+
+Up to 10 summary sets may be provided in this file, depending on the required summary reporting levels for the analysis. Here is an example of the 'policy' summary level with summaryset_id=1, plus an 'account' summary level with summaryset_id = 2. In summary set 2, the 'account' summary level includes both policy's because both output_id's are assigned a summary_id of 1.
+
+| output_id   | summary_id   | summaryset_id    |
+|:------------|--------------|-----------------:|
+| 1           | 1            |    1             | 
+| 2           | 2            |    1             | 
+| 1           | 1            |    2             |
+| 2           | 1            |    2             |
+
+If a more detailed summary level than policy is required for insured losses, then the user should specify in the fm profile file to back-allocate fmcalc losses to items. Then the output_id represents back-allocated policy losses to item, and in the fmsummaryxref file these can be grouped into any summary level, such as site, zipcode, line of business or region, for example. The user needs to define output_id in the fm xref file, and group them together into meaningful summary levels in the fm summary xref file.
+
+#### fmsummaryxreftobin
+```
+$ fmsummaryxreftobin < fmsummaryxref.csv > fmsummaryxref.bin
+```
+
+#### fmsummaryxreftocsv
+```
+$ fmsummaryxreftocsv < fmsummaryxref.bin > fmsummaryxref.csv
+```
+
+[Return to top](#dataconversioncomponents)
 
 <a id="fmxref"></a>
 ## fm xref 
