@@ -140,7 +140,7 @@ The occurrence year in this example is a scenario numbered year, which cannot be
 
 Option 2. date_id
 
-| Name               | Type   |  Bytes | Description                                              ----     | Example     |
+| Name               | Type   |  Bytes | Description                                                       | Example     |
 |:-------------------|--------|--------| :-----------------------------------------------------------------|------------:|
 | event_id           | int    |    4   | The occurrence event_id                                           |     1       |
 | period_no          | int    |    4   | A numbered period in which the event occurs                       |   4545      |
@@ -153,8 +153,9 @@ A required parameter is -P, the total number of periods of event occurrences. Th
 
 Option 2 format should be indicated by using the parameter -D
 ```
-'Option 1 (occurrence files with an occ_year, occ_month)
+'Option 1 (occurrence files with an occ_year, occ_month, occ_day)
 $ occurrencetobin -P10000 < occurrence.csv > occurrence.bin
+
 'Option 2 (occurrence files with an occ_date_id)
 $ occurrencetobin -P10000 -D < occurrence.csv > occurrence.bin
 ```
