@@ -2,7 +2,7 @@
 
 ### eltcalc <a id="eltcalc"></a>
 ***
-The program calculats sample mean and standard deviation of loss by summary_id and by event_id.
+The program calculates sample mean and standard deviation of loss by summary_id and by event_id.
 
 ##### Parameters
 
