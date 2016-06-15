@@ -212,7 +212,7 @@ The csv file should contain the following fields and include a header row.
 | vulnerability_id   | int    |    4   | Oasis vulnerability_id                                        |   45        |
 | intensity_bin_index| int    |    4   | Identifier of the hazard intensity bin                        |     10      |
 | damage_bin_index   | int    |    4   | Identifier of the damage bin                                  |     20      |
-| prob               | float  |    4   | The probability mass for the intensity bin                    |    0.186    | 
+| prob               | float  |    4   | The probability mass for the damage bin                       |    0.186    | 
 
 The data should be ordered by vulnerability_id and not contain nulls. 
 
