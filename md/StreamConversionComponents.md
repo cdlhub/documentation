@@ -6,9 +6,8 @@ The following components convert the binary output of each calculation component
 * **[fmtocsv](#fmtocsv)** is a utility to convert binary format losses to a csv. fmcalc standard output can be streamed directly into fmtocsv, or a binary file of the same format can be piped in.
 * **[summarycalctocsv](#summarycalctocsv)** is a utility to convert binary format summarycalc losses to a csv. summarycalc standard output can be streamed directly into summarycalctocsv, or a binary file of the same format can be piped in.
 
-Additionally,  
-* **[gultobin](#gultobin)** is a utility to convert gulcalc data in csv format into binary format such that it can be piped into fmcalc or summarycalc.
-
+Additionally, the following component is provided to convert csv data into binary format;
+* **[gultobin](#gultobin)** is a utility to convert gulcalc data in csv format into binary format such that it can be piped into fmcalc.
 
 Figure 1 shows the workflows for the data conversion components.
 
@@ -182,6 +181,46 @@ Csv file with the following fields;
 | loss              | float  |    4   | The insured loss value                                              | 5375.675    |
 
 [Return to top](#streamconversioncomponents)
+
+<a id="gultobin"></a>
+### gultobin 
+***
+A component which converts gulcalc data in csv format into gulcalc binary standard output, for stream_id=1 (item stream).
+
+##### Input file format
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| event_id          | int    |    4   | Oasis event_id                                                      |   4545      |
+| item_id           | int    |    4   | Oasis item_id                                                       |    300      |
+| sidx              | int    |    4   | Sample index                                                        |     10      |
+| loss              | float  |    4   | The ground up loss value                                            | 5675.675    |
+
+* For each event_id and item_id combination, a record for sidx = -1 (mean) and sidx = -2 (standard deviation) must be included, even if the loss values are zero. 
+* For each event_id and item_id combination, one or more sampled losses for sidx > 0 may be provided, but records for samples with zero loss may be omitted.
+
+##### Parameters
+-S, the number of samples must be provided.  This can be equal to or greater than maximum sample index value that appears in the csv data.
+
+##### Usage
+```
+$ gultobin [parameters] < [input].csv | [stdin component]
+$ gultobin [parameters] < [input].csv > [output].bin
+```
+
+##### Example
+```
+$ gultobin -S100 < gulcalci.csv | fmcalc > fmcalc.bin
+$ gultobin -S100 < gulcalci.csv > gulcalci.bin
+```
+
+##### Stdout stream_id
+
+| Byte 1 | Bytes 2-4 |  Description             |
+|:-------|-----------|:-------------------------|
+|    1   |     1     |  gulcalc item stdout     |
+
+[Return to top](#streamconversiontools)
 
 [Go to Planned work](PlannedWork.md)
 
