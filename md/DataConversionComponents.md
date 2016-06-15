@@ -130,8 +130,8 @@ Option 1. occ_year, occ_month, occ_day
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
-| event_id          | int    |    4   | Oasis event_id                                                      |  45567      |
-| period_no         | int    |    4   | identifying an abstract period of time, such as a year              |  56876      |
+| event_id          | int    |    4   | The occurrence event_id                                             |  45567      |
+| period_no         | int    |    4   | A numbered period in which the event occurs                         |  56876      |
 | occ_year          | int    |    4   | the year number of the event occurrence                             |   56876     |
 | occ_month         | int    |    4   | the month of the event occurrence                                   |   5         |
 | occ_day           | int    |    4   | the day of the event occurrence                                     |   16        |
