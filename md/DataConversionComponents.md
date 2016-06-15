@@ -117,12 +117,51 @@ $ footprinttocsv < eventfootprint.bin > eventfootprint.csv
 [Return to top](#dataconversioncomponents)
 
 ### occurrence
-The occurrence file is required for certain output components which, in the reference model, are leccalc, pltcalc and aalcalc.  In general, some form of event occurence file is required for any output which involves the calculation of loss metrics over a period of time.  The occurrence file assigns occurrences of the event_ids to numbered periods. A period can represent any length of time, such as a year or 2 years, or 18 months. The output metrics such as mean, standard deviation or loss exceedance probabilities are with respect to the chosen period length.  Most frequently, the period of interest is a year.
+The occurrence file is required for certain output components which, in the reference model, are leccalc, pltcalc and aalcalc.  In general, some form of event occurence file is required for any output which involves the calculation of loss metrics over a period of time.  The occurrence file assigns occurrences of the event_ids to numbered periods. A period can represent any length of time, such as a year or 2 years, or 18 months. The output metrics such as mean, standard deviation or loss exceedance probabilities are with respect to the chosen period length.  Most commonly, the period of interest is a year.
 
-The occurrence file also includes date fields.  There are two options;
-* date_id: An integer representing an offset number of days to some real date.
+The occurrence file also includes date fields.  There are two options for providing the date;
 * occ_year, occ_month, occ_day. These are all integers representing occurrence year, month and day.
+* occ_date_id: An integer representing an offset number of days relative to some arbitrary base date.
 
+#### File format
+The csv file should contain the following fields and include a header row.
+
+Option 1. occ_year, occ_month, occ_day
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| event_id          | int    |    4   | Oasis event_id                                                      |  45567      |
+| period_no         | int    |    4   | identifying an abstract period of time, such as a year              |  56876      |
+| occ_year          | int    |    4   | the year number of the event occurrence                             |   56876     |
+| occ_month         | int    |    4   | the month of the event occurrence                                   |   5         |
+| occ_day           | int    |    4   | the day of the event occurrence                                     |   16        |
+
+The occurrence year in this example is a scenario numbered year, which cannot be expressed as a real date in a standard calendar.
+
+Option 2. date_id
+
+| Name               | Type   |  Bytes | Description                                              ----     | Example     |
+|:-------------------|--------|--------| :-----------------------------------------------------------------|------------:|
+| event_id           | int    |    4   | The occurrence event_id                                           |     1       |
+| period_no          | int    |    4   | A numbered period in which the event occurs                       |   4545      |
+| occ_date_id        | int    |    4   | An integer representing an offset number of days to a base date   |    28626    | 
+
+For example, 28626 days relative to a base date of 0/1/1900 is 16/5/1978.
+
+#### occurrencetobin
+A required parameter is -P, the total number of periods of event occurrences. The total number of periods is held in the header of the binary file and used in output calculations.
+
+Option 2 format should be indicated by using the parameter -D
+```
+'Option 1 (occurrence files with an occ_year, occ_month)
+$ occurrencetobin -P10000 < occurrence.csv > occurrence.bin
+'Option 2 (occurrence files with an occ_date_id)
+$ occurrencetobin -P10000 -D < occurrence.csv > occurrence.bin
+```
+#### occurrencetocsv
+```
+$ occurrencetocsv < occurrence.bin > occurrence.csv
+```
 
 <a id="events"></a>
 ## Events
