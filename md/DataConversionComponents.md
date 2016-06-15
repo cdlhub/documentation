@@ -64,17 +64,17 @@ The csv file should contain the following fields and include a header row.
 
 The data should be ordered by bin_index ascending with bin_index starting from 1 and not contain nulls.
 
-#### damagetobin
+##### damagetobin
 ```
 $ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
 ```
 
-#### damagetocsv
+##### damagetocsv
 ```
 $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="event footprint"></a>
 ### footprint
 The event footprint is  required for the getmodel component, as well as an index file containing the starting positions of each event block. These must have the following location and filenames;
@@ -113,7 +113,7 @@ $ footprinttocsv < eventfootprint.bin > eventfootprint.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 ### occurrence
 The occurrence file is required for certain output components which, in the reference model, are leccalc, pltcalc and aalcalc.  In general, some form of event occurence file is required for any output which involves the calculation of loss metrics over a period of time.  The occurrence file assigns occurrences of the event_ids to numbered periods. A period can represent any length of time, such as a year or 2 years, or 18 months. The output metrics such as mean, standard deviation or loss exceedance probabilities are with respect to the chosen period length.  Most commonly, the period of interest is a year.
 
@@ -162,7 +162,7 @@ $ occurrencetobin -P10000 -D < occurrence.csv > occurrence.bin
 $ occurrencetocsv < occurrence.bin > occurrence.csv
 ```
 [Return to top](#dataconversioncomponents)
-
+---
 ## Random numbers <a id="rand"></a>
 A random number file may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It must have the following location and filename;
 * static/random.bin
@@ -188,7 +188,7 @@ $ randtocsv < random.bin > random.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="vulnerability"></a>
 ### vulnerability
 The vulnerability file is  required for the getmodel component. It contains the conditional distributions of damage for each intensity bin and for each vulnerability_id. This file must have the following location and filename;
@@ -217,11 +217,11 @@ $ vulnerabilitytobin < vulnerability.csv > vulnerability.bin
 $ vulnerabilitytocsv < vulnerability.bin > vulnerability.csv
 ```
 [Return to top](#dataconversioncomponents)
-
+---
 ## Input data
 
 <a id="coverage"></a>
-## Coverages
+### Coverages
 The coverages binary contains the list of coverages and the coverage TIVs. The data format is as follows. It is required by gulcalc and fmcalc and must have the following location and filename;
 
 * input/coverages.bin
@@ -247,9 +247,9 @@ $ coveragetocsv < coverages.bin > coverages.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="events"></a>
-## events
+### events
 One or more event binaries are required by eve and getmodel. It must have the following location and filename;
 * input/events.bin
 
@@ -270,9 +270,9 @@ $ evetobin < events.csv > events.bin
 $ evetocsv < events.bin > events.csv
 ```
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="item"></a>
-## items
+### items
 The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following location and filename;
 
 * input/items.bin
@@ -301,9 +301,9 @@ $ itemtocsv < items.bin > items.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="gulsummaryxref"></a>
-## gul summary xref
+### gul summary xref
 The gulsummaryxref binary is a cross reference file which determines how coverage losses from gulcalc output are summed together into at various summary levels in summarycalc. It is required by summarycalc and must have the following location and filename;
 
 * input/gulsummaryxref.bin
@@ -363,9 +363,9 @@ $ gulsummaryxreftocsv < gulsummaryxref.bin > gulsummaryxref.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="fmprogramme"></a>
-## fm programme 
+### fm programme 
 The fm programme binary file contains the level heirarchy and defines aggregations of losses required to perform a loss calculation, and is required for fmcalc only. 
 
 This must have the following location and filename;
@@ -398,9 +398,9 @@ $ fmprogrammetocsv < fm_programme.bin > fm_programme.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="fmprofile"></a>
-## fm profile
+### fm profile
 The fmprofile binary file contains the list of calculation rules with profile values (policytc_ids) that appear in the policytc file. This is required for fmcalc only. 
 
 This must be in the following location with filename format;
@@ -439,9 +439,10 @@ $ fmprofiletobin < fm_profile.csv > fm_profile.bin
 ```
 $ fmprofiletocsv < fm_profile.bin > fm_profile.csv
 ```
-
+[Return to top](#dataconversioncomponents)
+---
 <a id="fmpolicytc"></a>
-## fm policytc
+### fm policytc
 The fm policytc binary file contains the cross reference between the aggregations of losses defined in the fm programme file at a particular level and the calculation rule that should be applied as defined in the fm profile file. This file is required for fmcalc only. 
 
 This  must have the following location and filename;
@@ -474,10 +475,10 @@ $ fmpolicytctocsv < fm_policytc.bin > fm_policytc.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="fmsummaryxref"></a>
-## fm summary xref
-The gulsummaryxref binary is a cross reference file which determines how losses from fmcalc output are summed together into at various summary levels in summarycalc. It is required by summarycalc and must have the following location and filename;
+### fm summary xref
+The fm summary xref binary is a cross reference file which determines how losses from fmcalc output are summed together at various summary levels by summarycalc. It is required by summarycalc and must have the following location and filename;
 
 * input/fmsummaryxref.bin
 
@@ -501,8 +502,9 @@ One summary set consists of a common summaryset_id and each output_id being assi
 | 1           | 1            |    1             | 
 | 2           | 2            |    1             | 
 
+This shows, for summaryset_id=1, output_id=1 being assigned summary_id = 1 and output_id=1 being assigned summary_id = 2.  
 
-This shows, for summaryset_id=1, output_id=1 being assigned summary_id = 1 and output_id=1 being assigned summary_id = 2.  If the output_id represents a policy level loss output from fmcalc (the meaning of output_id is defined in the fm xref file) then no further grouping is performed by summarycalc and this is an example of a 'policy' summary level grouping.
+If the output_id represents a policy level loss output from fmcalc (the meaning of output_id is defined in the fm xref file) then no further grouping is performed by summarycalc and this is an example of a 'policy' summary level grouping.
 
 Up to 10 summary sets may be provided in this file, depending on the required summary reporting levels for the analysis. Here is an example of the 'policy' summary level with summaryset_id=1, plus an 'account' summary level with summaryset_id = 2. In summary set 2, the 'account' summary level includes both policy's because both output_id's are assigned a summary_id of 1.
 
@@ -526,10 +528,10 @@ $ fmsummaryxreftocsv < fmsummaryxref.bin > fmsummaryxref.csv
 ```
 
 [Return to top](#dataconversioncomponents)
-
+---
 <a id="fmxref"></a>
 ## fm xref 
-The fmxref binary file contains cross reference data specifying the output_id in the fmcalc as a combination of agg_id and layer_id, and is required for fmcalc only. 
+The fmxref binary file contains cross reference data specifying the output_id in the fmcalc as a combination of agg_id and layer_id, and is required by fmcalc. 
 
 This must be in the following location with filename format;
 * input/fm_xref.bin
@@ -582,7 +584,7 @@ $ fmxreftocsv < fm_xref.bin > fm_xref.csv
 ``` 
 
 [Return to top](#dataconversioncomponents)
-
+---
 [Go to Stream conversion components section](StreamConversionComponents.md)
 
 [Back to Contents](Contents.md)
