@@ -46,7 +46,9 @@ These components are provided for the convenience of viewing the data and debugg
 
 ## Static data
 
-### damage bins <a id="damagebins"></a>
+ <a id="damagebins"></a>
+### damage bins
+***
 The damage bin dictionary is a reference table in Oasis which defines how the effective damageability cdfs are discretized on a relative damage scale (normally between 0 and 1). It is required by getmodel and gulcalc and must have the following location and filename;
 
 * static/damage_bin_dict.bin
@@ -74,10 +76,11 @@ $ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
 $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
 [Return to top](#dataconversioncomponents)
----
-<a id="event footprint"></a>
+
+<a id="footprint"></a>
 ### footprint
-The event footprint is  required for the getmodel component, as well as an index file containing the starting positions of each event block. These must have the following location and filenames;
+***
+The event footprint is required for the getmodel component, as well as an index file containing the starting positions of each event block. These must have the following location and filenames;
 
 * static/eventfootprint.bin
 * static/eventfootprint.idx
@@ -113,8 +116,9 @@ $ footprinttocsv < eventfootprint.bin > eventfootprint.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 ### occurrence
+***
 The occurrence file is required for certain output components which, in the reference model, are leccalc, pltcalc and aalcalc.  In general, some form of event occurence file is required for any output which involves the calculation of loss metrics over a period of time.  The occurrence file assigns occurrences of the event_ids to numbered periods. A period can represent any length of time, such as a year or 2 years, or 18 months. The output metrics such as mean, standard deviation or loss exceedance probabilities are with respect to the chosen period length.  Most commonly, the period of interest is a year.
 
 The occurrence file also includes date fields.  There are two formats for providing the date;
@@ -162,9 +166,12 @@ $ occurrencetobin -P10000 -D < occurrence.csv > occurrence.bin
 $ occurrencetocsv < occurrence.bin > occurrence.csv
 ```
 [Return to top](#dataconversioncomponents)
----
-## Random numbers <a id="rand"></a>
+
+<a id="rand"></a>
+## Random numbers 
+***
 A random number file may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It must have the following location and filename;
+
 * static/random.bin
 
 If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are instead generated dynamically during the calculation. 
@@ -188,9 +195,10 @@ $ randtocsv < random.bin > random.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 <a id="vulnerability"></a>
 ### vulnerability
+***
 The vulnerability file is  required for the getmodel component. It contains the conditional distributions of damage for each intensity bin and for each vulnerability_id. This file must have the following location and filename;
 
 * static/vulnerability.bin
@@ -217,11 +225,12 @@ $ vulnerabilitytobin < vulnerability.csv > vulnerability.bin
 $ vulnerabilitytocsv < vulnerability.bin > vulnerability.csv
 ```
 [Return to top](#dataconversioncomponents)
----
+
 ## Input data
 
 <a id="coverage"></a>
 ### Coverages
+***
 The coverages binary contains the list of coverages and the coverage TIVs. The data format is as follows. It is required by gulcalc and fmcalc and must have the following location and filename;
 
 * input/coverages.bin
@@ -247,9 +256,10 @@ $ coveragetocsv < coverages.bin > coverages.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 <a id="events"></a>
 ### events
+***
 One or more event binaries are required by eve and getmodel. It must have the following location and filename;
 * input/events.bin
 
@@ -270,9 +280,10 @@ $ evetobin < events.csv > events.bin
 $ evetocsv < events.bin > events.csv
 ```
 [Return to top](#dataconversioncomponents)
----
+
 <a id="item"></a>
 ### items
+***
 The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following location and filename;
 
 * input/items.bin
@@ -301,9 +312,10 @@ $ itemtocsv < items.bin > items.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 <a id="gulsummaryxref"></a>
 ### gul summary xref
+***
 The gulsummaryxref binary is a cross reference file which determines how coverage losses from gulcalc output are summed together into at various summary levels in summarycalc. It is required by summarycalc and must have the following location and filename;
 
 * input/gulsummaryxref.bin
@@ -363,9 +375,10 @@ $ gulsummaryxreftocsv < gulsummaryxref.bin > gulsummaryxref.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 <a id="fmprogramme"></a>
 ### fm programme 
+***
 The fm programme binary file contains the level heirarchy and defines aggregations of losses required to perform a loss calculation, and is required for fmcalc only. 
 
 This must have the following location and filename;
@@ -373,7 +386,6 @@ This must have the following location and filename;
 
 #### File format
 The csv file should contain the following fields and include a header row.
-
 
 | Name                     | Type   |  Bytes | Description                                    | Example     |
 |:-------------------------|--------|--------| :----------------------------------------------|------------:|
@@ -398,9 +410,10 @@ $ fmprogrammetocsv < fm_programme.bin > fm_programme.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 <a id="fmprofile"></a>
 ### fm profile
+***
 The fmprofile binary file contains the list of calculation rules with profile values (policytc_ids) that appear in the policytc file. This is required for fmcalc only. 
 
 This must be in the following location with filename format;
@@ -440,9 +453,10 @@ $ fmprofiletobin < fm_profile.csv > fm_profile.bin
 $ fmprofiletocsv < fm_profile.bin > fm_profile.csv
 ```
 [Return to top](#dataconversioncomponents)
----
+
 <a id="fmpolicytc"></a>
 ### fm policytc
+***
 The fm policytc binary file contains the cross reference between the aggregations of losses defined in the fm programme file at a particular level and the calculation rule that should be applied as defined in the fm profile file. This file is required for fmcalc only. 
 
 This  must have the following location and filename;
@@ -475,9 +489,10 @@ $ fmpolicytctocsv < fm_policytc.bin > fm_policytc.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 <a id="fmsummaryxref"></a>
 ### fm summary xref
+***
 The fm summary xref binary is a cross reference file which determines how losses from fmcalc output are summed together at various summary levels by summarycalc. It is required by summarycalc and must have the following location and filename;
 
 * input/fmsummaryxref.bin
@@ -528,9 +543,10 @@ $ fmsummaryxreftocsv < fmsummaryxref.bin > fmsummaryxref.csv
 ```
 
 [Return to top](#dataconversioncomponents)
----
+
 <a id="fmxref"></a>
 ## fm xref 
+***
 The fmxref binary file contains cross reference data specifying the output_id in the fmcalc as a combination of agg_id and layer_id, and is required by fmcalc. 
 
 This must be in the following location with filename format;
@@ -584,7 +600,7 @@ $ fmxreftocsv < fm_xref.bin > fm_xref.csv
 ``` 
 
 [Return to top](#dataconversioncomponents)
----
+
 [Go to Stream conversion components section](StreamConversionComponents.md)
 
 [Back to Contents](Contents.md)
