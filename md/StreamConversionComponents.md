@@ -6,7 +6,8 @@ The following components convert the binary output of each calculation component
 * **[fmtocsv](#fmtocsv)** is a utility to convert binary format losses to a csv. fmcalc standard output can be streamed directly into fmtocsv, or a binary file of the same format can be piped in.
 * **[summarycalctocsv](#summarycalctocsv)** is a utility to convert binary format summarycalc losses to a csv. summarycalc standard output can be streamed directly into summarycalctocsv, or a binary file of the same format can be piped in.
 
-Additionally,  **[gultobin](#gultobin)** component is provided to convert gulcalc data in csv format into binary format such that it can be piped into fmcalc or summarycalc.
+Additionally,  
+* **[gultobin](#gultobin)** is a utility to convert gulcalc data in csv format into binary format such that it can be piped into fmcalc or summarycalc.
 
 
 Figure 1 shows the workflows for the data conversion components.
