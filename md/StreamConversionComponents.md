@@ -14,7 +14,8 @@ Figure 1 shows the workflows for the data conversion components.
 ##### Figure 1. Stream Conversion Workflows
 ![alt text](../img/Dbtools2.jpg "Data Conversion Workflows")
 
-## cdftocsv <a id="cdftocsv"></a>
+<a id="cdftocsv"></a>
+### cdftocsv 
 ***
 A component which converts the getmodel output stream, or binary file with the same structure, to a csv file.
 
@@ -53,7 +54,7 @@ Csv file with the following fields;
 [Return to top](#streamconversiontools)
 
 <a id="gultocsv"></a>
-## gultocsv 
+### gultocsv 
 ***
 A component which converts the gulcalc output stream, or binary file with the same structure, to a csv file.
 
@@ -101,7 +102,8 @@ gulcalc stream_id=2
 
 [Return to top](#streamconversiontools)
 
-## fmtocsv <a id="fmtocsv"></a>
+<a id="fmtocsv"></a>
+### fmtocsv 
 ***
 A component which converts the fmcalc output stream, or binary file with the same structure, to a csv file.
 
@@ -121,7 +123,7 @@ $ fmtocsv < [stdin].bin > [output].csv
 
 ##### Example
 ```
-$ eve 1 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | fmtocsv > fmcalc.csv
+$ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | fmtocsv > fmcalc.csv
 $ fmtocsv < fmcalc.bin > fmcalc.csv 
 ```
 
@@ -141,7 +143,7 @@ Csv file with the following fields;
 [Return to top](#streamconversioncomponents)
 
 <a id="summarycalctocsv"></a>
-## summarycalctocsv 
+### summarycalctocsv 
 ***
 A component which converts the summarycalc output stream, or binary file with the same structure, to a csv file.
 
@@ -179,7 +181,6 @@ Csv file with the following fields;
 | loss              | float  |    4   | The insured loss value                                              | 5375.675    |
 
 [Return to top](#streamconversioncomponents)
-
 
 [Go to Planned work](PlannedWork.md)
 
