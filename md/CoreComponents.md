@@ -1,7 +1,8 @@
 # Core Components <a id="corecomponents"></a>
 
 <a id="eve"></a>
-## eve
+### eve
+***
 eve takes as input a list of event ids in binary format and generates a partition of event ids as a binary data stream, according to the parameters supplied. 
 
 ##### Stream_id
@@ -34,8 +35,8 @@ The data structure of events.bin is a simple list of event ids (4 byte integers)
 [Return to top](#referencemodel)
 
 <a id="getmodel"></a>
-## getmodel 
-
+### getmodel 
+***
 getmodel generates a stream of effective damageability distributions (cdfs) from an input list of events. Specifically, it combines the probability distributions from the model files, eventfootprint.bin and vulnerability.bin, to generate effective damageability cdfs for the subset of exposures contained in the items.bin file and converts them into a binary stream. The source input data must have been generated as binary files by a separate program.
 
 This is reference example of the class of programs which generates the damage distributions for an event set and streams them into memory. It is envisaged that model developers who wish to use the toolkit as a back-end calculator of their existing platforms can write their own version of getmodel, reading in their own source data and converting it into the standard output stream. As long as the standard input and output structures are adhered to, the program can be written in any language and read any input data.
@@ -80,7 +81,8 @@ The program filters the eventfootprint binary file for all 'areaperil_id's which
 [Return to top](#referencemodel)
 
 <a id="gulcalc"></a>
-## gulcalc 
+### gulcalc
+***
 The gulcalc program performs Monte Carlo sampling of ground up loss and calculates mean and standard deviation by numerical integration of the cdfs. The sampling methodology has been extended beyond linear interpolation to include point value sampling and quadratic interpolation. This supports damage bin intervals which represent a single discrete damage value, and damage distributions with cdfs that are described by a piecewise quadratic function. 
 
 ##### Stream_id
@@ -159,7 +161,8 @@ If the -R parameter is used along with a specified number of random numbers then
 [Return to top](#referencemodel)
 
 <a id="fmcalc"></a>
-## fmcalc 
+### fmcalc
+***
 fmcalc is the in-memory implementation of the Oasis Financial Module. It applies policy terms and conditions to the ground up losses and produces insured loss sample output.  It takes in losses from gulcalc at item level only (stream_id = 1). 
 
 ##### Stream_id
@@ -201,7 +204,8 @@ See [Financial Module](FinancialModule.md)
 [Return to top](#referencemodel)
 
 <a id="summarycalc"></a>
-## summarycalc 
+### summarycalc 
+***
 The purpose of summarycalc is firstly to aggregate the samples of loss to a level of interest for reporting, thereby reducing the volume of data in the stream. This is a general first step which precedes all of the downstream output calculations.  Secondly, it unifies the formats of the gulcalc and fmcalc streams, so that they are transformed into an identical stream type for downstream outputs. Finally, it can generate up to 10 summary level outputs in one go, creating multiple output streams or files.
 
 The output is similar to the gulcalc or fmcalc input which are losses are by sample index and by event, but the coverage or policy input losses are grouped to an abstract level represented by a summary_id.  The relationship between the input identifier and the summary_id are defined in cross reference files called **gulsummaryxref** and **fmsummaryxref**.
