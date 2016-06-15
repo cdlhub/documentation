@@ -163,61 +163,64 @@ $ occurrencetobin -P10000 -D < occurrence.csv > occurrence.bin
 ```
 $ occurrencetocsv < occurrence.bin > occurrence.csv
 ```
-
-<a id="events"></a>
-## Events
-One or more event binaries are required by eve and getmodel. It must have the following location and filename format;
-* input/events.bin
-
-#### File format
-The csv file should contain a list of event_ids (integers) and no header.
-
-| Name              | Type   |  Bytes | Description         | Example     |
-|:------------------|--------|--------| :-------------------|------------:|
-| event_id          | int    |    4   | Oasis event_id      |   4545      |
-
-#### evetobin
-```
-$ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
-```
-
-#### evetocsv
-```
-$ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
-```
 [Return to top](#dataconversioncomponents)
 
+## Random numbers <a id="rand"></a>
+A random number file may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It must have the following location and filename format;
+* static/random.bin
+
+If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are generated dynamically in the calculation. 
+
+#### File format
+The csv file should contain a simple list of random numbers. It should not contain any headers.
+
+| Name              | Type   |  Bytes | Description                    | Example     |
+|:------------------|--------|--------| :------------------------------|------------:|
+| rand              | float  |    4   | Random number between 0 and 1  |  0.75875    |  
 
 
-<a id="item"></a>
-## Items
-The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following filename format and location;
-* input/items.bin
+#### randtobin
+```
+$ randtobin < random.csv > random.bin
+```
+
+#### randtocsv
+```
+$ randtocsv < random.bin > random.csv
+```
+
+[Return to top](#dataconversioncomponents)
+
+<a id="vulnerability"></a>
+### vulnerability
+The vulnerability file is  required for the getmodel component. It contains the conditional distributions of damage for each intensity bin and for each vulnerability_id. This file must be in the following location with filename;
+
+* static/vulnerability.bin
 
 #### File format
 The csv file should contain the following fields and include a header row.
 
-| Name              | Type   |  Bytes | Description                                                   | Example     |
-|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
-| item_id           | int    |    4   | Identifier of the exposure item                               |     1       |
-| coverage _id      | int    |    4   | Identifier of the coverage                                    |   1         |
-| areaperil_id      | int    |    4   | Identifier of the locator and peril of the item               |   4545      |
-| vulnerability_id  | int    |    4   | Identifier of the vulnerability distribution of the item      |   345456    |
-| group_id          | int    |    4   | Identifier of the correlation group of the item               |    1        |  
+| Name               | Type   |  Bytes | Description                                                   | Example     |
+|:-------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| vulnerability_id   | int    |    4   | Oasis vulnerability_id                                        |   45        |
+| intensity_bin_index| int    |    4   | Identifier of the hazard intensity bin                        |     10      |
+| damage_bin_index   | int    |    4   | Identifier of the damage bin                                  |     20      |
+| prob               | float  |    4   | The probability mass for the intensity bin                    |    0.186    | 
 
-The data should be ordered by areaperil_id, vulnerability_id ascending and not contain nulls.
+The data should be ordered by vulnerability_id and not contain nulls. 
 
-#### itemtobin
+#### vulnerabilitytobin
 ```
-$ itemtobin < items.csv > items.bin
-```
-
-#### itemtocsv
-```
-$ itemtocsv < items.bin > items.csv
+$ vulnerabilitytobin < vulnerability.csv > vulnerability.bin
 ```
 
+#### vulnerabilitytocsv
+```
+$ vulnerabilitytocsv < vulnerability.bin > vulnerability.csv
+```
 [Return to top](#dataconversioncomponents)
+
+## Input data
 
 <a id="coverage"></a>
 ## Coverages
@@ -247,34 +250,117 @@ $ coveragestocsv < coverages.bin > coverages.csv
 
 [Return to top](#dataconversioncomponents)
 
-<a id="rand"></a>
-## Random numbers 
-A random number file may be provided for the gulcalc component as an option (using gulcalc -r parameter) The random number binary contains a list of random numbers used for ground up loss sampling in the kernel calculation. It must have the following location and filename format;
-* static/random.bin
-
-If the gulcalc -r parameter is not used, the random number binary is not required and random numbers are generated dynamically in the calculation. 
+<a id="events"></a>
+## events
+One or more event binaries are required by eve and getmodel. It must have the following location and filename format;
+* input/events.bin
 
 #### File format
-The csv file should contain a simple list of random numbers. It should not contain any headers.
+The csv file should contain a list of event_ids (integers) and no header.
 
-| Name              | Type   |  Bytes | Description                    | Example     |
-|:------------------|--------|--------| :------------------------------|------------:|
-| rand              | float  |    4   | Random number between 0 and 1  |  0.75875    |  
+| Name              | Type   |  Bytes | Description         | Example     |
+|:------------------|--------|--------| :-------------------|------------:|
+| event_id          | int    |    4   | Oasis event_id      |   4545      |
 
-
-#### randtobin
+#### evetobin
 ```
-$ randtobin < random.csv > random.bin
+$ evetobin < e_chunk_1_data.csv > e_chunk_1_data.bin
 ```
 
-#### randtocsv
+#### evetocsv
 ```
-$ randtocsv < random.bin > random.csv
+$ evetocsv < e_chunk_1_data.bin > e_chunk_1_data.csv
+```
+[Return to top](#dataconversioncomponents)
+
+<a id="item"></a>
+## items
+The items binary contains the list of exposure items for which ground up loss will be sampled in the kernel calculations. The data format is as follows. It is required by gulcalc and outputcalc and must have the following filename format and location;
+* input/items.bin
+
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name              | Type   |  Bytes | Description                                                   | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------|------------:|
+| item_id           | int    |    4   | Identifier of the exposure item                               |     1       |
+| coverage _id      | int    |    4   | Identifier of the coverage                                    |   1         |
+| areaperil_id      | int    |    4   | Identifier of the locator and peril of the item               |   4545      |
+| vulnerability_id  | int    |    4   | Identifier of the vulnerability distribution of the item      |   345456    |
+| group_id          | int    |    4   | Identifier of the correlation group of the item               |    1        |  
+
+The data should be ordered by areaperil_id, vulnerability_id ascending and not contain nulls.
+
+#### itemtobin
+```
+$ itemtobin < items.csv > items.bin
+```
+
+#### itemtocsv
+```
+$ itemtocsv < items.bin > items.csv
 ```
 
 [Return to top](#dataconversioncomponents)
 
+<a id="gulsummaryxref"></a>
+## gul summary xref
+The gulsummaryxref binary is a cross reference file which determines how coverage losses from gulcalc output are summed together into at various summary levels in summarycalc. It is required by summarycalc and must have the following filename format and location;
+* input/gulsummaryxref.bin
 
+#### File format
+The csv file should contain the following fields and include a header row.
+
+| Name              | Type   |  Bytes | Description                                                    | Example     |
+|:------------------|--------|--------| :--------------------------------------------------------------|------------:|
+| coverage _id      | int    |    4   | Identifier of the coverage                                     |   3         |
+| summary_id        | int    |    4   | Identifier of the summary level group for one or more coverages|   1         |
+| summaryset_id     | int    |    4   | Identifier of the vulnerability distribution of the item       |   1         |
+
+The data should not contain nulls. There should be at least one summary set in the file.  Valid entries for summaryset_id is all integers between 0 and 9 inclusive.
+
+One summary set consists of all coverage_ids (from the coverages file) assigned a summary_id with a common summaryset_id. An example is as follows.
+
+| coverage_id | summary_id   | summaryset_id    |
+|:------------|--------------|-----------------:|
+| 1           | 1            |    1             | 
+| 2           | 1            |    1             | 
+| 3           | 1            |    1             |
+| 4           | 2            |    1             |
+| 5           | 2            |    1             |
+| 6           | 2            |    1             |
+
+This shows coverages 1-3 being grouped into summary_id = 1 and coverages 4-6 being grouped into summary_id = 2.  This could be an example of a 'site' level grouping, for example.
+
+Up to 10 summary sets may be provided in this file, depending on the required summary reporting levels for the analysis. Here is an example of a 'site' summary level with summaryset_id=1, plus an 'account' summary level with summaryset_id = 2. In the second set, the account summary level includes both sites.
+
+| coverage_id | summary_id   | summaryset_id    |
+|:------------|--------------|-----------------:|
+| 1           | 1            |    1             | 
+| 2           | 1            |    1             | 
+| 3           | 1            |    1             |
+| 4           | 2            |    1             |
+| 5           | 2            |    1             |
+| 6           | 2            |    1             |
+| 1           | 1            |    2             | 
+| 2           | 1            |    2             | 
+| 3           | 1            |    2             |
+| 4           | 1            |    2             |
+| 5           | 1            |    2             |
+| 6           | 1            |    2             |
+
+
+#### gulsummaryxreftobin
+```
+$ itemtobin < items.csv > items.bin
+```
+
+#### gulsummaryxreftocsv
+```
+$ itemtocsv < items.bin > items.csv
+```
+
+[Return to top](#dataconversioncomponents)
 
 <a id="fmprogramme"></a>
 ## fm programme 
