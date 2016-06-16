@@ -81,17 +81,15 @@ Figure 5 illustrates an example workflow.
 See example script [gulandfm_example.py](../../examples/gulandfm_example.py)
 ***
 ### 6. Multiple summary level workflows
-Summarycalc is capable of summarizing samples to up to 10 different user-defined levels for ground up loss and insured loss. This means that different outputs can be run on different summary levels.  In this example, event loss tables for three different summary levels are generated.
+Summarycalc is capable of summarizing samples to up to 10 different user-defined levels for ground up loss and insured loss. This means that different outputs can be run on different summary levels.  In this example, event loss tables for two different summary levels are generated.
 
 ```
-eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 s1/p1.bin -2 s2/p1.bin -3 s3/p1.bin
-eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 s1/p2.bin -2 s2/p2.bin -3 s3/p1.bin
+eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 s1/p1.bin -2 s2/p1.bin
+eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 s1/p2.bin -2 s2/p2.bin
 eltcalc < s1/p1.bin > elt_s1_p1.csv
 eltcalc < s1/p2.bin > elt_s1_p2.csv
 eltcalc < s2/p1.bin > elt_s2_p1.csv
 eltcalc < s2/p2.bin > elt_s2_p2.csv
-eltcalc < s3/p1.bin > elt_s3_p1.csv
-eltcalc < s3/p2.bin > elt_s3_p2.csv
 ```
 Again, the summarycalc streams can be sent to named pipes rather than written off to disk.
 
