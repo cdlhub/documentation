@@ -70,7 +70,7 @@ $ leccalc [parameters] > lec.csv
 'First generate summarycalc binaries by running the core workflow, for the required summary set
 $ eve 1 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - > work/summary1/summarycalc1.bin
 $ eve 2 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - > work/summary1/summarycalc2.bin
-'Then run leccalc, pointing to the specified sub-directory of work.
+'Then run leccalc, pointing to the specified sub-directory of work containing summarycalc binaries.
 $ leccalc -Ksummary1 -F lec_full_uncertainty_agg.csv -f lec_full_uncertainty_occ.csv 
 ```
 
@@ -116,7 +116,7 @@ The total number of periods is carried in the header of the occurrence file.  Th
 ##### Output
 csv file with the following fields;
 
-###### Full uncertainty loss exceedance curve
+**Full uncertainty loss exceedance curve**
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
@@ -124,7 +124,7 @@ csv file with the following fields;
 | return_period     | float  |    4   | return period interval                                              |    250      |
 | loss              | float  |    4   | loss exceedance threshold for return period                         |    546577.8 |
 
-###### Wheatsheaf exceedance curve;
+**Wheatsheaf loss exceedance curve **
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
@@ -133,7 +133,7 @@ csv file with the following fields;
 | return_period     | float  |    4   | return period interval                                              |    250      |
 | loss              | float  |    4   | loss exceedance threshold for return period                         |    546577.8 |
 
-###### Sample mean and Wheatsheaf mean exceedance curve;
+**Sample mean and Wheatsheaf mean loss exceedance curve**
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
@@ -144,7 +144,7 @@ csv file with the following fields;
 
 ### pltcalc <a id="pltcalc"></a>
 ***
-The program outputs sample mean and standard deviation by summary_id,  event_id and period_num.  It also outputs an event occurrence date.
+The program outputs sample mean and standard deviation by summary_id,  event_id and period_no.  It also outputs an event occurrence date.
 
 ##### Parameters
 
@@ -163,7 +163,7 @@ $ pltcalc < summarycalc.bin > plt.csv
 ```
 ##### Calculation
 
-The occurrence.bin file is read into memory.  For each summary_id,  event_id and period_num, the sample mean and standard deviation is calculated from the sampled losses in the summarycalc stream and output to file.  The exposure_value, which is carried in the event_id, summary_id header of the stream is also output, as well as the date field(s) from the occurrence file.
+The occurrence.bin file is read into memory.  For each summary_id,  event_id and period_no, the sample mean and standard deviation is calculated from the sampled losses in the summarycalc stream and output to file.  The exposure_value, which is carried in the event_id, summary_id header of the stream is also output, as well as the date field(s) from the occurrence file.
 
 ##### Output
 There are two output formats, depending on whether an event occurrence date is an integer offset to some base date that most external programs can interpret as a real date, or a day in a numbered scenario year. The output format will depend on the format of the date fields in the occurrence.bin file.  
@@ -173,7 +173,7 @@ In the former case, the output format is;
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | event_id          | int    |    4   | Oasis event_id                                                      |  45567      |
-| period_num        | int    |    4   | identifying an abstract period of time, such as a year              |  56876      |
+| period_no         | int    |    4   | identifying an abstract period of time, such as a year              |  56876      |
 | mean              | float  |    4   | sample mean                                                         |   1345.678  |
 | standard_deviation| float  |    4   | sample standard deviation                                           |    945.89   | 
 | exposure_value    | float  |    4   | exposure value for summary_id affected by the event                 |   70000     |
@@ -186,7 +186,7 @@ In the latter case, the output format is;
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | event_id          | int    |    4   | Oasis event_id                                                      |  45567      |
-| period_num        | int    |    4   | identifying an abstract period of time, such as a year              |  56876      |
+| period_no         | int    |    4   | identifying an abstract period of time, such as a year              |  56876      |
 | mean              | float  |    4   | sample mean                                                         |   1345.678  |
 | standard_deviation| float  |    4   | sample standard deviation                                           |    945.89   | 
 | exposure_value    | float  |    4   | exposure value for summary_id affected by the event                 |   70000     |
@@ -196,7 +196,7 @@ In the latter case, the output format is;
 
 ### aalcalc <a id="aalcalc"></a>
 ***
-aalcalc produces binary files which contain the sum of means, and sum of squared means across all periods for each summary_id.  This is the first stage in the calculation of average annual loss and standard deviation of loss, which requires the aggregation of the sum of means and sum of squared means for all periods. Like the leccalc component, the calculation cannot be performed within a single process on a subset of the data in cases where the analysis has been distributed across mutliple processes.  Instead, the aalcalc binaries returned from all processes are read back into memory by the aalsummary component which completes the calculation of average annual loss and standard deviation.
+aalcalc produces binary files which contain the sum of means, and sum of squared means across all periods for each summary_id.  This is the first stage in the calculation of average annual loss and standard deviation of loss, which requires the aggregation of the sum of means and sum of squared means across all periods. Like the leccalc component, the calculation cannot be performed within a single process containing a subset of the data, in cases where the analysis has been distributed across multiple processes.  Instead, the aalcalc binaries returned from all processes are read back into memory by the aalsummary component which completes the calculation of average annual loss and standard deviation.
 
 Two types of mean are calculated in aalcalc; analytical mean (type 1) and sample mean (type 2).  If the analysis is run with zero samples, then only type 1 means are returned by aalcalc.
 
@@ -241,8 +241,6 @@ aalsummary is the final stage calculation for average annual loss and standard d
 
 Two types of aal and standard deviation of loss are calculated in aalsummary; analytical (type 1) and sample (type 2).  If the analysis is run with zero samples, then only type 1 statistics are returned by aalsummary.
 
-aalsummary requires the aalcalc binaries to be located in a subdirectory of /work, which is itself a sub-directory of the location from which aalsummary is invoked. The user must ensure this directory exists, it will not be created automatically.
-
 ##### Parameters
 
 * -K{sub-directory}. The sub-directory of /work containing the input aalcalc binary files.
@@ -256,7 +254,7 @@ $ aalsummary [parameters] > aal.csv
 ```
 'First generate aalcalc binaries by running the core workflow, for the required summary set
 $ eve 1 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - | aalcalc > work/summary1/aal/aalcalc1.bin
-$ eve 1 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - | aalcalc > work/summary1/aal/aalcalc2.bin
+$ eve 2 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - | aalcalc > work/summary1/aal/aalcalc2.bin
 'Then run aalsummary, pointing to the specified sub-directory of work containing the aalcalc binaries.
 $ aalsummary -Ksummary1/aal > aal.csv 
 ```
