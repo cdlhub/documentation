@@ -277,6 +277,19 @@ The program requires the occurrence file;
 
 * static/occurrence.bin
 
+aalsummary does not have a standard input that can be streamed in. Instead, it reads in aalcalc binary data from a file in a fixed location. The location is in the 'work' subdirectory of the present working directory. For example;
+
+work/aalcalc1.bin
+work/aalcalc2.bin
+work/aalcalc3.bin
+The user must ensure the work subdirectory exists. The user may also specify a subdirectory of /work to store these files. e.g.
+
+work/summaryset1/aalcalc1.bin
+work/summaryset1/aalcalc2.bin
+work/summaryset1/aalcalc3.bin
+
+The aalcalc losses for all events (all processes) must be written to the /work folder before running aalsummary.
+
 ##### Calculation
 The aalcalc binaries and the occurrence file are read into memory. The sum of means and sum of squared means are summed by type and summary_id.  Then using the total number of periods from the header of the occurrence data, the overall mean and standard deviation is calculated. The exposure_value is also accumulated by summary_id and type by taking the maximum value.
 
