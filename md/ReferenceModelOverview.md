@@ -18,23 +18,23 @@ The set of **[core components](CoreComponents.md)** provided in this release is 
 
 The standard input and standard output data streams for the core components are covered in the Specification. 
 
-Figure 1 shows the core data stream workflow of the reference model with its particular internal data files.
+Figure 1 shows the core components workflow and the required data input files.
 
-##### Figure 1. Core workflow and required data
+##### Figure 1. Core components workflow and required data
 ![alt text](../img/ktoolsrequireddata.jpg "Core workflow and required data")
 
 The model / **static** data for the core workflow, shown as red source files, are the event footprint, vulnerability, damage bin dictionary and random number file.  These are stored in the **'static'** sub-directory of the working folder.  
 
 The user / analysis **input** data for the core workflow, shown as blue source files, are the events, items, coverages, fm programme, fm policytc, fm profile, fm xref, fm summary xref and gul summary xref files. These are stored in the **'input'** sub-directory of the working folder. 
 
-These are all Oasis kernel format data objects with fixed formats. Note that the events are a user input rather than a static input because the user could choose to run a subset of the full list of events, or even just one event. Usually, however, the whole event set will be run. 
+These are all Oasis kernel format data objects with fixed formats. Note that the events are a user input rather than a static input because the user could choose to run a subset of the full list of events, or even just one event. Usually, though, the whole event set will be run. 
 
 The **[output components](OutputComponents.md)** are various implementations of outputcalc, as described in general terms in the [Specification](Specification.md). The results are written directly into csv file as there is no downstream processing.
 
 * **eltcalc**  generates an event loss table from the sampled losses from summarycalc. It contains sample mean and standard deviation, and total exposed value for each event at the given summary level. 
-* **leccalc**  generates loss exceedance curve from the sampled losses from summarycalc. There are 8 variants of curves with small differences in the output format but the common output fields are summary_id, return period, and loss exceedance threshold. This output is only available for models which provide an event **occurrence** file.
-* **pltcalc**  generates a period loss table from the sampled losses from summarycalc. It contains sample mean and standard deviation, and total exposed value for each event and each period (for example a year) at the given summary level. It also contains a date field, corresponding to the date of the event occurrence. This output is only available for models which provide an event **occurrence** file.
-* **aalcalc**  generates the average annual loss and standard deviation of loss from the sampled losses from summarycalc, for each summary_id. It also contains total exposed value for each summary level, which is the maximum of the total exposed value across all simulated periods. This output is only available for models which provide an event **occurrence** file.
+* **leccalc**  generates loss exceedance curve from the sampled losses from summarycalc. There are 8 variants of curves with small differences in the output format but the common output fields are summary_id, return period, and loss exceedance threshold. This output is only available for models which provide an event occurrence file.
+* **pltcalc**  generates a period loss table from the sampled losses from summarycalc. It contains sample mean and standard deviation, and total exposed value for each event and each period (for example a year) at the given summary level. It also contains a date field, corresponding to the date of the event occurrence. This output is only available for models which provide an event occurrence file.
+* **aalcalc**  and **aalsummary** generate the average annual loss and standard deviation of loss from the sampled losses from summarycalc, for each summary_id. It also contains total exposed value for each summary level, which is the maximum of the total exposed value across all simulated periods. This output is only available for models which provide an event occurrence file.
  
 The files required for the output components are shown in Figure 2.
 
