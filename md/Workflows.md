@@ -33,7 +33,7 @@ See example script [pltcalc_example.py](../../examples/eltcalc_example.py)
 
 ### 3. Portfolio summary level full uncertainty aggregate and occurrence loss exceedance curves
 ***
-In this example, the summary samples are calculated as in the first two examples, but the results are output to the work folder.  Until this stage the calculation is run over multiple processes. Then leccalc reads the summarycalc binaries from the work folder and computes two loss exceedance curves in a single process. Note that you can output all eight loss exceedance curve variants in a single leccalc command.
+In this example, the summary samples are calculated as in the first two examples, but the results are output to the work folder.  Until this stage the calculation is run over multiple processes. Then, in a single process, leccalc reads the summarycalc binaries from the work folder and computes two loss exceedance curves in a single process. Note that you can output all eight loss exceedance curve variants in a single leccalc command.
 ```
 eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - > work/summary2/p1.bin
 eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - > work/summary2/p1.bin
@@ -47,7 +47,7 @@ See example script [leccalc_example.py](../../examples/leccalc_example.py)
 
 ### 4. Policy summary level average annual loss
 ***
-In this example, we are instead summarizing samples to policy level, which is summary set 1 for fm. This time, the samples are run through to aalcalc, and the aalcalc binaries are output to the work folder.  Until this stage the calculation is run over multiple processes. Then aalsummary reads the aalcalc binaries from the work folder and computes the aal output. 
+In this example, we are summing sample losses to policy level, which is summary set 1 for fm in the example data. This time, the samples are run through to aalcalc, and the aalcalc binaries are output to the work folder.  Until this stage the calculation is run over multiple processes. Then, in a single process, aalsummary reads the aalcalc binaries from the work folder and computes the aal output. 
 ```
 eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
 eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
