@@ -91,9 +91,9 @@ eltcalc < s2/p2.bin > elt_s2_p2.csv
 eltcalc < s3/p1.bin > elt_s3_p1.csv
 eltcalc < s3/p2.bin > elt_s3_p2.csv
 ```
-Again, the summarycalc streams can be sent to named pipes.
+Again, the summarycalc streams can be sent to named pipes rather than written off to disk.
 
-Figure 6 illustrates multiple summary level streams, each of which can go to different outputs.
+Figure 6 illustrates multiple summary level streams, each of which can go to different output calculations.
 
 ##### Figure 6. Multiple summary level workflows 
 ![alt text](../img/summarycalc.jpg "Ground up and insured loss workflow")
