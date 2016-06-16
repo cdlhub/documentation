@@ -223,9 +223,9 @@ binary file containing the following fields;
 |:--------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | summary_id          | int    |    4   | summary_id representing a grouping of losses                        |   10        |
 | type                | int    |    4   | 1 for analytical mean, 2 for mean calculated from samples           |    1        |
-| sum of mean         | float  |    4   | sum of period mean losses                                           |    67856.9  |
-| sum of squared mean | float  |    4   | sum of squared period mean losses                                   |    546577.8 |
-| exposure_value      | float  |    4   | maximum exposure value across all periods                           |    10098730 |
+| mean                | float  |    8   | sum of period mean losses                                           |    67856.9  |
+| squared_mean        | float  |    8   | sum of squared period mean losses                                   |    546577.8 |
+| max_exposure_value  | float  |    8   | maximum exposure value across all periods                           |    10098730 |
 
 ##### Internal data
 The program requires the occurrence file;
@@ -268,9 +268,9 @@ csv file containing the following fields;
 |:--------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | summary_id          | int    |    4   | summary_id representing a grouping of losses                        |   10        |
 | type                | int    |    4   | 1 for analytical statistics, 2 for sample statistics                |    1        |
-| mean                | float  |    4   | average annual loss                                                 |    6785.9   |
-| standard_deviation  | float  |    4   | standard deviation of loss                                          |    54657.8  |
-| exposure_value      | float  |    4   | maximum exposure value across all periods                           |    10098730 |
+| mean                | float  |    8   | average annual loss                                                 |    6785.9   |
+| standard_deviation  | float  |    8   | standard deviation of loss                                          |    54657.8  |
+| exposure_value      | float  |    8   | maximum exposure value across all periods                           |    10098730 |
 
 ##### Internal data
 The program requires the occurrence file;
