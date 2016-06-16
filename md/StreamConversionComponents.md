@@ -133,9 +133,6 @@ $ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | fmtocsv > fmcalc.csv
 $ fmtocsv < fmcalc.bin > fmcalc.csv 
 ```
 
-##### Input
-Same as fmcalc output or a binary file of the same format can be piped into fmtocsv.
-
 ##### Output
 Csv file with the following fields;
 
@@ -173,9 +170,6 @@ $ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | su
 $ summarycalctocsv < summarycalc.bin > summarycalc.csv 
 ```
 
-##### Input
-Same as summarycalc output or a binary file of the same format can be piped into summarycalctocsv.
-
 ##### Output
 Csv file with the following fields;
 
@@ -212,9 +206,6 @@ $ aalcalctocsv < [stdin].bin > [output].csv
 $ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc | aalcalctocsv > aalcalc.csv
 $ aalcalctocsv < aalcalc.bin > aalcalc.csv 
 ```
-
-##### Input
-Same as aalcalc output or a binary file of the same format can be piped into aalcalctocsv.
 
 ##### Output
 Csv file with the following fields;
