@@ -67,7 +67,10 @@ $ leccalc [parameters] > lec.csv
 
 ##### Example
 ```
-$ eve 1 1 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - > work/summary1/summarycalc1.bin
+'First generate summarycalc binaries by running the core workflow, for the required summary set
+$ eve 1 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - > work/summary1/summarycalc1.bin
+$ eve 2 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - > work/summary1/summarycalc2.bin
+'Then run leccalc, pointing to the specified sub-directory of work.
 $ leccalc -Ksummary1 -F lec_full_uncertainty_agg.csv -f lec_full_uncertainty_occ.csv 
 ```
 
@@ -193,7 +196,9 @@ In the latter case, the output format is;
 
 ### aalcalc <a id="aalcalc"></a>
 ***
-aalcalc computes the average annual loss and standard deviation of loss for each summary_id. Technically, this is calculated on a period by period basis because aalcalc, like leccalc and pltcalc, uses the occurrence file in which the periods of event occurrence are defined, and these are not necessarily annual periods.
+aalcalc produces binary files which contain the sum of means, and sum of squared means across all periods for each summary_id.  This is the first stage in the calculation of average annual loss and standard deviation of loss, which requires the aggregation of the sum of means and sum of squared means for all periods. Like the leccalc component, the calculation cannot be performed within a single process on a subset of the data in cases where the analysis has been distributed across mutliple processes.  Instead, the aalcalc binaries returned from all processes are read back into memory by the aalsummary component which completes the calculation of average annual loss and standard deviation.
+
+Two types of mean are calculated in aalcalc; analytical mean (type 1) and sample mean (type 2).  If the analysis is run with zero samples, then only type 1 means are returned by aalcalc.
 
 ##### Parameters
 
@@ -201,44 +206,26 @@ None
 
 ##### Usage
 ```
-$ [stdin component] | aalcalc > aal.csv
-$ aalcalc < [stdin].bin > aal.csv
+$ [stdin component] | aalcalc > aal.bin
+$ aalcalc < [stdin].bin > aal.bin
 ```
 
 ##### Example
 ```
-$ eve 1 1 1 | getmodel | gulcalc -S100 -C1 | summarycalc -g - | aalcalc > aal.csv
-$ aalcalc < summarycalc.bin > aal.csv 
+$ eve 1 1 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - | aalcalc > aal1.bin
+$ aalcalc < summarycalc.bin > aal.bin 
 ```
 
 ##### Output
-Csv file with the following fields;
+binary file containing the following fields;
 
-| Name              | Type   |  Bytes | Description                                                         | Example     |
-|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
-| summary_id        | int    |    4   | summary_id representing a grouping of losses                        |   10        |
-| type              | int    |    4   | 1 for analytical mean, 2 for mean calculated from samples           |    1        |
-| mean              | float  |    4   | average annual loss                                                 |    67856.9  |
-| standard_deviation| float  |    4   | standard deviation of annual loss                                   |    546577.8 |
-| exposure_value    | float  |    4   | maximum exposure value across all periods                           |    10098730 |
-
-##### Parameters
-
-None
-
-##### Usage
-```
-$ [stdin component] | aalcalc | [stout component]
-$ [stdin component] | aalcalc > [stdout].bin
-$ fmcalc < [stdin].bin > [stdout].bin
-```
-
-##### Example
-```
-$ eve 1 1 | getmodel | gulcalc -r -S100 -c - | summarycalc -g | aalcalc > elt.csv
-$ eve 1 1 | getmodel | gulcalc -r -S100 -i - | fmcalc > fmcalc.bin
-$ fmcalc < gulcalc.bin > fmcalc.bin 
-```
+| Name                | Type   |  Bytes | Description                                                         | Example     |
+|:--------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| summary_id          | int    |    4   | summary_id representing a grouping of losses                        |   10        |
+| type                | int    |    4   | 1 for analytical mean, 2 for mean calculated from samples           |    1        |
+| sum of mean         | float  |    4   | sum of period mean losses                                           |    67856.9  |
+| sum of squared mean | float  |    4   | sum of squared period mean losses                                   |    546577.8 |
+| exposure_value      | float  |    4   | maximum exposure value across all periods                           |    10098730 |
 
 ##### Internal data
 The program requires the occurrence file;
@@ -246,7 +233,52 @@ The program requires the occurrence file;
 * static/occurrence.bin
 
 ##### Calculation
-The occurrence file is read into memory.
+The occurrence file is read into memory. From the summarycalc stream data, the event sample means and sample means squared are computed for each summary_id.  The sample means and squared sampled means are summed by period and summary_id, according to which events are assigned to periods in the occurrence data.  Then the means and squared means are summed across the periods, for each summary_id.  The exposure_value, which is held at an event_id, summary_id in the summarycalc header is also accumulated by summary_id and period, and then across periods. In this case however, it is the maximum exposure value which is carried through the accumulations, not the sum.
+
+### aalsummary <a id="aalsummary"></a>
+***
+aalsummary is the final stage calculation for average annual loss and standard deviation of loss.  It reads in all aalcalc binary files which contain the sum of means, and sum of squared means across different sets of periods for each summary_id, and then computes overall average annual loss and standard deviation of loss across all periods.  
+
+Two types of aal and standard deviation of loss are calculated in aalsummary; analytical (type 1) and sample (type 2).  If the analysis is run with zero samples, then only type 1 statistics are returned by aalsummary.
+
+aalsummary requires the aalcalc binaries to be located in a subdirectory of /work, which is itself a sub-directory of the location from which aalsummary is invoked. The user must ensure this directory exists, it will not be created automatically.
+
+##### Parameters
+
+* -K{sub-directory}. The sub-directory of /work containing the input aalcalc binary files.
+
+##### Usage
+```
+$ aalsummary [parameters] > aal.csv
+```
+
+##### Example
+```
+'First generate aalcalc binaries by running the core workflow, for the required summary set
+$ eve 1 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - | aalcalc > work/summary1/aal/aalcalc1.bin
+$ eve 1 2 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - | aalcalc > work/summary1/aal/aalcalc2.bin
+'Then run aalsummary, pointing to the specified sub-directory of work containing the aalcalc binaries.
+$ aalsummary -Ksummary1/aal > aal.csv 
+```
+
+##### Output
+csv file containing the following fields;
+
+| Name                | Type   |  Bytes | Description                                                         | Example     |
+|:--------------------|--------|--------| :-------------------------------------------------------------------|------------:|
+| summary_id          | int    |    4   | summary_id representing a grouping of losses                        |   10        |
+| type                | int    |    4   | 1 for analytical statistics, 2 for sample statistics                |    1        |
+| mean                | float  |    4   | average annual loss                                                 |    6785.9   |
+| standard_deviation  | float  |    4   | standard deviation of loss                                          |    54657.8  |
+| exposure_value      | float  |    4   | maximum exposure value across all periods                           |    10098730 |
+
+##### Internal data
+The program requires the occurrence file;
+
+* static/occurrence.bin
+
+##### Calculation
+The aalcalc binaries and the occurrence file are read into memory. The sum of means and sum of squared means are summed by type and summary_id.  Then using the total number of periods from the header of the occurrence data, the overall mean and standard deviation is calculated. The exposure_value is also accumulated by summary_id and type by taking the maximum value.
 
 [Return to top](#outputcomponents)
 
