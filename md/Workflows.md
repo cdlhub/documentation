@@ -51,7 +51,7 @@ In this example, we are summing sample losses to policy level, which is summary 
 ```
 eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
 eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
-aalcalc -Ksummary1 > aal.csv
+aalsummary -Ksummary1 > aal.csv
 ```
 
 ##### Figure 4. aalcalc workflow
