@@ -279,14 +279,15 @@ The program requires the occurrence file;
 
 aalsummary does not have a standard input that can be streamed in. Instead, it reads in aalcalc binary data from a file in a fixed location. The location is in the 'work' subdirectory of the present working directory. For example;
 
-work/aalcalc1.bin
-work/aalcalc2.bin
-work/aalcalc3.bin
+* work/aalcalc1.bin
+* work/aalcalc2.bin
+* work/aalcalc3.bin
+
 The user must ensure the work subdirectory exists. The user may also specify a subdirectory of /work to store these files. e.g.
 
-work/summaryset1/aalcalc1.bin
-work/summaryset1/aalcalc2.bin
-work/summaryset1/aalcalc3.bin
+* work/summaryset1/aalcalc1.bin
+* work/summaryset1/aalcalc2.bin
+* work/summaryset1/aalcalc3.bin
 
 The aalcalc losses for all events (all processes) must be written to the /work folder before running aalsummary.
 
