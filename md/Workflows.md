@@ -6,8 +6,8 @@ This section presents some example workflows, starting with single output workfl
 
 ### 1. Portfolio summary level insured loss event loss table
 ***
-In this example, the core workflow is run through to fmcalc and then the losses are summarized by summary set 2, which is "portfolio" summary level.
-This produces multiple output files when run with multiple processes, each containing a subset of the events.  The output files can be concatinated together at the end.
+In this example, the core workflow is run through fmcalc into summarycalc and then the losses are summarized by summary set 2, which is "portfolio" summary level.
+This produces multiple output files when run with multiple processes, each containing a subset of the event set.  The output files can be concatinated together at the end.
 ```
 eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | eltcalc > elt_p1.csv
 eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | eltcalc > elt_p2.csv
