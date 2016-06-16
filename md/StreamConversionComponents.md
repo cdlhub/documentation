@@ -214,9 +214,9 @@ Csv file with the following fields;
 |:--------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | summary_id          | int    |    4   | summary_id representing a grouping of losses                        |   10        |
 | type                | int    |    4   | 1 for analytical mean, 2 for mean calculated from samples           |    1        |
-| mean                | float  |    4   | sum of period mean losses                                           |    67856.9  |
-| mean_squared        | float  |    4   | sum of squared period mean losses                                   |    546577.8 |
-| max_exposure_value  | float  |    4   | maximum exposure value across all periods                           |    10098730 |
+| mean                | float  |    8   | sum of period mean losses                                           |    67856.9  |
+| mean_squared        | float  |    8   | sum of squared period mean losses                                   |    546577.8 |
+| max_exposure_value  | float  |    8   | maximum exposure value across all periods                           |    10098730 |
 
 [Return to top](#streamconversioncomponents)
 
