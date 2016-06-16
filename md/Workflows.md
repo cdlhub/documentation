@@ -5,7 +5,7 @@ ktools is capable of multiple output workflows. This brings much greater flexibi
 This section presents some example workflows, starting with single output workflows and then moving onto more complex multi-output workflows. There are some python scripts provided which execute some of the illustrative workflows using the example data in the repository.  It is assumed that workflows will generally be run across multiple processes, with the number of processes being specified by the user.
 
 ### 1. Portfolio summary level insured loss event loss table
-
+***
 In this example, the core workflow is run through to fmcalc and then the losses are summarized by summary set 2, which is "portfolio" summary level.
 This produces multiple output files when run with multiple processes, each containing a subset of the events.  The output files can be concatinated together at the end.
 ```
@@ -19,7 +19,7 @@ eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | eltc
 See example script [eltcalc_example.py](../../examples/eltcalc_example.py)
 
 ### 2. Portfolio summary level insured loss period loss table
-
+***
 This is very similar to the first example, except the summary samples are run through pltcalc instead.  The output files can be concatinated together at the end.
 ```
 eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | pltcalc > plt_p1.csv
@@ -32,7 +32,7 @@ eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | pltc
 See example script [pltcalc_example.py](../../examples/eltcalc_example.py)
 
 ### 3. Portfolio summary level full uncertainty aggregate and occurrence loss exceedance curves
-
+***
 In this example, the summary samples are calculated as in the first two examples, but the results are output to the work folder.  Until this stage the calculation is ran over multiple processes. Then leccalc reads the summarycalc binaries from the work folder and computes two loss exceedance curves in a single process. Note that you can output all eight loss exceedance curve variants in a single leccalc command.
 ```
 eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - > work/summary2/p1.bin
@@ -41,6 +41,20 @@ leccalc -Ksummary2 -F lec_full_uncertainty_agg.csv -f lec_full_uncertainty_occ.c
 ```
 
 ##### Figure 3. leccalc workflow
-![alt text](../img/leccalc.jpg "eltcalc workflow")
+![alt text](../img/leccalc.jpg "leccalc workflow")
 
 See example script [leccalc_example.py](../../examples/leccalc_example.py)
+
+### 4. Policy summary level average annual loss
+***
+In this example, we are instead summarizing samples to policy level, which is summary set 1 for fm. This time, the samples are run through to aalcalc, and the aalcalc binaries are output to the work folder.  Until this stage the calculation is run over multiple processes. Then aalsummary reads the aalcalc binaries from the work folder and computes the aal output. 
+```
+eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
+eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
+aalcalc -Ksummary1 > aal.csv
+```
+
+##### Figure 3. aalcalc workflow
+![alt text](../img/aalcalc.jpg "aalcalc workflow")
+
+See example script [aalcalc_example.py](../../examples/aalcalc_example.py)
