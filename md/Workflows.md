@@ -45,13 +45,13 @@ leccalc -Ksummary2 -F lec_full_uncertainty_agg.csv -f lec_full_uncertainty_occ.c
 
 See example script [leccalc_example.py](../../examples/leccalc_example.py)
 ***
-### 4. Policy summary level average annual loss
+### 4. Portfolio summary level average annual loss
 
-In this example, we are summing sample losses to policy level, which is summary set 1 for fm in the example data. This time, the samples are run through to aalcalc, and the aalcalc binaries are output to the work folder.  Until this stage the calculation is run over multiple processes. Then, in a single process, aalsummary reads the aalcalc binaries from the work folder and computes the aal output. 
+This time, the samples are run through to aalcalc, and the aalcalc binaries are output to the work folder.  Until this stage the calculation is run over multiple processes. Then, in a single process, aalsummary reads the aalcalc binaries from the work folder and computes the aal output. 
 ```
-eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
-eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -1 - | aalcalc > work/summary1/p1.bin
-aalsummary -Ksummary1 > aal.csv
+eve 1 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | aalcalc > work/summary2/p1.bin
+eve 2 2 | getmodel | gulcalc -r -S100 -i - | fmcalc | summarycalc -f -2 - | aalcalc > work/summary2/p2.bin
+aalsummary -Ksummary2 > aal.csv
 ```
 
 ##### Figure 4. aalcalc workflow
