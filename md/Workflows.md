@@ -66,12 +66,12 @@ gulcalc can generate two output streams at once: item level samples to pipe into
 This is done by writing one stream to a file or named pipe, while streaming the other to standard output down the pipeline.
 
 ```
-eve 1 2 | getmodel | gulcalc -r -S100 -c gulcalcc1.bin -i - | fmcalc | summarycalc -f -2 - | eltcalc > fm_elt_p1.csv
-eve 2 2 | getmodel | gulcalc -r -S100 -c gulcalcc2.bin -i - | fmcalc | summarycalc -f -2 - | eltcalc > fm_elt_p2.csv
-summarycalc -g -2 - < gulcalcc1.bin | eltcalc > gul_elt_p1.csv
-summarycalc -g -2 - < gulcalcc2.bin | eltcalc > gul_elt_p1.csv
+eve 1 2 | getmodel | gulcalc -r -S100 -i gulcalci1.bin -c - | summarycalc -g -2 - | eltcalc > gul_elt_p1.csv
+eve 2 2 | getmodel | gulcalc -r -S100 -i gulcalci2.bin -c - | summarycalc -g -2 - | eltcalc > gul_elt_p2.csv
+fmcalc < gulcalci1.bin | summarycalc -f -2 - | eltcalc > fm_elt_p1.csv
+fmcalc < gulcalci2.bin | summarycalc -f -2 - | eltcalc > fm_elt_p2.csv
 ```
-Note that the gulcalc coverage stream does not need to be written off to disk, as it can be sent to a 'named pipe', which keeps the data in-memory and kicks off a new process.  This is easy to do in Linux (but harder in Windows).
+Note that the gulcalc item stream does not need to be written off to disk, as it can be sent to a 'named pipe', which keeps the data in-memory and kicks off a new process.  This is easy to do in Linux (but harder in Windows).
 
 Figure 5 illustrates an example workflow.
 
