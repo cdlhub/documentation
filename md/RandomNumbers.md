@@ -56,13 +56,13 @@ The random number file(s) is read into memory at the start of the gulcalc proces
 
 The ridx is generated from the sample index (sidx), event_id and group_id using the following modulus function;
 
-ridx= sidx + mod(group_id x P1 x P3 + event_id x P2, D)
+ridx= sidx + mod(group_id x P1 x P3 + event_id x P2, R)
 
-* D is the divisor of the modulus, equal to the total number of random numbers in the list.
-* P1 and P2 are the first two prime numbers which are greater than half of D.
+* R is the divisor of the modulus, equal to the total number of random numbers in the list.
+* P1 and P2 are the first two prime numbers which are greater than half of R.
 * P3 is the first prime number which is bigger than the number of samples, S.
 
-This formula pseudo-randomly assigns a starting position index to each event_id and group_id combo between 0 and D-1, and then S random numbers are drawn by incrementing the starting position by the sidx.
+This formula pseudo-randomly assigns a starting position index to each event_id and group_id combo between 0 and R-1, and then S random numbers are drawn by incrementing the starting position by the sidx.
 
 
 [Go to Financial Module](FinancialModule.md)
