@@ -1,4 +1,4 @@
-# Workflows
+# Workflows <a id="workflows"></a>
 
 ktools is capable of multiple output workflows. This brings much greater flexibility, but also more complexity for users of the toolkit.  
 
@@ -98,5 +98,9 @@ Figure 6 illustrates multiple summary level streams, each of which can go to dif
 ##### Figure 6. Multiple summary level workflows 
 ![alt text](../img/summarycalc.jpg "Ground up and insured loss workflow")
 
+[Return to top](#workflows)
 
+[Go to Appendix A Random numbers](RandomNumbers.md)
+
+[Back to Contents](Contents.md)
 
