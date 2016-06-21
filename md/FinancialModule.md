@@ -142,7 +142,7 @@ And next, for profile 6, the values for the overall policy deductible, limit and
 |:------------|--------|-----------| -------------|--------------------|
 |       3     | 1      | 1,000,000 | 1,000        |    0.1             |
 
-In practice, all profile values are stored in a single flattened format which contains all supported profile fields, but conceptually they belong in separate profile value tables (see fm profile in [Input tools](Inputtools.md)).
+In practice, all profile values are stored in a single flattened format which contains all supported profile fields, but conceptually they belong in separate profile value tables (see fm profile in [4.3 Data Conversion Components](DataConversionComponents.md)).
 
 For any given profile we have two standard rules:
 * **calcrule_id**, being the Function used to calculate the losses from the given Profile’s fields. More information about the functions can be found in [FM Profiles](fmprofiles.md).
@@ -186,7 +186,7 @@ For this example at level 3, the policytc data might look as follows;
 |    2     |     3    |    1     |    23       |
 
 
-## Outputs and back-allocation
+## Output and back-allocation
 
 Losses are output by event, output level and sample.  The table looks like this;
 
