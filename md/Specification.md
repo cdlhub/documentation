@@ -1,8 +1,8 @@
-# Specification <a id="specification"></a>
+# 3. Specification <a id="specification"></a>
 
 ### Introduction
 
-This section specifies the components and data stream structures in the in-memory kernel.
+This section specifies the core components and data stream structures in the in-memory kernel.
 These components are;
 
 * **[eve](#eve)**
