@@ -1,4 +1,4 @@
-# Output Components <a id="outputcomponents"></a>
+# 4.2 Output Components <a id="outputcomponents"></a>
 
 ### eltcalc <a id="eltcalc"></a>
 ***
@@ -294,6 +294,6 @@ The aalcalc binaries and the occurrence file are read into memory. The sum of me
 
 [Return to top](#outputcomponents)
 
-[Go to Data conversion components section](DataConversionComponents.md)
+[Go to 4.3 Data conversion components section](DataConversionComponents.md)
 
 [Back to Contents](Contents.md)
