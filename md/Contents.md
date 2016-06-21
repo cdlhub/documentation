@@ -9,7 +9,7 @@
 ##### 4.3 [Data conversion components](DataConversionComponents.md)
 ##### 4.4 [Stream conversion components](StreamConversionComponents.md)
 ##### 5. [Financial Module](FinancialModule.md)
-##### 6. [Workflows]
+##### 6. [Workflows](Workflows.md)
 ##### 7. [Planned work](PlannedWork.md)
 ##### 8. Appendix
 ###### 8.A [Random numbers](RandomNumbers.md)
