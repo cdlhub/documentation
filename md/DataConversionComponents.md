@@ -1,4 +1,4 @@
-# Data conversion components <a id="dataconversioncomponents"></a>
+# 4.3 Data conversion components <a id="dataconversioncomponents"></a>
 
 The following components convert input data in csv format to the binary format required by the calculation components in the reference model;
 
@@ -604,6 +604,6 @@ $ fmxreftocsv < fm_xref.bin > fm_xref.csv
 
 [Return to top](#dataconversioncomponents)
 
-[Go to Stream conversion components section](StreamConversionComponents.md)
+[Go to 4.4 Stream conversion components section](StreamConversionComponents.md)
 
 [Back to Contents](Contents.md)
