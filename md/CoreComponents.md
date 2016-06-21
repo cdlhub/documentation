@@ -266,6 +266,6 @@ summarycalc also calculates the maximum exposure value by summary_id and event_i
 
 [Return to top](#corecomponents)
 
-[Go to Output Components section](OutputComponents.md)
+[Go to 4.2 Output Components section](OutputComponents.md)
 
 [Back to Contents](Contents.md)
