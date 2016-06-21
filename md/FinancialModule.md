@@ -1,4 +1,4 @@
-# Financial Module
+# 5. Financial Module  <a id="financialmodule"></a>
 
 The Oasis Financial Module is a data-driven process design for calculating the losses on (re)insurance contracts. It has an abstract design in order to cater for the many variations in contract structures and terms. The way Oasis works is to be fed data in order to execute calculations, so for the insurance calculations it needs to know the structure, parameters and calculation rules to be used. This data must be provided in the files used by the Oasis Financial Module:
 
@@ -46,7 +46,7 @@ The Profiles currently supported are as follows;
 | Limit as a proportion of loss                                      | 13        |   15        |
 | Deductible as a proportion of loss                                 | 14        |   16        |
 
-See [FM Profiles](fmprofiles.md) for more details. 
+See Appendix [B FM Profiles](fmprofiles.md) for more details. 
 
 ## Design
 
@@ -205,6 +205,8 @@ In R1.1 of Oasis we took the view that it was simpler throughout to refer back t
 
 In the implementation this required back-allocating losses to item at every level in a multi-level calculation even the next level calculaton did not require it, which was inefficient.   The aggregations are now defined in terms of the previous level groupings (from_agg_id in the programme table, rather than item_id) and the execution path now only supports simple hierarchies.
 
-[Go to FM profiles](fmprofiles.md)
+[Return to top](#financialmodule)
+
+[Go to 6. Workflows](Workflows.md)
 
 [Back to Contents](Contents.md)
