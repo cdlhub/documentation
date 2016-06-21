@@ -47,6 +47,6 @@ Finally, the **[stream conversion components](StreamConversionComponents.md)** s
 
 [Return to top](#referencemodel)
 
-[Go to Core Components section](CoreComponents.md)
+[Go to 4.1 Core Components section](CoreComponents.md)
 
 [Back to Contents](Contents.md)
