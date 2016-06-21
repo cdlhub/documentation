@@ -6,7 +6,7 @@ The Oasis Financial Module is a data-driven process design for calculating the l
 * **fm_profile**: defines the layers and terms
 * **fm_policytc**: defines the relationship of the contract layers
 * **fm_xref**: specifies the summary level of the output losses
-* 
+ 
 This section explains the design of the Financial Module which has been implemented in the **fmcalc** component. 
 * Runtime parameters and usage instructions for fmcalc are covered in [4.1 Core Components](CoreComponents.md). 
 * The formats of the input files are covered in [4.3 Data Conversion Components](DataConversionComponents.md). 
