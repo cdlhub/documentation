@@ -10,6 +10,5 @@
 ##### 4.4 [Stream conversion components](StreamConversionComponents.md)
 ##### 5. [Financial Module](FinancialModule.md)
 ##### 6. [Workflows](Workflows.md)
-##### Appendix
-###### A [Random numbers](RandomNumbers.md)
-###### B [FM profiles](fmprofiles.md)
+##### Appendix A [Random numbers](RandomNumbers.md)
+##### Appendix B [FM profiles](fmprofiles.md)
