@@ -252,6 +252,6 @@ No standard output stream. The results table is exported to a csv file. See the 
 
 [Return to top](#specification)
 
-[Go to Reference model](ReferenceModelOverview.md)
+[Go to 4. Reference model](ReferenceModelOverview.md)
 
 [Back to Contents](Contents.md)
