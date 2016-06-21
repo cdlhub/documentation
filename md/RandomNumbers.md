@@ -1,4 +1,4 @@
-# Random numbers <a id="randomnumbers"></a>
+# Appendix A: Random numbers <a id="randomnumbers"></a>
 
 Simple uniform random numbers are assigned to each event, group and sample number to sample ground up loss in the gulcalc process. A group is a collection of items which share the same group_id, and is the method of supporting spatial correlation in ground up loss sampling in Oasis and ktools.
 
@@ -64,7 +64,8 @@ ridx= sidx + mod(group_id x P1 x P3 + event_id x P2, R)
 
 This formula pseudo-randomly assigns a starting position index to each event_id and group_id combo between 0 and R-1, and then S random numbers are drawn by incrementing the starting position by the sidx.
 
+[Return to top](#financialmodule)
 
-[Go to Financial Module](FinancialModule.md)
+[Go to Appendix B FM Profiles](fmprofiles.md)
 
 [Back to Contents](Contents.md)
