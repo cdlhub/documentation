@@ -10,9 +10,9 @@ Static data
 * **[vulnerabilitytobin](#vulnerability)** converts the vulnerability data.
 
 Input data
-* **[coveragetobin](#coverage)** converts the coverages data.
+* **[coveragetobin](#coverages)** converts the coverages data.
 * **[evetobin](#events)** converts a list of event_ids.
-* **[itemtobin](#item)** converts the items data.
+* **[itemtobin](#items)** converts the items data.
 * **[gulsummaryxreftobin](#gulsummaryxref)** converts the gul summary xref data.
 * **[fmpolicytctobin](#fmpolicytc)** converts the fm policytc data.
 * **[fmprogrammetobin](#fmprogramme)** converts the fm programme data.
@@ -64,16 +64,16 @@ The csv file should contain the following fields and include a header row.
 | interpolation     | float  |    4   | Interpolation damage value for the bin (usually the mid-point)|   0.015     |
 | interval_type     | int    |    4   | Identifier of the interval type, e.g. closed, open            |   1201      | 
 
-The data should be ordered by bin_index ascending with bin_index starting from 1 and not contain nulls.
+The data should be ordered by bin_index ascending and not contain nulls. The bin_index should be a contiguous sequence of integers starting from 1.
 
-##### damagetobin
+##### damagebintobin
 ```
-$ damagetobin < damage_bin_dict.csv > damage_bin_dict.bin
+$ damagebintobin < damage_bin_dict.csv > damage_bin_dict.bin
 ```
 
-##### damagetocsv
+##### damagebintocsv
 ```
-$ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
+$ damagebintocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ```
 [Return to top](#dataconversioncomponents)
 
@@ -82,8 +82,8 @@ $ damagetocsv < damage_bin_dict.bin > damage_bin_dict.csv
 ***
 The event footprint is required for the getmodel component, as well as an index file containing the starting positions of each event block. These must have the following location and filenames;
 
-* static/eventfootprint.bin
-* static/eventfootprint.idx
+* static/footprint.bin
+* static/footprint.idx
 
 ##### File format
 The csv file should contain the following fields and include a header row.
@@ -99,20 +99,20 @@ The data should be ordered by event_id, areaperil_id and not contain nulls.
 
 ##### footprinttobin
 ```
-$ footprinttobin -bin eventfootprint.bin -idx eventfootprint.idx < eventfootprint.csv
+$ footprinttobin -i {number of intensity bins} < footprint.csv
 ```
-This command will create a binary file eventfootprint.bin and an index file eventfootprint.idx in the working directory.
+This command will create a binary file footprint.bin and an index file footprint.idx in the working directory. The number of intensity bins is the maximum value of intensity_bin_index. 
 
-In general the usage is;
+There is an additional parameter -n, which should be used when there is only one record per event_id and areaperil_id, with a single intensity_bin_index value and prob = 1. This is the special case 'no hazard intensity uncertainty'. In this case, the usage is as follows.
 
 ```
-$ footprinttobin -bin {binary filename} -idx {index filename} < input.csv
+$ footprinttobin -i {number of intensity bins} -n < footprint.csv
 ```
-input.csv must conform to the csv format above.
+Both parameters -i and -n are held in the header of the footprint.bin and used in getmodel.
 
 ##### footprinttocsv
 ```
-$ footprinttocsv < eventfootprint.bin > eventfootprint.csv
+$ footprinttocsv < footprint.bin > footprint.csv
 ```
 
 [Return to top](#dataconversioncomponents)
@@ -214,12 +214,14 @@ The csv file should contain the following fields and include a header row.
 | damage_bin_index   | int    |    4   | Identifier of the damage bin                                  |     20      |
 | prob               | float  |    4   | The probability mass for the damage bin                       |    0.186    | 
 
-The data should be ordered by vulnerability_id and not contain nulls. 
+The data should be ordered by vulnerability_id, intensity_bin_index and not contain nulls. 
 
 ##### vulnerabilitytobin
+
 ```
-$ vulnerabilitytobin < vulnerability.csv > vulnerability.bin
+$ vulnerabilitytobin -d {number of damage bins} < vulnerability.csv > vulnerability.bin
 ```
+The parameter -d number of damage bins is the maximum value of damage_bin_index. This is held in the header of vulnerability.bin and used by getmodel.
 
 ##### vulnerabilitytocsv
 ```
