@@ -1,4 +1,4 @@
-# FM Profiles
+# Appendix B: FM Profiles <a id="fmprofiles"></a>
 
 This section specifies the attributes and rules for the following list of profiles.
 
@@ -247,5 +247,6 @@ loss = x.loss;
 loss = loss - (loss * ded);
 if (loss < 0) loss = 0;
 ```
+[Return to top](#fmprofiles)
 
 [Back to Contents](Contents.md)
