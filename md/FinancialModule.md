@@ -5,10 +5,11 @@ The Oasis Financial Module is a data-driven process design for calculating the l
 * **fm_programme**: defines how coverages are grouped into accounts and programmes
 * **fm_profile**: defines the layers and terms
 * **fm_policytc**: defines the relationship of the contract layers
-
+* **fm_xref**: specifies the summary level of the output losses
+* 
 This section explains the design of the Financial Module which has been implemented in the **fmcalc** component. 
-* Runtime parameters and usage instructions for fmcalc are covered in [Reference Model](ReferenceModel.md). 
-* The formats of the input files are covered in [Input Data](Inputtools.md). 
+* Runtime parameters and usage instructions for fmcalc are covered in [4.1 Core Components](CoreComponents.md). 
+* The formats of the input files are covered in [4.3 Data Conversion Components](DataConversionComponents.md). 
  
 In addition, there separate github repository [ktest](https://github.com/OasisLMF/ktest) which is an extended test suite for ktools and contains a library of financial module worked examples provided by Oasis Members with a full set of input and output files (access on request).
 
@@ -50,11 +51,12 @@ See Appendix [B FM Profiles](fmprofiles.md) for more details.
 
 ## Design
 
-The Oasis Financial Module is a data-driven process design for calculating the losses on insurance policies. Like the Exposure Module, it is an abstract design in order to cater for the many variations and has three basic concepts:
+The Oasis Financial Module is a data-driven process design for calculating the losses on insurance policies. It is an abstract design in order to cater for the many variations and has four basic concepts:
 
 1. A **programme** which defines which **items** are grouped together at which levels for the purpose of providing loss amounts to policy terms and conditions. The programme has a user-definable profile and dictionary called **prog** which holds optional reference details such as a description and account identifier. The prog table is not required for the calculation and therefore does not appear in the kernel input files.
 2. A policytc **profile** which provides the parameters of the policy’s terms and conditions such as limit and deductible and calculation rules.
 3. A **policytc** cross-reference file which associates a policy terms and conditions profile to each programme level aggregation.
+4. A **xref** file which specifies how the output losses are summarized.
 
 The profile not only provides the fields to be used in calculating losses (such as limit and deductible) but also which mathematical calculation (calcrule_id) and which allocation rule (allocrule_id) to apply.
 
@@ -104,14 +106,14 @@ Items 1-4 represent Structure, Other Structure, Contents and Time Element covera
 
 The actual items falling into the programme are specified in the **programme** table together with the aggregation groupings that go into a given level calculation:
 
-| prog_id  | from_agg_id | level_id| to_agg_id |
-|:---------|-------------|---------| ---------:|
-|       1  | 1           |     1   | 1         |
-|       1  | 2           |     1   | 1         |
-|       1  | 3           |     1   | 1         |
-|       1  | 4           |     1   | 2         |
-|       1  | 1           |     2   | 1         |
-|       1  | 2           |     2   | 1         |
+| from_agg_id | level_id| to_agg_id |
+|:------------|---------| ---------:|
+| 1           |     1   | 1         |
+| 2           |     1   | 1         |
+| 3           |     1   | 1         |
+| 4           |     1   | 2         |
+| 1           |     2   | 1         |
+| 2           |     2   | 1         |
 
 Note that from_agg_id for level_id=1 is equal to the item_id in the input loss table (but in theory from_agg_id could represent a higher level of grouping, if required). 
 
@@ -142,21 +144,19 @@ And next, for profile 6, the values for the overall policy deductible, limit and
 
 In practice, all profile values are stored in a single flattened format which contains all supported profile fields, but conceptually they belong in separate profile value tables (see fm profile in [Input tools](Inputtools.md)).
 
-For any given profile we have four standard rules:
+For any given profile we have two standard rules:
 * **calcrule_id**, being the Function used to calculate the losses from the given Profile’s fields. More information about the functions can be found in [FM Profiles](fmprofiles.md).
 * **allocrule_id**, being the rule for allocating back to ITEM level. There are really only two meaningful values here – don’t allocate (0) used typically for the final level to avoid maintaining lots of detailed losses, or allocate back to ITEMs (1) used in all other cases which is in proportion to the input ground up losses.
 (Allocation does not need to be on this basis, by the way, there could be other rules such as allocate back always on TIV or in proportion to the input losses from the previous level, but we have implemented a ground up loss back-allocation rule.
-* **sourcerule_id** (not currently used), which is used for conditional logic if TIV (for example) needs to be used in a calculation.
-* **levelrule_id** (not currently used) used for processing level-specific rules such as “special conditions”.
 
 ### Policytc
 The **policytc** table specifies the insurance policies (a policy in Oasis FM is a combination of prog_id and layer_id) and the separate terms and conditions which will be applied to each layer_id/agg_id for a given level. In our example, we have a limit and deductible with the same value applicable to the combination of the first three items, a limit and deductible for the fourth item (time) in level 1, and then a limit, deductible, and line applicable at level 2 covering all items. We’d represent this in terms of the distinct agg_ids as follows:
 
-| prog_id | layer_id | level_id | agg_id   | policytc_id |
-|:--------|----------|----------| ---------|------------:|
-|    1    |    1     |     1    |    1     |    1        |
-|    1    |    1     |     1    |    2     |    2        |
-|    1    |    1     |     2    |    1     |    3        |
+| layer_id | level_id | agg_id   | policytc_id |
+|:---------|----------| ---------|------------:|
+|    1     |     1    |    1     |    1        |
+|    1     |     1    |    2     |    2        |
+|    1     |     2    |    1     |    3        |
 
 In words, the data in the table mean;
 
@@ -180,26 +180,33 @@ Layers can be used to model multiple sets of terms and conditions applied to the
 
 For this example at level 3, the policytc data might look as follows;
 
-| prog_id | layer_id | level_id | agg_id   | policytc_id |
-|:--------|----------|----------| ---------|------------:|
-|    1    |    1     |     3    |    1     |    22       |
-|    1    |    2     |     3    |    1     |    23       |
+| layer_id | level_id | agg_id   | policytc_id |
+|:---------|----------| ---------|------------:|
+|    1     |     3    |    1     |    22       |
+|    2     |     3    |    1     |    23       |
 
 
 ## Outputs and back-allocation
 
-Losses are output by event, programme, layer, output level and sample.  The table looks like this;
+Losses are output by event, output level and sample.  The table looks like this;
 
-| event_id|  prog_id | layer_id | output_id| sidx  |  loss    |
-|:--------|----------|----------| ---------|-------|---------:|
-|    1    |    1     |     1    |    1     |    1  |   455.24 |
-|    2    |    1     |     1    |    1     |    1  |   345.6  |
+| event_id|  output_id | sidx  |  loss    |
+|:--------|------------|-------|---------:|
+|    1    |      1     |    1  |   455.24 |
+|    2    |      1     |    1  |   345.6  |
 
-The output_id represents some grouping of items, depending on what allocation rule is applied at the final level of calculation;
-* If allocrule_id = 0 for all policytc_ids at the final level then output_id = agg_id of the final level
-* If allocrule_id = 1 for all policytc_ids at the final level then output_id = from_agg_id of the first level.
+The output_id is specified by the user in the **xref** table, and is a unique combination of agg_id and layer_id. For instance;
 
-In other words, losses are either output at the contract level or back-allocated to the lowest level, which is item_id. To avoid unnecessary computation, it is recommended not to back-allocate unless losses are required to be reported at a more detailed level than the contract level (site or zip code, for example). In this case, losses are re-aggregated up from item level in a separate output module, using an item_id to summary level cross reference table.
+| output_id | agg_id   | layer_id    |
+|:----------|----------|------------:|
+| 1         | 1        |    1        | 
+| 2         | 1        |    2        |
+
+There are two options, depending on whether the losses are allocated back to the items at the final level or not. 
+* If allocrule_id = 0 for all policytc_ids at the final level then agg_id = to_agg_id of the final level in the **programme** table
+* If allocrule_id = 1 for all policytc_ids at the final level then output_id = from_agg_id of the first level in the **programme** table
+
+In other words, losses are either output at the contract level or back-allocated to the lowest level, which is item_id. To avoid unnecessary computation, it is recommended not to back-allocate unless losses are required to be reported at a more detailed level than the contract level (site or zip code, for example). In this case, losses are re-aggregated up from item level (represented by output_id in fmcalc output) in summarycalc, using the fmsummaryxref table.
 
 In R1.1 of Oasis we took the view that it was simpler throughout to refer back to the base items rather than use a hierarchy of aggregated loss calculations. So, for example, we could have calculated a loss at the site level and then used this calculated loss directly at the policy conditions level but instead we allocated back to item level and then re-aggregated to the next level. The reason for this was that intermediate conditions may only apply to certain items so if we didn’t go back to the base item “ground-up” level then any higher level could have a complicated grouping of a level. 
 
