@@ -112,8 +112,9 @@ Both parameters -i and -n are held in the header of the footprint.bin and used i
 
 ##### footprinttocsv
 ```
-$ footprinttocsv < footprint.bin > footprint.csv
+$ footprinttocsv > footprint.csv
 ```
+footprinttocsv requires a binary file footprint.bin and an index file footprint.idx to be present in the working directory. 
 
 [Return to top](#dataconversioncomponents)
 
@@ -263,7 +264,7 @@ $ coveragetocsv < coverages.bin > coverages.csv
 <a id="events"></a>
 ### events
 ***
-One or more event binaries are required by eve and getmodel. It must have the following location and filename;
+One or more event binaries are required by eve. It must have the following location and filename;
 * input/events.bin
 
 ##### File format
