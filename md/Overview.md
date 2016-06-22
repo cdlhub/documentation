@@ -21,17 +21,17 @@ The reference model demonstrates an implementation of the principal calculation 
 
 The analysis workflows are controlled by the user, not the toolkit, and they can be as simple or as complex as required.
 
-The simplest workflow is straight through in-memory processing to produce a single output file.  This minimises the amount of disk I/O at each stage and results in the best performance. This workflow is shown in Figure 2.
+The simplest workflow is in-memory parallel processing to produce a single output.  This minimises the amount of disk I/O at each stage and results in the best performance. This workflow is shown in Figure 2.
 
-##### Figure 2. Single output file processing
-![alt text](../img/eltcalc.jpg "Single output file processing")
+##### Figure 2. Single output processing
+![alt text](../img/eltcalc.jpg "Single output processing")
 
 However it is possible to stream data from one process into to several processes, allowing the calculation of multiple outputs simultaneously, as shown in Figure 3.
 
 ##### Figure 3. Multiple output file processing
 ![alt text](../img/gulandfm.jpg "Multiple output file processing")
 
-For multi-output, multi-process workflows, Linux operating systems provide functionality such as 'named pipes' which in-memory data streams can be diverted to and manipulated as if they were files, and 'tee' which sends a stream from one process into multiple processes.  An example script for multi-process workflows are provided in the examples folder. Also, see [Workflows](Workflows.md).
+For multi-output, multi-process workflows, Linux operating systems provide functionality such as 'named pipes' which in-memory data streams can be diverted to and manipulated as if they were files, and 'tee' which sends a stream from one process into multiple processes.  An example script for multi-process workflows is provided in the examples folder. Also, see [Workflows](Workflows.md).
 
 [Go to 3. Specification](Specification.md)
 
