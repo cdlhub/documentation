@@ -21,7 +21,7 @@ $ eve [parameters] | getmodel | gulcalc [parameters] > [stdout].bin
 ##### Example
 ```
 $ eve 1 2 > events1_2.bin 
-$ eve 1 2 | getmodel | gulcalc -S100 -i - > gulcalc.bin
+$ eve 1 2 | getmodel | gulcalc -r -S100 -i - > gulcalc1_2.bin
 ```
 
 In this example, the events from the file **events.bin** will be read into memory and the first half (partition 1 of 2) would be streamed out to binary file, or downstream to a single process calculation workflow.
@@ -32,7 +32,7 @@ The program requires an event binary. The file is picked up from the **input** s
 
 The data structure of events.bin is a simple list of event ids (4 byte integers).
 
-[Return to top](#referencemodel)
+[Return to top](#corecomponents)
 
 <a id="getmodel"></a>
 ### getmodel 
@@ -78,7 +78,7 @@ The getmodel output stream is ordered by event and streamed out in blocks for ea
 ##### Calculation
 The program filters the eventfootprint binary file for all 'areaperil_id's which appear in the items file. This selects the event footprints that affect the exposures on the basis on their location, and discards the rest.  Similarly the program filters the vulnerability file for 'vulnerability_id's that appear in the items file. This removes damage distributions which are not relevant for the exposures. Then the intensity distributions from the eventfootprint file and conditional damage distributions from the vulnerability file are convolved for every combination of areaperil_id and vulnerability_id in the items file. The effective damage probabilities are calculated by a sum product of conditional damage probabilities with intensity probabilities for each event, areaperil, vulnerability combination and each damage bin.  The resulting discrete probability distributions are converted into discrete cumulative distribution functions 'cdfs'.  Finally, the damage bin mid-point from the damage bin dictionary ('interpolation' field) is read in as a new field in the cdf stream as 'bin_mean'.  This field is the conditional mean damage for the bin and it is used to facilitate the calculation of mean and standard deviation in the gulcalc component. 
 
-[Return to top](#referencemodel)
+[Return to top](#corecomponents)
 
 <a id="gulcalc"></a>
 ### gulcalc
@@ -158,7 +158,7 @@ A final calculation which occurs in the gulcalc program is of the mean and stand
 
 If the -R parameter is used along with a specified number of random numbers then random numbers used for sampling are generated on the fly for each event and group of items which have a common group_id using the Mersenne twister psuedo random number generator (the default RNG of the C++ v11 compiler).  if the -r parameter is used, gulcalc reads a random number from the provided random number file. See [Random Numbers](RandomNumbers.md) for more details.
 
-[Return to top](#referencemodel)
+[Return to top](#corecomponents)
 
 <a id="fmcalc"></a>
 ### fmcalc
@@ -201,7 +201,7 @@ The program requires the item, coverage and fm input data, which are Oasis abstr
 ##### Calculation
 See [Financial Module](FinancialModule.md)
 
-[Return to top](#referencemodel)
+[Return to top](#corecomponents)
 
 <a id="summarycalc"></a>
 ### summarycalc 
