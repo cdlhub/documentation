@@ -31,7 +31,7 @@ However it is possible to stream data from one process into to several processes
 ##### Figure 3. Multiple output file processing
 ![alt text](../img/gulandfm.jpg "Multiple output file processing")
 
-For multi-output, multi-process workflows, Linux operating systems provide functionality such as 'named pipes' which in-memory data streams can be diverted to and manipulated as if they were files, and 'tee' which sends a stream from one process into multiple processes.  An example script for multi-process workflows is provided in the examples folder. Also, see [Workflows](Workflows.md).
+For multi-output, multi-process workflows, Linux operating systems provide functionality such as 'named pipes' which in-memory data streams can be diverted to and manipulated as if they were files, and 'tee' which sends a stream from one process into multiple processes.  An example script for multi-process, multi-output workflows is provided in the examples folder. Also, see [Workflows](Workflows.md).
 
 [Go to 3. Specification](Specification.md)
 
