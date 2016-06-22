@@ -16,7 +16,7 @@ $ eltcalc < [stdin].bin > elt.csv
 
 ##### Example
 ```
-$ eve 1 1 | getmodel | gulcalc -S100 -c - | summarycalc -g -1 - | eltcalc > elt.csv
+$ eve 1 1 | getmodel | gulcalc -r -S100 -c - | summarycalc -g -1 - | eltcalc > elt.csv
 $ eltcalc < summarycalc.bin > elt.csv 
 ```
 
@@ -39,8 +39,7 @@ csv file with the following fields;
 | standard_deviation| float  |    4   | sample standard deviation                                           |    945.89   | 
 | exposure_value    | float  |    4   | sum of TIV for summary_id affected by event_id                      |   70000     |
 
-
-[Return to top](#outputs)
+[Return to top](#outputcomponents)
 
 ### leccalc <a id="leccalc"></a>
 ***
@@ -142,6 +141,8 @@ csv file with the following fields;
 | return_period     | float  |    4   | return period interval                                              |    250      |
 | loss              | float  |    4   | loss exceedance threshold for return period                         |    546577.8 |
 
+[Return to top](#outputcomponents)
+
 ### pltcalc <a id="pltcalc"></a>
 ***
 The program outputs sample mean and standard deviation by summary_id,  event_id and period_no.  It also outputs an event occurrence date.
@@ -158,7 +159,7 @@ $ pltcalc < [stdin].bin > plt.csv
 
 ##### Example
 ```
-$ eve 1 1 1 | getmodel | gulcalc -S100 -C1 | summarycalc -1 - | pltcalc > plt.csv
+$ eve 1 1 1 | getmodel | gulcalc -r -S100 -C1 | summarycalc -1 - | pltcalc > plt.csv
 $ pltcalc < summarycalc.bin > plt.csv 
 ```
 ##### Calculation
@@ -193,6 +194,8 @@ In the latter case, the output format is;
 | occ_year          | int    |    4   | the year number of the event occurrence                             |   56876     |
 | occ_month         | int    |    4   | the month of the event occurrence                                   |   5         |
 | occ_year          | int    |    4   | the day of the event occurrence                                     |   16        |
+
+[Return to top](#outputcomponents)
 
 ### aalcalc <a id="aalcalc"></a>
 ***
@@ -234,6 +237,8 @@ The program requires the occurrence file;
 
 ##### Calculation
 The occurrence file is read into memory. From the summarycalc stream data, the event sample means and sample means squared are computed for each summary_id.  The sample means and squared sampled means are summed by period and summary_id, according to which events are assigned to periods in the occurrence data.  Then the means and squared means are summed across the periods, for each summary_id.  The exposure_value, which is held at an event_id, summary_id in the summarycalc header is also accumulated by summary_id and period, and then across periods. In this case however, it is the maximum exposure value which is carried through the accumulations, not the sum.
+
+[Return to top](#outputcomponents)
 
 ### aalsummary <a id="aalsummary"></a>
 ***
