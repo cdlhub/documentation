@@ -105,7 +105,7 @@ getmodel data packet structure (record repeated no_of_bin times)
 <a id="gulcalc"></a>
 ## gulcalc 
 
-gulcalc is the component which calculates ground up loss. It takes the getmodel output as standard input and based on the sampling parameters specified, performs Monte Carlo sampling and numerical integration. The output is a stream of ground up loss samples in Oasis kernel format, with numerical mean (sidx=-1) and standard deviation (sidx=-2).
+gulcalc is the component which calculates ground up loss. It takes the getmodel output as standard input and based on the sampling parameters specified, performs Monte Carlo sampling and numerical integration. The output is a stream of ground up loss samples in Oasis kernel format, with numerical integration mean (sidx=-1) and standard deviation (sidx=-2).
 
 ##### Input
 Same as getmodel output or a binary file of the same data structure can be piped into gulcalc.
