@@ -12,15 +12,17 @@ These components are;
 * **[summarycalc](#summarycalc)**
 * **[outputcalc](#outputcalc)**
 
-Most components have a standard input (stdin) and output (stdout) data stream structure. These data structures are not defined explicitly as meta data in the code as they would be in a database language, and they have been designed to minimise the volume flowing through the pipeline. For example, indexes which are common to a block of data are defined as a header record and then only the variable data records that are relevant to the header key are part of the data stream. The names of the data fields given below are unimportant, only their position in the data stream in order to perform the calculations defined in the program.
+The components have a standard input (stdin) and/or output (stdout) data stream structure. eve is the stream-initiating component which only has a standard output stream, whereas outputcalc is a stream-terminating component with only a standard input stream.
 
-A single implementation of each of the above components is provided in the Reference Model,  with the exception of outputcalc where four reference implementations are provided. These are called eltcalc, leccalc, aalcalc, and pltcalc. The output from these components vary and it is up to the developer to decide what form the output takes. This specification covers the input stream requirements of outputcalc, which represents one of a potentially unlimited set of output components.  
+The stream data structures have been designed to minimise the volume flowing through the pipeline, using data packet 'headers' to remove redundant data. For example, indexes which are common to a block of data are defined as a header record and then only the variable data records that are relevant to the header key are part of the data stream. The names of the data fields given below are unimportant, only their position in the data stream is important in order to perform the calculations defined in the program.
+
+An implementation of each of the above components is provided in the [Reference Model](ReferenceModelOverview.md), where usage instructions and command line parameters are provided.
 
 #### Stream types
 
 The architecture supports multiple stream types. Therefore a developer can define a new type of data stream within the framework by specifying a unique stream_id of the stdout of one or more of the components, or even write a new component which performs an intermediate calculation between the existing components.
 
-The stream_id is the first 4 byte header of the stdout streams. The higher byte is reserved to identify the type of stream (which component), and the 2nd to 4th bytes hold the identifier of the stream. This is used for validation of pipeline commands to report errors if the components are not being used correctly.
+The stream_id is the first 4 byte header of the stdout streams. The higher byte is reserved to identify the type of stream (which component), and the 2nd to 4th bytes hold the identifier of the stream. This is used for validation of pipeline commands to report errors if the components are not being used in the correct order.
 
 The current reserved values are as follows;
 
@@ -37,13 +39,11 @@ Reserved stream_ids;
 
 | Byte 1 | Bytes 2-4 |  Description                                                              		            |
 |:-------|-----------|:-----------------------------------------------------------------------------------------|
-|    0   |     1     |  getmodel - Reference example for Oasis format CDF output                                |
+|    0   |     1     |  getmodel - Reference example for Oasis format effective damageability CDF output        |
 |    1   |     1     |  gulcalc - Reference example for Oasis format item level ground up loss sample output    |
 |    1   |     2     |  gulcalc - Reference example for Oasis format coverage level ground up loss sample output|
 |    2   |     1     |  fmcalc - Reference example for Oasis format insured loss sample output                  |
 |    3   |     1     |  summarycalc - Reference example for Oasis format summary level loss sample output       |
-
-outputcalc has no stream_id as it output results directly to csv.
 
 There are rules about which stream types can be accepted as inputs to the components. These are;
 * gulcalc can only take stream 0/1 (getmodel output) as input
@@ -72,7 +72,7 @@ Note that eve has no stream_id header.
 <a id="getmodel"></a>
 ## getmodel 
 
-getmodel is the component which generates a stream of cdfs for a given set of event_ids. 
+getmodel is the component which generates a stream of effective damageability cdfs for a given set of event_ids. 
 
 ##### Input
 Same as eve output or a binary file of the same input format can be piped into getmodel.
@@ -242,6 +242,7 @@ The data packet may be a variable length and so a sidx of 0 identifies the end o
 
 ## outputcalc <a id="outputcalc"></a>
 
+with the exception of outputcalc where four reference implementations are provided. These are called eltcalc, leccalc, aalcalc, and pltcalc. The output from these components vary and it is up to the developer to decide what form the output takes. This specification covers the input stream requirements of outputcalc, which represents one of a potentially unlimited set of output components. 
 outputcalc performs results analysis such as an event loss table or loss exceedance curve on the sampled output from either the gulcalc or fmcalc program.  The output is a results table in csv format.  Four examples are provided in the Reference Model.
 
 ##### Input
