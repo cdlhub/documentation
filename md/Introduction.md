@@ -16,7 +16,7 @@ In 2016 the functionality of ktools was extended to include the full range of Ke
 
 The Kernel is provided as a toolkit of components (“ktools”) which can be invoked at the command line.  Each component is a separately compiled executable with a binary data stream of inputs and/or outputs.
 
-The principle is to stream data through the calculations in memory, starting with generating the damage distributions and ending with calculating the user's required result, before writing the output to disk.  This is done on an event-by-event basis, which means at any one time the compute server only has to hold the model data for a single event in its memory, per process. The user can run the calculation across multiple processes in parellel, specifiying the analysis workfkow and number of processes in a script file appropriate to the operating system.
+The principle is to stream data through the calculations in memory, starting with generating the damage distributions and ending with calculating the user's required result, before writing the output to disk.  This is done on an event-by-event basis, which means at any one time the compute server only has to hold the model data for a single event in its memory, per process. The user can run the calculation across multiple processes in parallel, specifiying the analysis workfkow and number of processes in a script file appropriate to the operating system.
 
 ### Language
 
