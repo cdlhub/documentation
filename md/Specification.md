@@ -78,11 +78,16 @@ getmodel is the component which generates a stream of effective damageability cd
 Same as eve output or a binary file of the same input format can be piped into getmodel.
 
 ##### Output
-getmode header packet structure
+Stream header packet structure
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | stream_id         | int    |   1/3  | Identifier of the data stream type.                                 |    0/1      |
+
+getmodel header packet structure
+
+| Name              | Type   |  Bytes | Description                                                         | Example     |
+|:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | event_id          | int    |    4   | Oasis event_id                                                      |   4545      |
 | areaperil_id      | int    |    4   | Oasis areaperil_id                                                  |  345456     |
 | vulnerability_id  | int    |    4   | Oasis vulnerability_id                                              |   345       |
@@ -100,7 +105,7 @@ getmodel data packet structure (record repeated no_of_bin times)
 <a id="gulcalc"></a>
 ## gulcalc 
 
-gulcalc is the component which calculates ground up loss. It takes the getmodel output as standard input and based on the sampling parameters specified, performs Monte Carlo sampling and numerical integration. The output is a table of ground up loss samples in Oasis kernel format, with mean (sidx=-1) and standard deviation (sidx=-2).
+gulcalc is the component which calculates ground up loss. It takes the getmodel output as standard input and based on the sampling parameters specified, performs Monte Carlo sampling and numerical integration. The output is a stream of ground up loss samples in Oasis kernel format, with numerical mean (sidx=-1) and standard deviation (sidx=-2).
 
 ##### Input
 Same as getmodel output or a binary file of the same data structure can be piped into gulcalc.
@@ -109,7 +114,7 @@ Same as getmodel output or a binary file of the same data structure can be piped
 
 ##### stream_id 1
 
-gulcalc stream header packet structure
+stream header packet structure
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
@@ -128,15 +133,22 @@ gulcalc data packet structure
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
 | sidx              | int    |    4   | Sample index                                                        |    10       |
-| gul               | float  |    4   | The ground up loss for the sample                                   | 5675.675    |
+| loss              | float  |    4   | The ground up loss for the sample                                   | 5675.675    |
 
 The data packet may be a variable length and so an sidx of 0 identifies the end of the data packet.
 
+There are two values of sidx with special meaning as follows;
+
+| sidx   |  Meaning                                 |
+|:-------|:-----------------------------------------|
+|   -1   | numerical integration mean               |
+|   -2   | numerical integration standard deviation |
+
 ##### stream_id 2
 
-The only difference here is that the field in the gul header packet structure is coverage_id, representing a grouping of item_id,  rather than item_id. The distinction and rationale for having this as a alternative stream is explained in the Reference Model section.  
+The main difference here is that the field in the gulcalc header packet structure is coverage_id, representing a grouping of item_id,  rather than item_id. The distinction and rationale for having this as a alternative stream is explained in the Reference Model section.  
 
-gulcalc stream header packet structure
+stream header packet structure
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
@@ -157,24 +169,23 @@ gulcalc data packet structure
 | sidx              | int    |    4   | Sample index                                                        |    10       |
 | loss              | float  |    4   | The ground up loss for the sample                                   | 5675.675    |
 
-There are two values of sidx with special meaning as follows;
+Only the numerical integration mean is output for stream_id 2.
 
 | sidx   |  Meaning                                 |
 |:-------|:-----------------------------------------|
 |   -1   | numerical integration mean               |
-|   -2   | numerical integration standard deviation |
 
 [Return to top](#specification)
 
 ## fmcalc <a id="fmcalc"></a>
 
-fmcalc is the component which takes the gulcalc output stream as standard input and applies the policy terms and conditions to produce insured loss samples. The output is a table of insured loss samples in Oasis kernel format, including the insured loss for the mean ground up loss (sidx=-1) and the total exposed value (sidx=-3).
+fmcalc is the component which takes the gulcalc output stream as standard input and applies the policy terms and conditions to produce insured loss samples. The output is a table of insured loss samples in Oasis kernel format, including the insured loss for the mean ground up loss (sidx=-1) and the maximum exposed value (sidx=-3).
 
 ##### Input
 Same as gulcalc output or a binary file of the same data structure can be piped into fmcalc.
 
 ##### Output
-Stream Header packet structure
+Stream header packet structure
 
 | Name              | Type   |  Bytes | Description                          | Example     |
 |:------------------|--------|--------| :------------------------------------|------------:|
@@ -202,9 +213,11 @@ There are two values of sidx with special meaning as follows;
 | sidx   |  Meaning                                 |
 |:-------|:-----------------------------------------|
 |   -1   | numerical integration mean               |
-|   -3   | exposure value                           | 
+|   -3   | maximum exposed value                    | 
 
-In the case of sidx = -1, this is the numerically integrated mean ground up loss passed through the financial terms from gulcalc.  sidx=-3 is generated by fmcalc and this is the TIV of the items passed through the financial terms.  This represents a 100% loss scenario to all exposured items after applying the insurance terms and conditions and is used in reports that require a total exposed value.
+In the case of sidx = -1, this is the numerically integrated mean ground up loss passed through the financial terms from gulcalc. 
+
+The maximum exposed value, sidx=-3,  is generated by fmcalc and this is the TIV of the items passed through the financial terms.  This represents a 100% loss scenario to all exposed items after applying the insurance terms and conditions and is used in outputs that require an exposed value.
 
 [Return to top](#specification)
 
@@ -213,10 +226,10 @@ In the case of sidx = -1, this is the numerically integrated mean ground up loss
 summarycalc is a component which sums the sampled losses from either gulcalc or fmcalc to the users required level(s) for reporting results.  This is a simple sum of the loss value by event_id, sidx and summary_id, where summary_id is a grouping of coverage_id for gulcalc or output_id for fmcalc defined in the user's input files.  
 
 ##### Input
-Same as gulcalc output or fmcalc output. A binary file of either data structure can be piped into summarycalc.
+Same as gulcalc coverage output (stream_id =2) or fmcalc output. A binary file of either data structure can be piped into summarycalc.
 
 ##### Output
-Stream Header packet structure
+Stream header packet structure
 
 | Name              | Type   |  Bytes | Description                          | Example     |
 |:------------------|--------|--------| :------------------------------------|------------:|
@@ -225,11 +238,11 @@ Stream Header packet structure
 
 summarycalc header packet structure
 
-| Name              | Type   |  Bytes | Description                                                           | Example     |
-|:------------------|--------|--------| :---------------------------------------------------------------------|------------:|
-| event_id          | int    |    4   | Oasis event_id                                                        |   4545      |
-| summary_id        | int    |    4   | Oasis summary_id                                                      |    300      |
-| exposure_value    | float  |    4   | The calculated maximum possible loss based on TIV and financial terms |    300      |
+| Name              | Type   |  Bytes | Description                                               | Example     |
+|:------------------|--------|--------| :---------------------------------------------------------|------------:|
+| event_id          | int    |    4   | Oasis event_id                                            |   4545      |
+| summary_id        | int    |    4   | Oasis summary_id                                          |    300      |
+| exposure_value    | float  |    4   | The TIV (from gulcalc) or maximum exposure value (fmcalc) |    600000   |
 
 summarycalc data packet structure
 
@@ -242,14 +255,20 @@ The data packet may be a variable length and so a sidx of 0 identifies the end o
 
 ## outputcalc <a id="outputcalc"></a>
 
-with the exception of outputcalc where four reference implementations are provided. These are called eltcalc, leccalc, aalcalc, and pltcalc. The output from these components vary and it is up to the developer to decide what form the output takes. This specification covers the input stream requirements of outputcalc, which represents one of a potentially unlimited set of output components. 
-outputcalc performs results analysis such as an event loss table or loss exceedance curve on the sampled output from either the gulcalc or fmcalc program.  The output is a results table in csv format.  Four examples are provided in the Reference Model.
+Outputcalc is a general term for an end-of-pipeline component which represents one of a potentially unlimited set of output components. Four examples are provided in the Reference Model. These are; 
+
+* eltcalc
+* leccalc
+* aalcalc/aalsummary
+* pltcalc. 
+
+outputcalc performs results analysis such as an event loss table or loss exceedance curve on the sampled output from summarycalc.  The output is a results table in csv format. 
 
 ##### Input
 summarycalc stdout. Binary files of the same data structures can be piped into the outputcalc component.
 
 ##### Output
-No standard output stream. The results table is exported to a csv file. See the [Reference model](ReferenceModel.md) for example output.
+No standard output stream. The results table is exported to a csv file. 
 
 [Return to top](#specification)
 
