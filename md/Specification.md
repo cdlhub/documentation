@@ -113,8 +113,7 @@ Same as getmodel output or a binary file of the same data structure can be piped
 ##### Output
 
 ##### stream_id 1
-
-stream header packet structure
+Stream header packet structure
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
@@ -146,9 +145,9 @@ There are two values of sidx with special meaning as follows;
 
 ##### stream_id 2
 
-The main difference here is that the field in the gulcalc header packet structure is coverage_id, representing a grouping of item_id,  rather than item_id. The distinction and rationale for having this as a alternative stream is explained in the Reference Model section.  
+The main difference here is that the field in the gulcalc header packet structure is coverage_id, representing a grouping of item_id, rather than item_id. The distinction and rationale for having this as a alternative stream is explained in the Reference Model section.  
 
-stream header packet structure
+Stream header packet structure
 
 | Name              | Type   |  Bytes | Description                                                         | Example     |
 |:------------------|--------|--------| :-------------------------------------------------------------------|------------:|
