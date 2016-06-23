@@ -1,22 +1,22 @@
 # 1. Introduction
-The in-memory solution for the Oasis Kernel is called the kernel tools or “ktools”. ktools is an independent “specification” of a set of processes which means that it defines the processing architecture and data structures and is then implemented as “reference model” which can then be adapted for particular model or business needs. 
+The in-memory solution for the Oasis Kernel is called the kernel tools or “ktools”. ktools is an independent “specification” of a set of processes which means that it defines the processing architecture and data structures. The framework is implemented as a set of components called the “reference model” which can then be adapted for particular model or business needs. 
 
 The code can be compiled in Linux, POSIX-compliant Windows and native Windows.
 
 ### Background
-The Kernel performs the core Oasis calculations of computing effective damageability distributions, Monte-Carlo sampling of ground up loss, the financial module, which applies insurance policy terms and conditions to the sampled losses, and some common catastrophe model outputs.
+The Kernel performs the core Oasis calculations of computing effective damageability distributions, Monte-Carlo sampling of ground up loss, the financial module calculations, which apply insurance policy terms and conditions to the sampled losses, and finally some common catastrophe model outputs.
 
-The first releases of Oasis used SQL-based calculation back-end with all calculations being performed in a database.  Release 1.3  included the first “in-memory” version of the Oasis Kernel written in C++ and C to provide streamed calculation at high computational performance, as an alternative to the database calculation for the most intensive Kernel calculations of ground up loss sampling and financial module calculations. The in-memory variant was first delivered as a stand-alone toolkit "ktools" with R1.4. 
+The early releases of Oasis used a SQL-compliant database to perform all calculations.  Release 1.3  included the first “in-memory” version of the Oasis Kernel written in C++ and C to provide streamed calculation at high computational performance, as an alternative to the database calculation. The scope of the in-memory calculation was for the most intensive Kernel calculations of ground up loss sampling and the financial module. This in-memory variant was first delivered as a stand-alone toolkit "ktools" with R1.4. 
 
-With R1.5, a Linux-based in-memory calculation back-end was deployed, using the reference model components of ktools. The range of functionality of ktools was limited to ground up loss sampling, the financial module and single output workflows, with effective damage distributions and output calculations still being performed in a SQL database.
+With R1.5, a Linux-based in-memory calculation back-end was released, using the reference model components of ktools. The range of functionality of ktools was still limited to ground up loss sampling, the financial module and single output workflows, with effective damage distributions and output calculations still being performed in a SQL-compliant database.
 
 In 2016 the functionality of ktools was extended to include the full range of Kernel calculations, including effective damageability distribution calculations and a wider range of financial module and output calculations.  The data stream structures and input data formats were also substantially revised to handle multi-peril models, user-definable summary levels for outputs, and multiple output workflows.  
 
 ### Architecture
 
-The Kernel is provided as a toolkit of components (“ktools”) which can be invoked at the command line.  Each component is a separately compiled executable with a binary data stream of inputs and outputs.
+The Kernel is provided as a toolkit of components (“ktools”) which can be invoked at the command line.  Each component is a separately compiled executable with a binary data stream of inputs and/or outputs.
 
-The principle is to stream data through by event end-to-end, with multiple processes being used either sequentially or concurrently, at the control of the user using a script file appropriate to the operating system.
+The principle is to stream data through the calculations in memory, starting with generating the damage distributions and ending with calculating the user's required result, before writing the output to disk.  This is done on an event-by-event basis, which means at any one time the compute server only has to hold the model data for a single event in its memory, per process. The user can run the calculation across multiple processes in parellel, specifiying the analysis workfkow and number of processes in a script file appropriate to the operating system.
 
 ### Language
 
