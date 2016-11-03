@@ -19,12 +19,16 @@ effective damageability distribution, held as a discrete cumulative distribution
 of uncertainty in a single distribution, representing the overall damage distribution conditional on the event occurring.
 * **Monte-Carlo sampling**. Oasis performs Monte-Carlo sampling of ground up and insured losses as its loss calculation methodology.
  
-These standards in methodology drove the design of the specification and so a different approach in any of these areas might have resulted in
-substantially different data streams. However there is substantial scope to adapt ktools to support variations in model calculation methodology,
-subject to adhering broadly to this calculation framework. 
+These standards in methodology drove the design of the specification and so a different approach in any of these areas would have resulted in
+substantially different data streams. However there is a lot of scope to adapt ktools to support variations in model calculation methodology,
+subject to them adhering broadly to this calculation framework. 
 
-#### 'Plug and play'
+### The 'plug and play' kernel
 
-Oasis is an agnostic plug and play framework for loss models is achieved in ktools by separating the calculation steps into separate
-components.  Each component is compiled separately which means any component can be replaced by a bespoke calculation component.  Further more,
-the developer is free to decide on the internal data structures.
+Oasis is an agnostic plug and play framework for loss models, which is achieved in ktools by separating the calculation steps into separate components.  Each component is compiled separately which means any component can be replaced by a bespoke calculation component.  Furthermore, the component developer has a free hand to decide on the input data structures.  The components that are most likely to be adapted for model variations are;
+
+* **getmodel**. There is great variation in the way uncertainty is expressed in catastrophe models, and more efficient ways of storing data. The reference implementation of getmodel reads in hazard footprint and damage probability distribution data which has already been discretized and converted Oasis 'kernel' format.   getmodel can be adapted to read in the model data in the models source format, and perform the discretization in the calculation logic.
+
+* **gulcalc**. The reference implementation has a simple approach to sampling damage using simple uniform random numbers, and to correlating damage across items.  gulcalc could be adapted to more sophisticated sampling strategies and methods of correlating damage.  Also, in respect of multi-peril damage, different methodologies of combining damage from different perils to the same exposure such that the total insured value or replacement value is not exceeded could be implemented.  This is also the place where conditional coverage damage methodologies could be implemented. 
+
+From a users perspective, additional calculation components could be developed to generate a particular type of report, and fmcalc could be adapted to support different policy types by adding new calculation rules and defining different data structures for policy data.
