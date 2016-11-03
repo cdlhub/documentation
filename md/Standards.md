@@ -2,13 +2,13 @@
 
 The element of ktools that represents a standard is the Specification, not the input data structures in the reference model, 
 nor even the specific logic that drives the calculations. The standard is essentially the structure of data streams that flow in between
-the calculation components. 
+the calculation components. However, all of the data streams have ids which means that the data streaming architecture is extensible.
 
 ### Loss modelling methodology
 
 The data stream structures arise from the Oasis methodology for representing models and calculating losses which can be summarized as follows;
 
-* **Event-based calculation**. An event is a data representation of a catastophic event. Oasis calculates losses to a set of exposures on an event 
+* **Event-based calculation**. An event is a data representation of a catastophic event. Oasis calculates losses to a set of exposures on an event.
 by event basis, and so the calculation is driven by a list of events. Work is also distributed by events. The smallest unit of work is a loss calculation
 for a single event.
 * **Discrete probability distributions**. Probability distributions for intensity and damage are represented as histograms with bins which represent 
